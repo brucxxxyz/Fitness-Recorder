@@ -28,22 +28,22 @@
     <div class="input-box" id="selectBox">
       <select id="workoutSelect"></select>
     </div>
-    <div id="existingItems" class="existing"></div>
   </div>
 
   <div class="card">
-    <div class="row-space">
-      <div>
-        <div class="label">当前记录</div>
-        <div id="countLabel">组数：0</div>
-        <div id="totalLabel" class="muted">总计：0 个</div>
-      </div>
 
-      <div class="row" style="margin-left:auto;">
+    <!-- 当前记录 + 按钮平行 -->
+    <div class="row-space">
+      <div id="currentItemLabel" class="current-label">当前记录：</div>
+
+      <div class="btn-row">
         <button id="subBtn" class="counter-btn">-</button>
         <button id="addBtn" class="counter-btn">+</button>
       </div>
     </div>
+
+    <div id="countLabel">组数：0</div>
+    <div id="totalLabel" class="muted">总计：0 个</div>
 
     <button id="deleteItemBtn" class="danger small" style="margin-top:10px; display:none;">
       删除该项目数据
