@@ -50,7 +50,20 @@
     margin-bottom: 4px;
   }
 
-  input[type="date"],
+  /* 日期按钮高度调小 */
+  input[type="date"] {
+    width: 70%;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #ffffff;
+    color: var(--fg);
+    font-size: 15px;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+  }
+
   select {
     width: 70%;
     padding: 8px 10px;
@@ -83,7 +96,7 @@
   .row { display: flex; align-items: center; gap: 8px; }
   .row-space { display: flex; justify-content: space-between; align-items: center; }
 
-  /* - / + 按钮更小 */
+  /* -/+ 按钮缩小 */
   .counter-btn {
     padding: 4px 10px;
     font-size: 14px;
@@ -106,7 +119,7 @@
 
 <div class="app">
 
-<!-- 首页 -->
+<!-- 今日训练页 -->
 <div id="page-home" class="page active">
   <h1>今日训练</h1>
 
@@ -118,6 +131,9 @@
   <div class="card">
     <div class="label">项目</div>
     <select id="workoutSelect"></select>
+
+    <!-- 显示已有记录项目 -->
+    <div id="existingItems" style="margin-top:6px; font-size:13px; color:var(--muted); text-align:center;"></div>
   </div>
 
   <div class="card">
@@ -149,15 +165,11 @@
   </div>
 </div>
 
-<!-- 历史页 -->
+<!-- 历史记录页 -->
 <div id="page-history" class="page">
   <h1>历史记录</h1>
 
   <div id="historyList"></div>
-
-  <div class="card">
-    <button id="deleteDayBtn" class="danger small center-btn">删除当天记录</button>
-  </div>
 
   <div class="card">
     <button id="backHome" class="center-btn">返回今日训练</button>
@@ -182,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "哑铃弯举": 12,
   };
 
-  const STORAGE_KEY = "fitness_history_v3";
+  const STORAGE_KEY = "fitness_history_v4";
   let history = {};
   let currentCount = 0;
 
@@ -191,6 +203,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const datePicker = document.getElementById("datePicker");
   const workoutSelect = document.getElementById("workoutSelect");
+  const existingItems = document.getElementById("existingItems");
+
   const countLabel = document.getElementById("countLabel");
   const totalLabel = document.getElementById("totalLabel");
 
@@ -201,27 +215,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const gotoHistory = document.getElementById("gotoHistory");
   const backHome = document.getElementById("backHome");
-  const deleteDayBtn = document.getElementById("deleteDayBtn");
 
   const historyList = document.getElementById("historyList");
 
-  function todayStr() {
+  /* ---------- 工具函数 ---------- */
+
+  const todayStr = () => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-  }
+  };
 
-  function loadStorage() {
+  const getDateKey = () => datePicker.value || todayStr();
+
+  const loadStorage = () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) history = JSON.parse(raw);
-  }
+  };
 
-  function saveStorage() {
+  const saveStorage = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  };
+
+  /* ---------- UI 更新 ---------- */
+
+  function updateDisplay() {
+    const item = workoutSelect.value;
+    const per = WORKOUTS[item];
+    countLabel.textContent = `组数：${currentCount}`;
+    totalLabel.textContent = `总计：${currentCount * per} 个`;
   }
 
-  function getDateKey() {
-    return datePicker.value || todayStr();
+  function updateExistingItems() {
+    const dateKey = getDateKey();
+
+    if (!history[dateKey]) {
+      existingItems.textContent = "";
+      return;
+    }
+
+    const items = Object.keys(history[dateKey]);
+    if (items.length === 0) {
+      existingItems.textContent = "";
+      return;
+    }
+
+    const list = items
+      .map(name => `${name}（${history[dateKey][name]} 组）`)
+      .join("，");
+
+    existingItems.textContent = `已有记录：${list}`;
   }
+
+  /* ---------- 加载当前项目 ---------- */
 
   function loadCurrent() {
     const dateKey = getDateKey();
@@ -230,15 +275,12 @@ document.addEventListener("DOMContentLoaded", () => {
     currentCount = history[dateKey]?.[item] ?? 0;
 
     updateDisplay();
+    updateExistingItems();
+
     deleteItemBtn.style.display = currentCount > 0 ? "block" : "none";
   }
 
-  function updateDisplay() {
-    const item = workoutSelect.value;
-    const per = WORKOUTS[item];
-    countLabel.textContent = `组数：${currentCount}`;
-    totalLabel.textContent = `总计：${currentCount * per} 个`;
-  }
+  /* ---------- 保存当前项目 ---------- */
 
   function saveCurrent() {
     const dateKey = getDateKey();
@@ -251,13 +293,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
       saveStorage();
       deleteItemBtn.style.display = "none";
+      updateExistingItems();
       return;
     }
 
     history[dateKey][item] = currentCount;
     saveStorage();
     deleteItemBtn.style.display = "block";
+    updateExistingItems();
   }
+
+  /* ---------- 删除项目 ---------- */
 
   deleteItemBtn.onclick = () => {
     const dateKey = getDateKey();
@@ -271,8 +317,11 @@ document.addEventListener("DOMContentLoaded", () => {
     saveStorage();
     currentCount = 0;
     updateDisplay();
+    updateExistingItems();
     deleteItemBtn.style.display = "none";
   };
+
+  /* ---------- 清除当天 ---------- */
 
   clearTodayBtn.onclick = () => {
     const dateKey = getDateKey();
@@ -280,8 +329,11 @@ document.addEventListener("DOMContentLoaded", () => {
     saveStorage();
     currentCount = 0;
     updateDisplay();
+    updateExistingItems();
     deleteItemBtn.style.display = "none";
   };
+
+  /* ---------- 加减按钮 ---------- */
 
   addBtn.onclick = () => {
     currentCount++;
@@ -297,6 +349,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   datePicker.onchange = loadCurrent;
   workoutSelect.onchange = loadCurrent;
+
+  /* ---------- 渲染历史记录 ---------- */
 
   function renderHistoryPage() {
     historyList.innerHTML = "";
@@ -360,9 +414,23 @@ document.addEventListener("DOMContentLoaded", () => {
         card.appendChild(row);
       });
 
+      /* 每个日期自己的删除按钮 */
+      const delBtn = document.createElement("button");
+      delBtn.className = "danger small center-btn";
+      delBtn.style.marginTop = "10px";
+      delBtn.textContent = "删除当天记录";
+      delBtn.onclick = () => {
+        delete history[dateKey];
+        saveStorage();
+        renderHistoryPage();
+      };
+
+      card.appendChild(delBtn);
       historyList.appendChild(card);
     });
   }
+
+  /* ---------- 页面切换 ---------- */
 
   gotoHistory.onclick = () => {
     renderHistoryPage();
@@ -375,14 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pageHome.classList.add("active");
   };
 
-  deleteDayBtn.onclick = () => {
-    const dateKey = prompt("请输入要删除的日期（YYYY-MM-DD）");
-    if (dateKey && history[dateKey]) {
-      delete history[dateKey];
-      saveStorage();
-      renderHistoryPage();
-    }
-  };
+  /* ---------- 初始化 ---------- */
 
   loadStorage();
 
