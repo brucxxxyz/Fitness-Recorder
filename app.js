@@ -8,12 +8,13 @@ document.addEventListener("DOMContentLoaded", () => {
     "哑铃弯举": 12,
   };
 
-  const STORAGE_KEY = "fitness_history_v6";
+  const STORAGE_KEY = "fitness_history_v7";
   let history = {};
   let currentCount = 0;
 
   const datePicker = document.getElementById("datePicker");
   const workoutSelect = document.getElementById("workoutSelect");
+  const selectBox = document.getElementById("selectBox");
   const existingItems = document.getElementById("existingItems");
 
   const countLabel = document.getElementById("countLabel");
@@ -43,6 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveStorage = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
   };
+
+  /* 让 select 文本居中显示 */
+  function updateSelectLabel() {
+    const text = workoutSelect.options[workoutSelect.selectedIndex].text;
+    selectBox.setAttribute("data-value", text);
+  }
 
   function updateDisplay() {
     const item = workoutSelect.value;
@@ -74,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateDisplay();
     updateExistingItems();
     deleteItemBtn.style.display = currentCount > 0 ? "block" : "none";
+    updateSelectLabel();
   }
 
   function saveCurrent() {
