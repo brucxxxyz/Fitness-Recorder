@@ -1,0 +1,126 @@
+:root {
+  --bg: #ffffff;
+  --fg: #111827;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --accent: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.app { max-width: 480px; margin: 0 auto; }
+
+h1 {
+  font-size: 20px;
+  margin: 12px 0 16px;
+  text-align: center;
+}
+
+/* 输入行 */
+.form-row {
+  width: 70%;
+  margin: 0 auto 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-row label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.input-box {
+  width: 100%;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.input-box input[type="date"],
+.input-box select {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.existing {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* 卡片 */
+.card {
+  background: #f9fafb;
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+button {
+  font-family: var(--font);
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--accent);
+  display: block;
+  margin: 0 auto;
+}
+
+button.small { padding: 4px 10px; font-size: 13px; }
+button.danger { background: var(--danger); }
+button.warning { background: var(--warning); color: #111; }
+
+.row-space {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.counter-btn {
+  padding: 4px 10px;
+  font-size: 14px;
+  min-width: 32px;
+}
+
+.history-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  color: #999;
+  font-size: 13px;
+}
