@@ -58,7 +58,7 @@ No setup required.
 5. Your site will be available at:
 
 ```
-https://brucxxxyz.github.io/<your-repo-name>/
+https://brucxxxyz.github.io/Fitness-Recorder/
 ```
 
 Now you can use the app anywhere — including on your phone.
