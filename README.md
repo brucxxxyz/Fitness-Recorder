@@ -106,23 +106,6 @@ Potential improvements for future versions:
 
 ---
 
-## 📸 Screenshots (optional)
-
-You can add screenshots here later:
-
-```
-/screenshots
-```
-
----
-
-## 📜 License
-
-MIT License  
-Free to use, modify, and distribute.
-
----
-
 ## 🖋️ Credits
 
 **— Designed by BY —**
