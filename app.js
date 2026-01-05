@@ -8,15 +8,15 @@ document.addEventListener("DOMContentLoaded", () => {
     "哑铃弯举": 12,
   };
 
-  const STORAGE_KEY = "fitness_history_v7";
+  const STORAGE_KEY = "fitness_history_v8";
   let history = {};
   let currentCount = 0;
 
   const datePicker = document.getElementById("datePicker");
   const workoutSelect = document.getElementById("workoutSelect");
   const selectBox = document.getElementById("selectBox");
-  const existingItems = document.getElementById("existingItems");
 
+  const currentItemLabel = document.getElementById("currentItemLabel");
   const countLabel = document.getElementById("countLabel");
   const totalLabel = document.getElementById("totalLabel");
 
@@ -49,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateSelectLabel() {
     const text = workoutSelect.options[workoutSelect.selectedIndex].text;
     selectBox.setAttribute("data-value", text);
+    currentItemLabel.textContent = "当前记录：" + text;
   }
 
   function updateDisplay() {
@@ -58,28 +59,11 @@ document.addEventListener("DOMContentLoaded", () => {
     totalLabel.textContent = `总计：${currentCount * per} 个`;
   }
 
-  function updateExistingItems() {
-    const dateKey = getDateKey();
-    if (!history[dateKey]) {
-      existingItems.textContent = "";
-      return;
-    }
-    const items = Object.keys(history[dateKey]);
-    if (items.length === 0) {
-      existingItems.textContent = "";
-      return;
-    }
-    existingItems.textContent =
-      "已有记录：" +
-      items.map(name => `${name}（${history[dateKey][name]} 组）`).join("，");
-  }
-
   function loadCurrent() {
     const dateKey = getDateKey();
     const item = workoutSelect.value;
     currentCount = history[dateKey]?.[item] ?? 0;
     updateDisplay();
-    updateExistingItems();
     deleteItemBtn.style.display = currentCount > 0 ? "block" : "none";
     updateSelectLabel();
   }
@@ -94,14 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
       delete history[dateKey][item];
       if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
       saveStorage();
-      updateExistingItems();
       deleteItemBtn.style.display = "none";
       return;
     }
 
     history[dateKey][item] = currentCount;
     saveStorage();
-    updateExistingItems();
     deleteItemBtn.style.display = "block";
   }
 
@@ -115,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
     saveStorage();
     currentCount = 0;
     updateDisplay();
-    updateExistingItems();
     deleteItemBtn.style.display = "none";
   };
 
@@ -125,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
     saveStorage();
     currentCount = 0;
     updateDisplay();
-    updateExistingItems();
     deleteItemBtn.style.display = "none";
   };
 
