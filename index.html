@@ -51,31 +51,19 @@
   }
 
   /* 日期按钮高度调小 */
-  input[type="date"] {
+  input[type="date"],
+select {
     width: 70%;
-    padding: 4px 10px;
+    padding: 6px 10px;      /* ← 两者统一 */
     border-radius: 10px;
     border: 1px solid var(--border);
     background: #ffffff;
     color: var(--fg);
-    font-size: 15px;
+    font-size: 15px;        /* ← 字体一致 */
     display: block;
-    margin: 0 auto;
+    margin: 0 auto;         /* ← 居中 */
     text-align: center;
-  }
-
-  select {
-    width: 70%;
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: #ffffff;
-    color: var(--fg);
-    font-size: 15px;
-    display: block;
-    margin: 0 auto;
-    text-align: center;
-  }
+}
 
   button {
     font-family: var(--font);
