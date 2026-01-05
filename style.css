@@ -28,7 +28,9 @@ h1 {
   text-align: center;
 }
 
-/* 输入行 */
+/* ---------------------------
+   输入行（日期 & 项目）
+   --------------------------- */
 .form-row {
   width: 70%;
   margin: 0 auto 14px;
@@ -43,7 +45,9 @@ h1 {
   margin-bottom: 4px;
 }
 
+/* 统一外框 */
 .input-box {
+  position: relative;
   width: 100%;
   height: 38px;
   border: 1px solid var(--border);
@@ -55,32 +59,49 @@ h1 {
   box-sizing: border-box;
 }
 
+/* 让 input 和 select 都透明 */
 .input-box input[type="date"],
 .input-box select {
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: transparent;
-    font-size: 15px;
-    text-align: center;
-    padding: 0;
-    margin: 0;
-
-    /* 关键：让字体真正居中（iOS 专用补偿） */
-    padding-top: 4px;      /* ← 让文字往下推一点 */
-    line-height: normal;   /* ← 让系统决定行高 */
-
-    -webkit-appearance: none;
-    appearance: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  color: transparent;        /* ← 隐藏文字 */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
+/* 日期按钮：iOS 会自动居中，无需伪元素 */
+.input-box input[type="date"] {
+  color: var(--fg);          /* 日期控件不能隐藏文字 */
+}
+
+/* 项目按钮：用伪元素显示真正的文字（水平居中） */
+.input-box[data-value]::after {
+  content: attr(data-value);
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 15px;
+  color: var(--fg);
+  pointer-events: none;
+}
+
+/* 已有记录 */
 .existing {
   margin-top: 6px;
   font-size: 13px;
   color: var(--muted);
 }
 
-/* 卡片 */
+/* ---------------------------
+   卡片
+   --------------------------- */
 .card {
   background: #f9fafb;
   border-radius: 14px;
