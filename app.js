@@ -62,11 +62,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadCurrent() {
     const dateKey = getDateKey();
     const item = workoutSelect.value;
+
+    // 读取今日该项目的历史记录
     currentCount = history[dateKey]?.[item] ?? 0;
+
+    // 更新 UI
     updateDisplay();
-    deleteItemBtn.style.display = currentCount > 0 ? "block" : "none";
     updateSelectLabel();
-  }
+
+    // 显示删除按钮
+    deleteItemBtn.style.display = currentCount > 0 ? "block" : "none";
+}
 
   function saveCurrent() {
     const dateKey = getDateKey();
@@ -153,8 +159,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const left = document.createElement("div");
         left.textContent = `${item}：${count} 组（${count * per} 个）`;
 
-        const right = document.createElement("div");
-        right.className = "btn-row";
+       const right = document.createElement("div");
+       right.className = "btn-row";   // ← 使用首页同款布局
+
 
         const sub = document.createElement("button");
         sub.className = "counter-btn";
