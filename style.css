@@ -67,7 +67,7 @@ h1 {
   font-size: 15px;
   padding: 0;
   margin: 0;
-  color: transparent; /* 隐藏文字 */
+  color: transparent;
   -webkit-appearance: none;
   appearance: none;
 }
@@ -95,7 +95,7 @@ h1 {
   font-weight: 500;
 }
 
-/* 按钮行 */
+/* 按钮行（首页 & 历史记录共用） */
 .btn-row {
   display: flex;
   gap: 6px;
@@ -109,7 +109,13 @@ h1 {
   min-width: 26px;
 }
 
-/* 卡片 */
+/* 历史记录行 */
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .card {
   background: #f9fafb;
   border-radius: 14px;
