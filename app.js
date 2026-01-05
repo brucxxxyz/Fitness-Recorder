@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "哑铃弯举": 12,
   };
 
-  const STORAGE_KEY = "fitness_history_v8";
+  const STORAGE_KEY = "fitness_history_v9";
   let history = {};
   let currentCount = 0;
 
@@ -148,14 +148,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const count = items[item];
 
         const row = document.createElement("div");
-        row.className = "row-space history-item";
+        row.className = "history-row history-item";
 
         const left = document.createElement("div");
         left.textContent = `${item}：${count} 组（${count * per} 个）`;
 
         const right = document.createElement("div");
-        right.className = "row";
-        right.style.marginLeft = "auto";
+        right.className = "btn-row";
 
         const sub = document.createElement("button");
         sub.className = "counter-btn";
