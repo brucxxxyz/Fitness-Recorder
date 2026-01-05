@@ -93,7 +93,11 @@ select {
     text-align: center;
     padding: 0;
     margin: 0;
-    line-height: 38px;        /* ← 关键：让字体垂直居中 */
+
+    /* 关键：让字体“看起来”垂直居中 */
+    line-height: 34px;     /* ← 不是 38px，必须比容器高度略小 */
+    padding-top: 2px;      /* ← 微调，让文字往下 2px */
+
     -webkit-appearance: none;
     appearance: none;
 }
