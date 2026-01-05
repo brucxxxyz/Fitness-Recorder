@@ -84,7 +84,7 @@ select {
 
 /* 让内部控件透明、无边框、填满容器 */
 .input-wrap input[type="date"],
-.input-wrap select {
+..input-wrap select {
     width: 100%;
     height: 100%;
     border: none;
@@ -94,9 +94,9 @@ select {
     padding: 0;
     margin: 0;
 
-    /* 关键：让字体“看起来”垂直居中 */
-    line-height: 34px;     /* ← 不是 38px，必须比容器高度略小 */
-    padding-top: 2px;      /* ← 微调，让文字往下 2px */
+    /* 最终有效的视觉补偿 */
+    padding-top: 6px;     /* ← 关键：让文字往下推 */
+    line-height: normal;  /* ← 让 iOS 自己决定行高 */
 
     -webkit-appearance: none;
     appearance: none;
