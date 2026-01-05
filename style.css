@@ -78,7 +78,7 @@ h1 {
 }
 
 /* 项目按钮：伪元素显示文字（水平居中） */
-#selectBox[data-value]::after {
+.input-box[data-value]::after {
   content: attr(data-value);
   position: absolute;
   left: 0;
@@ -89,10 +89,24 @@ h1 {
   pointer-events: none;
 }
 
-.existing {
-  margin-top: 6px;
+/* 当前记录行 */
+.current-label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* 按钮行 */
+.btn-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* 缩小按钮 */
+.counter-btn {
+  padding: 2px 8px;
   font-size: 13px;
-  color: var(--muted);
+  min-width: 26px;
 }
 
 /* 卡片 */
@@ -125,12 +139,6 @@ button.warning { background: var(--warning); color: #111; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.counter-btn {
-  padding: 4px 10px;
-  font-size: 14px;
-  min-width: 32px;
 }
 
 .history-item {
