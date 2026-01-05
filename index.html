@@ -50,33 +50,18 @@
     margin-bottom: 4px;
   }
 
-input[type="date"] {
-  -webkit-appearance: none; /* ← 关键 */
-}
-
-input[type="date"],
-select {
-  width: 92%;            /* ← 控件缩小（你可改成 60%、65%、80%） */
-  padding: 8px 10px;     /* ← 保持原高度 */
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #ffffff;
-  color: var(--fg);
-  font-size: 15px;       /* ← 字体大小不变 */
-
-  display: block;        /* ← 让 margin auto 生效 */
-  margin: 0 auto;        /* ← 控件整体居中 */
-  text-align: center;    /* ← 字体在控件内部居中 */
-}
-
+  input[type="date"],
   select {
-    width: 100%;
+    width: 70%;
     padding: 8px 10px;
     border-radius: 10px;
     border: 1px solid var(--border);
     background: #ffffff;
     color: var(--fg);
     font-size: 15px;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
   }
 
   button {
@@ -98,6 +83,19 @@ select {
   .row { display: flex; align-items: center; gap: 8px; }
   .row-space { display: flex; justify-content: space-between; align-items: center; }
 
+  /* - / + 按钮更小 */
+  .counter-btn {
+    padding: 4px 10px;
+    font-size: 14px;
+    min-width: 32px;
+  }
+
+  /* 按钮居中 */
+  .center-btn {
+    display: block;
+    margin: 0 auto;
+  }
+
   .history-item {
     padding: 8px 0;
     border-bottom: 1px solid var(--border);
@@ -108,7 +106,7 @@ select {
 
 <div class="app">
 
-<!-- ------------------ 首页：当天训练 ------------------ -->
+<!-- 首页 -->
 <div id="page-home" class="page active">
   <h1>今日训练</h1>
 
@@ -129,38 +127,48 @@ select {
         <div id="countLabel">组数：0</div>
         <div id="totalLabel" style="color:var(--muted)">总计：0 个</div>
       </div>
-      <div class="row">
-        <button id="subBtn">-</button>
-        <button id="addBtn">+</button>
+
+      <!-- -/+ 按钮靠右 -->
+      <div class="row" style="margin-left:auto;">
+        <button id="subBtn" class="counter-btn">-</button>
+        <button id="addBtn" class="counter-btn">+</button>
       </div>
     </div>
 
-    <!-- 删除当前项目按钮 -->
     <button id="deleteItemBtn" class="danger small" style="margin-top:10px; display:none;">
       删除该项目数据
     </button>
   </div>
 
   <div class="card">
-    <button class="warning small" id="clearTodayBtn">清除当天全部数据</button>
+    <button class="warning small center-btn" id="clearTodayBtn">清除当天全部数据</button>
   </div>
 
   <div class="card">
-    <button id="gotoHistory">查看历史记录</button>
+    <button id="gotoHistory" class="center-btn">查看历史记录</button>
   </div>
 </div>
 
-<!-- ------------------ 历史记录页 ------------------ -->
+<!-- 历史页 -->
 <div id="page-history" class="page">
   <h1>历史记录</h1>
 
   <div id="historyList"></div>
 
   <div class="card">
-    <button id="backHome">返回今日训练</button>
+    <button id="deleteDayBtn" class="danger small center-btn">删除当天记录</button>
+  </div>
+
+  <div class="card">
+    <button id="backHome" class="center-btn">返回今日训练</button>
   </div>
 </div>
 
+</div>
+
+<!-- 落款 -->
+<div style="text-align:center; margin-top:30px; color:#999; font-size:13px;">
+  — Designed by BY —
 </div>
 
 <script>
@@ -193,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const gotoHistory = document.getElementById("gotoHistory");
   const backHome = document.getElementById("backHome");
+  const deleteDayBtn = document.getElementById("deleteDayBtn");
 
   const historyList = document.getElementById("historyList");
 
@@ -237,14 +246,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!history[dateKey]) history[dateKey] = {};
 
-    // 自动删除：组数为 0
     if (currentCount === 0) {
       delete history[dateKey][item];
-
-      if (Object.keys(history[dateKey]).length === 0) {
-        delete history[dateKey];
-      }
-
+      if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
       saveStorage();
       deleteItemBtn.style.display = "none";
       return;
@@ -308,58 +312,55 @@ document.addEventListener("DOMContentLoaded", () => {
       card.className = "card";
 
       const title = document.createElement("div");
-      title.innerHTML = `<strong>${dateKey}</strong>`;
+      title.style.fontWeight = "bold";
+      title.style.marginBottom = "6px";
+      title.textContent = dateKey;
       card.appendChild(title);
 
       const items = history[dateKey];
-
       Object.keys(items).forEach(item => {
-        const row = document.createElement("div");
-        row.className = "history-item";
-
         const per = WORKOUTS[item];
         const count = items[item];
 
-        row.innerHTML = `
-          <div><strong>${item}</strong>：${count} 组（共 ${count * per} 个）</div>
-          <div class="row" style="margin-top:6px;">
-            <button class="small" data-date="${dateKey}" data-item="${item}" data-op="-">-</button>
-            <button class="small" data-date="${dateKey}" data-item="${item}" data-op="+">+</button>
-          </div>
-        `;
+        const row = document.createElement("div");
+        row.className = "row-space history-item";
 
+        const left = document.createElement("div");
+        left.textContent = `${item}：${count} 组（${count * per} 个）`;
+
+        const right = document.createElement("div");
+        right.className = "row";
+        right.style.marginLeft = "auto";
+
+        const sub = document.createElement("button");
+        sub.className = "counter-btn";
+        sub.textContent = "-";
+        sub.onclick = () => {
+          if (history[dateKey][item] > 0) history[dateKey][item]--;
+          if (history[dateKey][item] === 0) delete history[dateKey][item];
+          if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
+          saveStorage();
+          renderHistoryPage();
+        };
+
+        const add = document.createElement("button");
+        add.className = "counter-btn";
+        add.textContent = "+";
+        add.onclick = () => {
+          history[dateKey][item]++;
+          saveStorage();
+          renderHistoryPage();
+        };
+
+        right.appendChild(sub);
+        right.appendChild(add);
+
+        row.appendChild(left);
+        row.appendChild(right);
         card.appendChild(row);
       });
 
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "删除当天数据";
-      delBtn.className = "danger small";
-      delBtn.style.marginTop = "8px";
-      delBtn.onclick = () => {
-        delete history[dateKey];
-        saveStorage();
-        renderHistoryPage();
-      };
-
-      card.appendChild(delBtn);
       historyList.appendChild(card);
-    });
-
-    historyList.querySelectorAll("button[data-op]").forEach(btn => {
-      btn.onclick = () => {
-        const dateKey = btn.dataset.date;
-        const item = btn.dataset.item;
-        const op = btn.dataset.op;
-
-        if (op === "+") history[dateKey][item]++;
-        else if (op === "-" && history[dateKey][item] > 0) history[dateKey][item]--;
-
-        if (history[dateKey][item] === 0) delete history[dateKey][item];
-        if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
-
-        saveStorage();
-        renderHistoryPage();
-      };
     });
   }
 
@@ -374,27 +375,27 @@ document.addEventListener("DOMContentLoaded", () => {
     pageHome.classList.add("active");
   };
 
-  function init() {
-    loadStorage();
-
-    for (const name in WORKOUTS) {
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = `${name}（每组 ${WORKOUTS[name]} 个）`;
-      workoutSelect.appendChild(opt);
+  deleteDayBtn.onclick = () => {
+    const dateKey = prompt("请输入要删除的日期（YYYY-MM-DD）");
+    if (dateKey && history[dateKey]) {
+      delete history[dateKey];
+      saveStorage();
+      renderHistoryPage();
     }
+  };
 
-    datePicker.value = todayStr();
-    loadCurrent();
-  }
+  loadStorage();
 
-  init();
+  Object.keys(WORKOUTS).forEach(item => {
+    const opt = document.createElement("option");
+    opt.value = opt.textContent = item;
+    workoutSelect.appendChild(opt);
+  });
+
+  datePicker.value = todayStr();
+  loadCurrent();
 });
 </script>
-
-<div style="text-align:center; margin-top:30px; color:#999; font-size:13px;">
-  — Designed by BY —
-</div>
 
 </body>
 </html>
