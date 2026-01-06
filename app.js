@@ -1,33 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const WORKOUTS = {
-    "对握下拉": 10,
-    "卧推": 8,
-    "深蹲": 12,
-    "硬拉": 5,
-    "哑铃弯举": 12,
+  /* -------------------------
+     1. 数据结构
+  ------------------------- */
+
+  const WORKOUT_GROUPS = {
+    "胸部": ["卧推", "上斜卧推", "哑铃飞鸟", "拉绳夹胸"],
+    "背部": ["引体向上", "高位下拉", "对握下拉", "坐姿划船"],
+    "腿部": ["深蹲", "硬拉", "腿举", "弓步蹲", "小腿提踵"],
+    "肩部": ["哑铃推举", "杠铃推举", "侧平举", "前平举", "反向飞鸟"],
+    "手臂": ["哑铃弯举", "杠铃弯举", "锤式弯举", "绳索下压", "臂屈伸"],
+    "核心": ["卷腹", "仰卧起坐", "俄罗斯转体", "抬腿", "平板支撑"]
   };
 
-  const STORAGE_KEY = "fitness_history_v9";
+  const STORAGE_KEY = "fitness_history_v10";
   let history = {};
-  let currentCount = 0;
+
+  /* -------------------------
+     2. DOM
+  ------------------------- */
 
   const datePicker = document.getElementById("datePicker");
-  const workoutSelect = document.getElementById("workoutSelect");
+  const bodyPartSelect = document.getElementById("bodyPartSelect");
   const selectBox = document.getElementById("selectBox");
-
-  const currentItemLabel = document.getElementById("currentItemLabel");
-  const countLabel = document.getElementById("countLabel");
-  const totalLabel = document.getElementById("totalLabel");
-
-  const addBtn = document.getElementById("addBtn");
-  const subBtn = document.getElementById("subBtn");
-  const deleteItemBtn = document.getElementById("deleteItemBtn");
-  const clearTodayBtn = document.getElementById("clearTodayBtn");
+  const subItemContainer = document.getElementById("subItemContainer");
 
   const gotoHistory = document.getElementById("gotoHistory");
   const backHome = document.getElementById("backHome");
   const historyList = document.getElementById("historyList");
+
+  /* -------------------------
+     3. 工具函数
+  ------------------------- */
 
   const todayStr = () => {
     const d = new Date();
@@ -45,94 +49,91 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
   };
 
-  /* 让 select 文本居中显示 */
+  /* -------------------------
+     4. 更新部位选择文字（居中）
+  ------------------------- */
+
   function updateSelectLabel() {
-    const text = workoutSelect.options[workoutSelect.selectedIndex].text;
+    const text = bodyPartSelect.options[bodyPartSelect.selectedIndex].text;
     selectBox.setAttribute("data-value", text);
-    currentItemLabel.textContent = "当前记录：" + text;
   }
 
-  function updateDisplay() {
-    const item = workoutSelect.value;
-    const per = WORKOUTS[item];
-    countLabel.textContent = `组数：${currentCount}`;
-    totalLabel.textContent = `总计：${currentCount * per} 个`;
+  /* -------------------------
+     5. 渲染子项目列表
+  ------------------------- */
+
+  function renderSubItems() {
+    const part = bodyPartSelect.value;
+    const items = WORKOUT_GROUPS[part];
+    const dateKey = getDateKey();
+
+    subItemContainer.innerHTML = "";
+
+    items.forEach(item => {
+      const count = history[dateKey]?.[item] ?? 0;
+
+      const row = document.createElement("div");
+      row.className = "subitem-row";
+
+      const left = document.createElement("div");
+      left.textContent = item;
+
+      const right = document.createElement("div");
+      right.className = "btn-row";
+
+      const sub = document.createElement("button");
+      sub.className = "counter-btn";
+      sub.textContent = "-";
+      sub.onclick = () => adjustItem(item, -1);
+
+      const add = document.createElement("button");
+      add.className = "counter-btn";
+      add.textContent = "+";
+      add.onclick = () => adjustItem(item, +1);
+
+      const countLabel = document.createElement("span");
+      countLabel.style.margin = "0 6px";
+      countLabel.textContent = count;
+
+      right.appendChild(sub);
+      right.appendChild(countLabel);
+      right.appendChild(add);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      subItemContainer.appendChild(row);
+    });
   }
 
-  function loadCurrent() {
+  /* -------------------------
+     6. 调整项目组数
+  ------------------------- */
+
+  function adjustItem(item, delta) {
     const dateKey = getDateKey();
-    const item = workoutSelect.value;
-
-    // 读取今日该项目的历史记录
-    currentCount = history[dateKey]?.[item] ?? 0;
-
-    // 更新 UI
-    updateDisplay();
-    updateSelectLabel();
-
-    // 显示删除按钮
-    deleteItemBtn.style.display = currentCount > 0 ? "block" : "none";
-}
-
-  function saveCurrent() {
-    const dateKey = getDateKey();
-    const item = workoutSelect.value;
-
     if (!history[dateKey]) history[dateKey] = {};
 
-    if (currentCount === 0) {
+    const newValue = (history[dateKey][item] ?? 0) + delta;
+
+    if (newValue <= 0) {
       delete history[dateKey][item];
       if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
-      saveStorage();
-      deleteItemBtn.style.display = "none";
-      return;
+    } else {
+      history[dateKey][item] = newValue;
     }
 
-    history[dateKey][item] = currentCount;
     saveStorage();
-    deleteItemBtn.style.display = "block";
+    renderSubItems();
   }
 
-  deleteItemBtn.onclick = () => {
-    const dateKey = getDateKey();
-    const item = workoutSelect.value;
-    if (history[dateKey]) {
-      delete history[dateKey][item];
-      if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
-    }
-    saveStorage();
-    currentCount = 0;
-    updateDisplay();
-    deleteItemBtn.style.display = "none";
-  };
-
-  clearTodayBtn.onclick = () => {
-    const dateKey = getDateKey();
-    delete history[dateKey];
-    saveStorage();
-    currentCount = 0;
-    updateDisplay();
-    deleteItemBtn.style.display = "none";
-  };
-
-  addBtn.onclick = () => {
-    currentCount++;
-    updateDisplay();
-    saveCurrent();
-  };
-
-  subBtn.onclick = () => {
-    if (currentCount > 0) currentCount--;
-    updateDisplay();
-    saveCurrent();
-  };
-
-  datePicker.onchange = loadCurrent;
-  workoutSelect.onchange = loadCurrent;
+  /* -------------------------
+     7. 历史记录页
+  ------------------------- */
 
   function renderHistoryPage() {
     historyList.innerHTML = "";
     const dates = Object.keys(history).sort();
+
     if (dates.length === 0) {
       historyList.innerHTML = "<div class='card'>暂无记录</div>";
       return;
@@ -149,38 +150,31 @@ document.addEventListener("DOMContentLoaded", () => {
       card.appendChild(title);
 
       const items = history[dateKey];
+
       Object.keys(items).forEach(item => {
-        const per = WORKOUTS[item];
         const count = items[item];
 
         const row = document.createElement("div");
         row.className = "history-row history-item";
 
         const left = document.createElement("div");
-        left.textContent = `${item}：${count} 组（${count * per} 个）`;
+        left.textContent = `${item}：${count} 组`;
 
-       const right = document.createElement("div");
-       right.className = "btn-row";   // ← 使用首页同款布局
-
+        const right = document.createElement("div");
+        right.className = "btn-row";
 
         const sub = document.createElement("button");
         sub.className = "counter-btn";
         sub.textContent = "-";
         sub.onclick = () => {
-          if (history[dateKey][item] > 0) history[dateKey][item]--;
-          if (history[dateKey][item] === 0) delete history[dateKey][item];
-          if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
-          saveStorage();
-          renderHistoryPage();
+          adjustHistoryItem(dateKey, item, -1);
         };
 
         const add = document.createElement("button");
         add.className = "counter-btn";
         add.textContent = "+";
         add.onclick = () => {
-          history[dateKey][item]++;
-          saveStorage();
-          renderHistoryPage();
+          adjustHistoryItem(dateKey, item, +1);
         };
 
         right.appendChild(sub);
@@ -191,20 +185,36 @@ document.addEventListener("DOMContentLoaded", () => {
         card.appendChild(row);
       });
 
-      const delBtn = document.createElement("button");
-      delBtn.className = "danger small";
-      delBtn.style.marginTop = "10px";
-      delBtn.textContent = "删除当天记录";
-      delBtn.onclick = () => {
-        delete history[dateKey];
-        saveStorage();
-        renderHistoryPage();
-      };
-
-      card.appendChild(delBtn);
       historyList.appendChild(card);
     });
   }
+
+  function adjustHistoryItem(dateKey, item, delta) {
+    const newValue = (history[dateKey][item] ?? 0) + delta;
+
+    if (newValue <= 0) {
+      delete history[dateKey][item];
+      if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
+    } else {
+      history[dateKey][item] = newValue;
+    }
+
+    saveStorage();
+    renderHistoryPage();
+  }
+
+  /* -------------------------
+     8. 事件绑定
+  ------------------------- */
+
+  bodyPartSelect.onchange = () => {
+    updateSelectLabel();
+    renderSubItems();
+  };
+
+  datePicker.onchange = () => {
+    renderSubItems();
+  };
 
   gotoHistory.onclick = () => {
     renderHistoryPage();
@@ -217,14 +227,19 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("page-home").classList.add("active");
   };
 
+  /* -------------------------
+     9. 初始化
+  ------------------------- */
+
   loadStorage();
 
-  Object.keys(WORKOUTS).forEach(item => {
+  Object.keys(WORKOUT_GROUPS).forEach(part => {
     const opt = document.createElement("option");
-    opt.value = opt.textContent = item;
-    workoutSelect.appendChild(opt);
+    opt.value = opt.textContent = part;
+    bodyPartSelect.appendChild(opt);
   });
 
   datePicker.value = todayStr();
-  loadCurrent();
+  updateSelectLabel();
+  renderSubItems();
 });
