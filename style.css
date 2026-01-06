@@ -167,3 +167,16 @@ button.warning { background: var(--warning); color: #111; }
   color: #999;
   font-size: 13px;
 }
+
+.btn-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.small-btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+}
+
