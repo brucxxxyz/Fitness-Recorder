@@ -91,14 +91,18 @@ button:active {
   opacity: 0.8;
 }
 
-/* 小按钮（并排按钮） */
+/* ------------------------- */
+/* 🔥 最小补丁：新增按钮布局样式 */
+/* ------------------------- */
+
+/* 小按钮（用于并排按钮） */
 .small-btn {
   flex: 1;
   padding: 10px;
   font-size: 14px;
 }
 
-/* 按钮行（并排） */
+/* 按钮行（用于并排布局） */
 .btn-row {
   display: flex;
   justify-content: space-between;
@@ -128,7 +132,7 @@ canvas {
   height: auto !important;
 }
 
-/* 让按钮在 iOS 上更像原生 */
+/* iOS 点击优化 */
 button {
   -webkit-tap-highlight-color: transparent;
 }
