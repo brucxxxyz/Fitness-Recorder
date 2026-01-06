@@ -1,58 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* -------------------------
-     1. 数据结构（含每组次数）
-  ------------------------- */
-
-  const WORKOUT_GROUPS = {
-    "胸部": [
-      { name: "卧推", reps: 12 },
-      { name: "上斜卧推", reps: 12 },
-      { name: "哑铃飞鸟", reps: 15 },
-      { name: "拉绳夹胸", reps: 15 }
-    ],
-    "背部": [
-      { name: "引体向上", reps: 8 },
-      { name: "高位下拉", reps: 10 },
-      { name: "对握下拉", reps: 10 },
-      { name: "坐姿划船", reps: 12 }
-    ],
-    "腿部": [
-      { name: "深蹲", reps: 12 },
-      { name: "硬拉", reps: 5 },
-      { name: "腿举", reps: 15 },
-      { name: "弓步蹲", reps: 12 },
-      { name: "小腿提踵", reps: 20 }
-    ],
-    "肩部": [
-      { name: "哑铃推举", reps: 10 },
-      { name: "杠铃推举", reps: 8 },
-      { name: "侧平举", reps: 15 },
-      { name: "前平举", reps: 12 },
-      { name: "反向飞鸟", reps: 12 }
-    ],
-    "手臂": [
-      { name: "哑铃弯举", reps: 12 },
-      { name: "杠铃弯举", reps: 10 },
-      { name: "锤式弯举", reps: 12 },
-      { name: "绳索下压", reps: 12 },
-      { name: "臂屈伸", reps: 10 }
-    ],
-    "核心": [
-      { name: "卷腹", reps: 20 },
-      { name: "仰卧起坐", reps: 20 },
-      { name: "俄罗斯转体", reps: 20 },
-      { name: "抬腿", reps: 15 },
-      { name: "平板支撑", reps: 60 }
-    ]
-  };
-
-  const STORAGE_KEY = "fitness_history_v12";
+  const STORAGE_KEY = "fitness_history_v13";
   let history = {};
-
-  /* -------------------------
-     2. DOM
-  ------------------------- */
 
   const datePicker = document.getElementById("datePicker");
   const bodyPartSelect = document.getElementById("bodyPartSelect");
@@ -62,10 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const gotoHistory = document.getElementById("gotoHistory");
   const backHome = document.getElementById("backHome");
   const historyList = document.getElementById("historyList");
-
-  /* -------------------------
-     3. 工具函数
-  ------------------------- */
 
   const todayStr = () => {
     const d = new Date();
@@ -83,19 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
   };
 
-  /* -------------------------
-     4. 更新部位选择文字（居中）
-  ------------------------- */
-
   function updateSelectLabel() {
     const text = bodyPartSelect.options[bodyPartSelect.selectedIndex].text;
     selectBox.setAttribute("data-value", text);
   }
 
   /* -------------------------
-     5. 渲染子项目列表（主页）
+     渲染主页子项目
   ------------------------- */
-
   function renderSubItems() {
     const part = bodyPartSelect.value;
     const items = WORKOUT_GROUPS[part];
@@ -113,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
       row.className = "subitem-row";
 
       const left = document.createElement("div");
-      left.textContent = `${item}   ${reps}次/组   总${total}次`;
+      left.textContent = `${item}   ${reps}次 × ${count}组 = ${total}次`;
 
       const right = document.createElement("div");
       right.className = "btn-row";
@@ -142,10 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* -------------------------
-     6. 调整项目组数（主页）
-  ------------------------- */
-
   function adjustItem(item, delta) {
     const dateKey = getDateKey();
     if (!history[dateKey]) history[dateKey] = {};
@@ -164,9 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* -------------------------
-     7. 历史记录页
+     历史记录页
   ------------------------- */
-
   function renderHistoryPage() {
     historyList.innerHTML = "";
     const dates = Object.keys(history).sort();
@@ -197,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         row.className = "history-row history-item";
 
         const left = document.createElement("div");
-        left.textContent = `${item}  ${reps}次/组  ${count}组  总${total}次`;
+        left.textContent = `${item}  ${reps}次 × ${count}组 = ${total}次`;
 
         const right = document.createElement("div");
         right.className = "btn-row";
@@ -248,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* -------------------------
-     8. 事件绑定
+     事件绑定
   ------------------------- */
 
   bodyPartSelect.onchange = () => {
@@ -272,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /* -------------------------
-     9. 初始化
+     初始化
   ------------------------- */
 
   loadStorage();
