@@ -132,3 +132,26 @@ canvas {
 button {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* 修复按钮大小不一致 + 文字不居中（最小补丁） */
+button,
+.small-btn,
+.counter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 让所有按钮高度一致 */
+button {
+  height: 44px; /* iOS 默认按钮高度 */
+}
+
+.small-btn {
+  height: 40px;
+}
+
+.counter-btn {
+  height: 32px;
+  padding: 0 12px;
+}
