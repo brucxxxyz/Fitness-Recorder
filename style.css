@@ -58,8 +58,8 @@ h1 {
 }
 
 /* input 和 select 都透明 */
-.input-box input[type="date"],
-.input-box select {
+.input-box select,
+.input-box input[type="date"] {
   width: 100%;
   height: 100%;
   border: none;
@@ -107,6 +107,15 @@ h1 {
   padding: 2px 8px;
   font-size: 13px;
   min-width: 26px;
+}
+
+/* 子项目列表行 */
+.subitem-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border); /* A2‑1 细灰线 */
 }
 
 /* 历史记录行 */
