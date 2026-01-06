@@ -43,11 +43,11 @@ document.addEventListener("DOMContentLoaded", () => {
       { name: "仰卧起坐", reps: 20 },
       { name: "俄罗斯转体", reps: 20 },
       { name: "抬腿", reps: 15 },
-      { name: "平板支撑", reps: 60 } // 秒
+      { name: "平板支撑", reps: 60 }
     ]
   };
 
-  const STORAGE_KEY = "fitness_history_v11";
+  const STORAGE_KEY = "fitness_history_v12";
   let history = {};
 
   /* -------------------------
@@ -107,12 +107,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = obj.name;
       const reps = obj.reps;
       const count = history[dateKey]?.[item] ?? 0;
+      const total = count * reps;
 
       const row = document.createElement("div");
       row.className = "subitem-row";
 
       const left = document.createElement("div");
-      left.textContent = `${item}   ${reps}次/组`;
+      left.textContent = `${item}   ${reps}次/组   总${total}次`;
 
       const right = document.createElement("div");
       right.className = "btn-row";
@@ -189,14 +190,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       Object.keys(items).forEach(item => {
         const count = items[item];
+        const reps = findReps(item);
+        const total = count * reps;
 
         const row = document.createElement("div");
         row.className = "history-row history-item";
 
-        const reps = findReps(item);
-
         const left = document.createElement("div");
-        left.textContent = `${item}  ${reps}次/组  ${count}组`;
+        left.textContent = `${item}  ${reps}次/组  ${count}组  总${total}次`;
 
         const right = document.createElement("div");
         right.className = "btn-row";
