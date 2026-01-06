@@ -1,5 +1,3 @@
-// workouts.js
-
 const WORKOUT_GROUPS = {
   "背部": [
     { name: "对握下拉", reps: 10 },
