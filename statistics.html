@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>训练统计</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <title>训练统计</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -13,27 +13,26 @@
 
   <h1>训练统计</h1>
 
+  <!-- 周/月 和 上一周/下一周、上一月/下一月 -->
   <div class="card btn-row">
+    <button id="btnPrev" class="small-btn"><</button>
     <button id="btnWeek" class="small-btn">每周</button>
     <button id="btnMonth" class="small-btn">每月</button>
-  </div>
-  
-  <div class="card btn-row">
-  <button id="btnPrev" class="small-btn"><</button>
-  <button id="btnWeek" class="small-btn">每周</button>
-  <button id="btnMonth" class="small-btn">每月</button>
-  <button id="btnNext" class="small-btn">></button>
-</div>
-
-  <div class="card btn-row">
-    <button id="btnBar" class="small-btn">柱状图</button>
-    <button id="btnScatter" class="small-btn">散点图</button>
+    <button id="btnNext" class="small-btn">></button>
   </div>
 
+  <!-- 图表类型切换 -->
+  <div class="card btn-row">
+    <button id="btnBar" class="small-btn">柱状图（数量）</button>
+    <button id="btnScatter" class="small-btn">散点图（能量）</button>
+  </div>
+
+  <!-- 图表 -->
   <div class="card">
     <canvas id="chartCanvas" height="300"></canvas>
   </div>
 
+  <!-- 返回 -->
   <div class="card">
     <button id="btnBack" class="small-btn">返回</button>
   </div>
