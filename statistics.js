@@ -4,10 +4,12 @@ const ctx = document.getElementById("chartCanvas").getContext("2d");
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
+// 自动卡路里：B 方案
 function caloriesPerSet(reps) {
   return reps * 0.6;
 }
 
+// 计算某天总次数 & 总卡路里
 function getDayStats(dateKey) {
   const items = history[dateKey];
   if (!items) return { totalReps: 0, totalCalories: 0 };
@@ -36,12 +38,18 @@ function findReps(itemName) {
   return 0;
 }
 
-function getCurrentWeek() {
+// 偏移量：0=本周/本月，-1=上周/上月，+1=下周/下月
+let weekOffset = 0;
+let monthOffset = 0;
+
+// 根据偏移获取一周（周一~周日）
+function getWeekByOffset(offset) {
   const today = new Date();
-  const day = today.getDay(); // 0=周日, 1=周一
+  today.setDate(today.getDate() + offset * 7);
+
+  const day = today.getDay(); // 0=周日,1=周一
   const monday = new Date(today);
 
-  // 让周一作为第一天
   const diff = day === 0 ? -6 : 1 - day;
   monday.setDate(today.getDate() + diff);
 
@@ -54,18 +62,27 @@ function getCurrentWeek() {
   return arr;
 }
 
-function getLast30Days() {
+// 根据偏移获取一个月所有日期
+function getMonthByOffset(offset) {
+  const today = new Date();
+  today.setMonth(today.getMonth() + offset);
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const days = new Date(year, month + 1, 0).getDate();
   const arr = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+
+  for (let i = 1; i <= days; i++) {
+    const d = new Date(year, month, i);
     arr.push(d.toISOString().slice(0, 10));
   }
   return arr;
 }
 
+// 柱状图（数量）
 function renderBar(dates) {
-  const labels = dates.map(d => d.slice(5));
+  const labels = dates.map(d => d.slice(5)); // 显示 MM-DD
   const data = dates.map(d => getDayStats(d).totalReps);
 
   if (chart) chart.destroy();
@@ -79,17 +96,23 @@ function renderBar(dates) {
         data,
         backgroundColor: "#4f46e5"
       }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true }
+      }
     }
   });
 }
 
+// 散点图（卡路里 + 次数大小）
 function renderScatter(dates) {
   const data = dates.map(d => {
     const { totalReps, totalCalories } = getDayStats(d);
     return {
       x: d.slice(5),
       y: totalCalories,
-      r: Math.max(3, totalReps / 20)
+      r: Math.max(3, totalReps / 20) // 点越大次数越多
     };
   });
 
@@ -112,8 +135,9 @@ function renderScatter(dates) {
   });
 }
 
-let currentMode = "week";
-let currentChart = "bar";
+// 当前模式：week / month，bar / scatter
+let currentMode = "week";   // 默认本周
+let currentChart = "bar";   // 默认柱状图
 
 function refreshChart() {
   let dates;
@@ -124,31 +148,23 @@ function refreshChart() {
     dates = getMonthByOffset(monthOffset);
   }
 
-  if (currentChart === "bar") renderBar(dates);
-  else renderScatter(dates);
+  if (currentChart === "bar") {
+    renderBar(dates);
+  } else {
+    renderScatter(dates);
+  }
 }
 
-document.getElementById("btnPrev").onclick = () => {
-  if (currentMode === "week") weekOffset--;
-  else monthOffset--;
-  refreshChart();
-};
-
-document.getElementById("btnNext").onclick = () => {
-  if (currentMode === "week") weekOffset++;
-  else monthOffset++;
-  refreshChart();
-};
-
+// 绑定按钮
 document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
-  weekOffset = 0;
+  weekOffset = 0;     // 回到本周
   refreshChart();
 };
 
 document.getElementById("btnMonth").onclick = () => {
   currentMode = "month";
-  monthOffset = 0;
+  monthOffset = 0;    // 回到本月
   refreshChart();
 };
 
@@ -162,48 +178,27 @@ document.getElementById("btnScatter").onclick = () => {
   refreshChart();
 };
 
+document.getElementById("btnPrev").onclick = () => {
+  if (currentMode === "week") {
+    weekOffset--;
+  } else {
+    monthOffset--;
+  }
+  refreshChart();
+};
+
+document.getElementById("btnNext").onclick = () => {
+  if (currentMode === "week") {
+    weekOffset++;
+  } else {
+    monthOffset++;
+  }
+  refreshChart();
+};
+
 document.getElementById("btnBack").onclick = () => {
   window.location.href = "index.html";
 };
 
+// 默认本周 / 本月（currentMode="week" 时显示本周）
 refreshChart();
-
-let weekOffset = 0;  // 0 = 本周, -1 = 上周, +1 = 下周
-let monthOffset = 0; // 0 = 本月
-
-function getWeekByOffset(offset) {
-  const today = new Date();
-  today.setDate(today.getDate() + offset * 7);
-
-  const day = today.getDay();
-  const monday = new Date(today);
-  const diff = day === 0 ? -6 : 1 - day;
-  monday.setDate(today.getDate() + diff);
-
-  const arr = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    arr.push(d.toISOString().slice(0, 10));
-  }
-  return arr;
-}
-
-function getMonthByOffset(offset) {
-  const today = new Date();
-  today.setMonth(today.getMonth() + offset);
-
-  const year = today.getFullYear();
-  const month = today.getMonth();
-
-  const arr = [];
-  const days = new Date(year, month + 1, 0).getDate();
-
-  for (let i = 1; i <= days; i++) {
-    const d = new Date(year, month, i);
-    arr.push(d.toISOString().slice(0, 10));
-  }
-  return arr;
-}
-
-
