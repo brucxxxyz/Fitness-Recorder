@@ -36,11 +36,19 @@ function findReps(itemName) {
   return 0;
 }
 
-function getLast7Days() {
+function getCurrentWeek() {
+  const today = new Date();
+  const day = today.getDay(); // 0=周日, 1=周一
+  const monday = new Date(today);
+
+  // 让周一作为第一天
+  const diff = day === 0 ? -6 : 1 - day;
+  monday.setDate(today.getDate() + diff);
+
   const arr = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
     arr.push(d.toISOString().slice(0, 10));
   }
   return arr;
