@@ -152,3 +152,35 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
+
+/* 让日期选择器与下拉框大小一致、文字居中 */
+input[type="date"],
+select {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 100%;
+  padding: 12px;              /* 与按钮一致 */
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  background: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;    /* 关键：文字居中 */
+  text-align: center;         /* 让日期文字居中 */
+}
+
+/* 修复 iOS 日期控件内部文字偏上问题 */
+input[type="date"] {
+  line-height: normal;
+  height: 44px;               /* 固定高度，保证一致 */
+}
+
+/* 修复 select 在 iOS 上文字偏下的问题 */
+select {
+  height: 44px;
+  line-height: 44px;
+}
+
