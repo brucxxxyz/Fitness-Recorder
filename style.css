@@ -184,3 +184,12 @@ select {
   line-height: 32px;
 }
 
+/* 让日期选择器与锻炼部位选择器大小完全一致 */
+input[type="date"] {
+  height: 44px;            /* 与 select 完全一致 */
+  padding: 10px;           /* 与 select 一致 */
+  box-sizing: border-box;  /* 防止高度被 padding 撑开 */
+  font-size: 16px;         /* 与 select 一致 */
+}
+
+
