@@ -1,121 +1,69 @@
-:root {
-  --bg: #ffffff;
-  --fg: #111827;
-  --border: #e5e7eb;
-  --muted: #6b7280;
-  --accent: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-}
-
+/* 全局布局 */
 body {
   margin: 0;
-  padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--fg);
+  padding: 0;
+  background: #f5f5f7;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
 }
 
-.page { display: none; }
-.page.active { display: block; }
-
-.app { max-width: 480px; margin: 0 auto; }
-
-h1 {
-  font-size: 20px;
-  margin: 12px 0 16px;
-  text-align: center;
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
 }
 
-/* 输入行 */
+/* 页面切换 */
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/* 卡片 */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* 表单行 */
 .form-row {
-  width: 70%;
-  margin: 0 auto 14px;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
 .form-row label {
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 4px;
+  flex: 0 0 80px;
+  font-size: 16px;
 }
 
-/* 统一外框 */
 .input-box {
-  position: relative;
+  flex: 1;
+}
+
+input[type="date"],
+select {
   width: 100%;
-  height: 38px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 16px;
   background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
 }
 
-/* input 和 select 都透明 */
-.input-box select,
-.input-box input[type="date"] {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: transparent;
-  font-size: 15px;
-  padding: 0;
-  margin: 0;
-  color: transparent;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-/* 日期控件不能隐藏文字 */
-.input-box input[type="date"] {
-  color: var(--fg);
-}
-
-/* 项目按钮：伪元素显示文字（水平居中） */
-.input-box[data-value]::after {
-  content: attr(data-value);
-  position: absolute;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 15px;
-  color: var(--fg);
-  pointer-events: none;
-}
-
-/* 当前记录行 */
-.current-label {
-  font-size: 15px;
-  font-weight: 500;
-}
-
-/* 按钮行（首页 & 历史记录共用） */
-.btn-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-/* 缩小按钮 */
-.counter-btn {
-  padding: 2px 8px;
-  font-size: 13px;
-  min-width: 26px;
-}
-
-/* 子项目列表行 */
+/* 子项目行（今日训练） */
 .subitem-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border); /* A2‑1 细灰线 */
+  margin-bottom: 8px;
+  font-size: 15px;
 }
 
 /* 历史记录行 */
@@ -123,60 +71,64 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
+  font-size: 15px;
 }
 
-.card {
-  background: #f9fafb;
-  border-radius: 14px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-
+/* 按钮基础样式 */
 button {
-  font-family: var(--font);
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 16px;
-  font-weight: 500;
+  background: #4f46e5;
   color: #fff;
-  background: var(--accent);
-  display: block;
-  margin: 0 auto;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-button.small { padding: 4px 10px; font-size: 13px; }
-button.danger { background: var(--danger); }
-button.warning { background: var(--warning); color: #111; }
-
-.row-space {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+button:active {
+  opacity: 0.8;
 }
 
-.history-item {
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.footer {
-  text-align: center;
-  margin-top: 30px;
-  color: #999;
-  font-size: 13px;
-}
-
-.btn-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
+/* 小按钮（并排按钮） */
 .small-btn {
   flex: 1;
   padding: 10px;
   font-size: 14px;
 }
 
+/* 按钮行（并排） */
+.btn-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* 加减按钮 */
+.counter-btn {
+  width: auto;
+  padding: 4px 10px;
+  font-size: 16px;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 6px;
+}
+
+/* 历史记录标题 */
+.history-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+/* 图表 canvas 容器 */
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* 让按钮在 iOS 上更像原生 */
+button {
+  -webkit-tap-highlight-color: transparent;
+}
