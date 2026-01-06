@@ -75,48 +75,69 @@ select {
   font-size: 15px;
 }
 
-/* 按钮基础样式 */
+/* 按钮基础样式（绿色 + 居中） */
 button {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background: #4f46e5;
+  background: #22c55e;      /* 亮绿色 */
   color: #fff;
   font-size: 16px;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:active {
-  opacity: 0.8;
+  background: #16a34a;      /* 深绿色 */
+  opacity: 0.95;
 }
 
-/* ------------------------- */
-/* 🔥 最小补丁：新增按钮布局样式 */
-/* ------------------------- */
-
-/* 小按钮（用于并排按钮） */
+/* 小按钮（并排按钮） */
 .small-btn {
   flex: 1;
   padding: 10px;
   font-size: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #22c55e;
 }
 
-/* 按钮行（用于并排布局） */
+.small-btn:active {
+  background: #16a34a;
+}
+
+/* 按钮行（并排） */
 .btn-row {
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-/* 加减按钮 */
+/* 加减按钮（绿色） */
 .counter-btn {
   width: auto;
   padding: 4px 10px;
   font-size: 16px;
-  background: #4f46e5;
+  background: #22c55e;
   color: #fff;
   border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.counter-btn:active {
+  background: #16a34a;
 }
 
 /* 历史记录标题 */
@@ -130,9 +151,4 @@ button:active {
 canvas {
   width: 100% !important;
   height: auto !important;
-}
-
-/* iOS 点击优化 */
-button {
-  -webkit-tap-highlight-color: transparent;
 }
