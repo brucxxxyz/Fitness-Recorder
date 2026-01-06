@@ -146,3 +146,7 @@ document.getElementById("btnBack").onclick = () => {
 };
 
 refreshChart();
+
+let weekOffset = 0;  // 0 = 本周, -1 = 上周, +1 = 下周
+let monthOffset = 0; // 0 = 本月
+
