@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>训练统计</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+<div class="app">
+
+  <h1>训练统计</h1>
+
+  <div class="card" style="text-align:center;">
+    <button id="btnWeek">每周</button>
+    <button id="btnMonth">每月</button>
+  </div>
+
+  <div class="card" style="text-align:center;">
+    <button id="btnBar">柱状图（数量）</button>
+    <button id="btnScatter">散点图（能量）</button>
+  </div>
+
+  <div class="card">
+    <canvas id="chartCanvas" height="300"></canvas>
+  </div>
+
+  <div class="card">
+    <button onclick="history.back()">返回</button>
+  </div>
+
+</div>
+
+<script src="workouts.js"></script>
+<script src="statistics.js"></script>
+</body>
+</html>
