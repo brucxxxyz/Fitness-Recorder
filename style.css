@@ -155,3 +155,32 @@ button {
   height: 32px;
   padding: 0 12px;
 }
+
+/* 让日期选择器与锻炼部位选择器大小完全一致 */
+input[type="date"],
+select {
+  height: 44px;              /* 统一高度 */
+  padding: 10px;             /* 保持你原来的 padding */
+  box-sizing: border-box;    /* 防止高度被 padding 撑开 */
+}
+
+/* 锻炼部位按钮文字水平居中 */
+select {
+  text-align: center;        /* 水平居中 */
+  text-align-last: center;   /* 修复 Chrome/Safari 居中 */
+}
+
+/* 修复 - 数字 + 垂直居中 */
+.subitem-row span,
+.counter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 让数字与按钮高度一致 */
+.subitem-row span {
+  height: 32px;              /* 与 counter-btn 高度一致 */
+  line-height: 32px;
+}
+
