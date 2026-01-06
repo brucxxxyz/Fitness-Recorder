@@ -115,20 +115,18 @@ document.addEventListener("DOMContentLoaded", () => {
       title.style.marginBottom = "6px";
       title.textContent = dateKey;
       card.appendChild(title);
-      
-// 清除当天按钮
-const clearBtn = document.createElement("button");
-clearBtn.textContent = "清除当天数据";
-clearBtn.className = "small-btn";
-clearBtn.style.marginBottom = "10px";
 
-clearBtn.onclick = () => {
-  delete history[dateKey];
-  saveStorage();
-  renderHistoryPage();
-};
-
-card.appendChild(clearBtn);
+      // 清除当天数据按钮
+      const clearBtn = document.createElement("button");
+      clearBtn.textContent = "清除当天数据";
+      clearBtn.className = "small-btn";
+      clearBtn.style.marginBottom = "10px";
+      clearBtn.onclick = () => {
+        delete history[dateKey];
+        saveStorage();
+        renderHistoryPage();
+      };
+      card.appendChild(clearBtn);
 
       const items = history[dateKey];
 
