@@ -133,4 +133,8 @@ document.getElementById("btnScatter").onclick = () => {
   refreshChart();
 };
 
+document.getElementById("btnBack").onclick = () => {
+  window.location.href = "index.html";
+};
+
 refreshChart();
