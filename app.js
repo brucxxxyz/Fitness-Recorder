@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const gotoHistory = document.getElementById("gotoHistory");
   const backHome = document.getElementById("backHome");
+  const gotoStats = document.getElementById("gotoStats");
   const historyList = document.getElementById("historyList");
 
   const todayStr = () => {
@@ -33,9 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     selectBox.setAttribute("data-value", text);
   }
 
-  /* -------------------------
-     渲染主页子项目
-  ------------------------- */
   function renderSubItems() {
     const part = bodyPartSelect.value;
     const items = WORKOUT_GROUPS[part];
@@ -47,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = obj.name;
       const reps = obj.reps;
       const count = history[dateKey]?.[item] ?? 0;
-      const total = count * reps;
+      const total = reps * count;
 
       const row = document.createElement("div");
       row.className = "subitem-row";
@@ -99,9 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderSubItems();
   }
 
-  /* -------------------------
-     历史记录页
-  ------------------------- */
   function renderHistoryPage() {
     historyList.innerHTML = "";
     const dates = Object.keys(history).sort();
@@ -126,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Object.keys(items).forEach(item => {
         const count = items[item];
         const reps = findReps(item);
-        const total = count * reps;
+        const total = reps * count;
 
         const row = document.createElement("div");
         row.className = "history-row history-item";
@@ -182,10 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderHistoryPage();
   }
 
-  /* -------------------------
-     事件绑定
-  ------------------------- */
-
   bodyPartSelect.onchange = () => {
     updateSelectLabel();
     renderSubItems();
@@ -206,9 +197,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("page-home").classList.add("active");
   };
 
-  /* -------------------------
-     初始化
-  ------------------------- */
+  gotoStats.onclick = () => {
+    window.location.href = "statistics.html";
+  };
 
   loadStorage();
 
