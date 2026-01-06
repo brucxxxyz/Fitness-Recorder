@@ -22,36 +22,17 @@
     </div>
   </div>
 
-  <!-- 项目 -->
+  <!-- 部位选择 -->
   <div class="form-row">
-    <label for="workoutSelect">项目</label>
+    <label for="bodyPartSelect">锻炼部位</label>
     <div class="input-box" id="selectBox">
-      <select id="workoutSelect"></select>
+      <select id="bodyPartSelect"></select>
     </div>
   </div>
 
-  <div class="card">
-
-    <!-- 当前记录 + 按钮平行 -->
-    <div class="row-space">
-      <div id="currentItemLabel" class="current-label">当前记录：</div>
-
-      <div class="btn-row">
-        <button id="subBtn" class="counter-btn">-</button>
-        <button id="addBtn" class="counter-btn">+</button>
-      </div>
-    </div>
-
-    <div id="countLabel">组数：0</div>
-    <div id="totalLabel" class="muted">总计：0 个</div>
-
-    <button id="deleteItemBtn" class="danger small" style="margin-top:10px; display:none;">
-      删除该项目数据
-    </button>
-  </div>
-
-  <div class="card">
-    <button id="clearTodayBtn" class="warning small">清除当天全部数据</button>
+  <!-- 子项目列表（动态生成） -->
+  <div class="card" id="subItemContainer">
+    <!-- JS 会自动填充子项目 -->
   </div>
 
   <div class="card">
