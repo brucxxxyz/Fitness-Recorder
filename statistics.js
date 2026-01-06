@@ -111,8 +111,8 @@ function renderScatter(dates) {
     const { totalReps, totalCalories } = getDayStats(d);
     return {
       x: d.slice(5),
-      y: totalCalories,
-      r: Math.max(3, totalReps / 20) // 点越大次数越多
+      y: totalCalories || 0.1,
+      r: Math.max(5, totalReps / 15)
     };
   });
 
