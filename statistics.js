@@ -116,18 +116,39 @@ let currentMode = "week";
 let currentChart = "bar";
 
 function refreshChart() {
-  const dates = currentMode === "week" ? getLast7Days() : getLast30Days();
+  let dates;
+
+  if (currentMode === "week") {
+    dates = getWeekByOffset(weekOffset);
+  } else {
+    dates = getMonthByOffset(monthOffset);
+  }
+
   if (currentChart === "bar") renderBar(dates);
   else renderScatter(dates);
 }
 
+document.getElementById("btnPrev").onclick = () => {
+  if (currentMode === "week") weekOffset--;
+  else monthOffset--;
+  refreshChart();
+};
+
+document.getElementById("btnNext").onclick = () => {
+  if (currentMode === "week") weekOffset++;
+  else monthOffset++;
+  refreshChart();
+};
+
 document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
+  weekOffset = 0;
   refreshChart();
 };
 
 document.getElementById("btnMonth").onclick = () => {
   currentMode = "month";
+  monthOffset = 0;
   refreshChart();
 };
 
@@ -149,4 +170,40 @@ refreshChart();
 
 let weekOffset = 0;  // 0 = 本周, -1 = 上周, +1 = 下周
 let monthOffset = 0; // 0 = 本月
+
+function getWeekByOffset(offset) {
+  const today = new Date();
+  today.setDate(today.getDate() + offset * 7);
+
+  const day = today.getDay();
+  const monday = new Date(today);
+  const diff = day === 0 ? -6 : 1 - day;
+  monday.setDate(today.getDate() + diff);
+
+  const arr = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    arr.push(d.toISOString().slice(0, 10));
+  }
+  return arr;
+}
+
+function getMonthByOffset(offset) {
+  const today = new Date();
+  today.setMonth(today.getMonth() + offset);
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const arr = [];
+  const days = new Date(year, month + 1, 0).getDate();
+
+  for (let i = 1; i <= days; i++) {
+    const d = new Date(year, month, i);
+    arr.push(d.toISOString().slice(0, 10));
+  }
+  return arr;
+}
+
 
