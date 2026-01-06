@@ -75,27 +75,20 @@ select {
   font-size: 15px;
 }
 
-/* 按钮基础样式（绿色 + 居中） */
+/* 按钮基础样式 */
 button {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background: #22c55e;      /* 亮绿色 */
+  background: #4f46e5;
   color: #fff;
   font-size: 16px;
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  -webkit-tap-highlight-color: transparent;
 }
 
 button:active {
-  background: #16a34a;      /* 深绿色 */
-  opacity: 0.95;
+  opacity: 0.8;
 }
 
 /* 小按钮（并排按钮） */
@@ -103,16 +96,6 @@ button:active {
   flex: 1;
   padding: 10px;
   font-size: 14px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #22c55e;
-}
-
-.small-btn:active {
-  background: #16a34a;
 }
 
 /* 按钮行（并排） */
@@ -122,22 +105,14 @@ button:active {
   gap: 10px;
 }
 
-/* 加减按钮（绿色） */
+/* 加减按钮 */
 .counter-btn {
   width: auto;
   padding: 4px 10px;
   font-size: 16px;
-  background: #22c55e;
+  background: #4f46e5;
   color: #fff;
   border-radius: 6px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.counter-btn:active {
-  background: #16a34a;
 }
 
 /* 历史记录标题 */
@@ -153,34 +128,7 @@ canvas {
   height: auto !important;
 }
 
-/* 让日期选择器与下拉框大小一致、文字居中 */
-input[type="date"],
-select {
-  appearance: none;
-  -webkit-appearance: none;
-
-  width: 100%;
-  padding: 12px;              /* 与按钮一致 */
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-  background: #fff;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;    /* 关键：文字居中 */
-  text-align: center;         /* 让日期文字居中 */
+/* 让按钮在 iOS 上更像原生 */
+button {
+  -webkit-tap-highlight-color: transparent;
 }
-
-/* 修复 iOS 日期控件内部文字偏上问题 */
-input[type="date"] {
-  line-height: normal;
-  height: 44px;               /* 固定高度，保证一致 */
-}
-
-/* 修复 select 在 iOS 上文字偏下的问题 */
-select {
-  height: 44px;
-  line-height: 44px;
-}
-
