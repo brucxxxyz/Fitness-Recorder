@@ -192,4 +192,23 @@ input[type="date"] {
   font-size: 16px;         /* 与 select 一致 */
 }
 
+/* 让日期选择器与 select 完全一致 */
+.date-wrapper {
+  height: 44px;               /* 与 select 完全一致 */
+  display: flex;
+  align-items: center;
+}
+
+.date-wrapper input[type="date"] {
+  height: 100%;               /* 填满容器 */
+  width: 100%;
+  padding: 0 10px;            /* 与 select 一致 */
+  font-size: 16px;
+  box-sizing: border-box;
+
+  /* iOS 修复：缩小内部原生控件 */
+  transform: scale(0.92);
+  transform-origin: center;
+}
+
 
