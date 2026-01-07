@@ -47,7 +47,7 @@ body {
   flex: 1;
 }
 
-/* 让日期选择器与锻炼部位选择器完全一致 */
+/* 日期选择器 + 锻炼部位选择器（完全一致） */
 input[type="date"],
 select {
   width: 100%;
@@ -60,17 +60,38 @@ select {
   box-sizing: border-box;
 }
 
-/* 锻炼部位按钮文字水平居中 */
+/* 锻炼部位文字水平居中 */
 select {
   text-align: center;
   text-align-last: center;
+}
+
+/* 日期按钮外层容器（确保大小一致） */
+.date-wrapper {
+  height: 44px;              /* 与 select 完全一致 */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* 日期按钮内部缩放（确保视觉一致） */
+.date-wrapper input[type="date"] {
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+
+  transform: scale(0.96);     /* 调整大小匹配 select */
+  transform-origin: center;
 }
 
 /* 子项目行（今日训练） */
 .subitem-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;       /* 锁定 - 数字 + 垂直居中 */
+  align-items: center;        /* 锁定 - 数字 + 垂直居中 */
   margin-bottom: 8px;
   font-size: 15px;
 }
@@ -87,7 +108,7 @@ select {
 /* 按钮基础样式（绿色） */
 button {
   width: 100%;
-  height: 44px;              /* 与输入框一致 */
+  height: 44px;               /* 与输入框一致 */
   padding: 12px;
   border-radius: 8px;
   border: none;
@@ -111,7 +132,7 @@ button:active {
 /* 小按钮（并排按钮） */
 .small-btn {
   flex: 1;
-  height: 44px;              /* 与大按钮一致 */
+  height: 44px;
   padding: 10px;
   font-size: 14px;
 
@@ -156,6 +177,7 @@ button:active {
 .subitem-row span {
   min-width: 32px;
   text-align: center;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,25 +195,3 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
-
-/* 让日期按钮大小与锻炼部位按钮完全一致 */
-.date-wrapper {
-  height: 44px;               /* 与 select 完全一致 */
-  width: 100%;
-  display: flex;
-  align-items: center;
-  overflow: hidden;           /* 防止内部控件溢出 */
-}
-
-.date-wrapper input[type="date"] {
-  width: 100%;
-  height: 100%;
-  padding: 0 10px;
-  font-size: 16px;
-  box-sizing: border-box;
-
-  /* iOS 原生控件缩放，确保高度一致 */
-  transform: scale(0.88);
-  transform-origin: center;
-}
-
