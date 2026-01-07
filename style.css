@@ -195,3 +195,25 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
+
+/* 让日期按钮与锻炼部位按钮完全一致（最终稳定方案） */
+.date-wrapper {
+  height: 44px;               /* 与 select 完全一致 */
+  width: 100%;
+  overflow: hidden;           /* 裁切内部原生控件 */
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* 让原生 date 控件填满容器，但不缩放 */
+.date-wrapper input[type="date"] {
+  width: 100%;
+  height: 60px;               /* 原生高度较大，超出部分被裁切 */
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  background: transparent;
+  box-sizing: border-box;
+}
