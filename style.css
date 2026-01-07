@@ -217,3 +217,9 @@ canvas {
   background: transparent;
   box-sizing: border-box;
 }
+
+/* 页面标题水平居中 */
+.page h2 {
+  text-align: center;
+  width: 100%;
+}
