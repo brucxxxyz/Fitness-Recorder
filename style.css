@@ -47,21 +47,30 @@ body {
   flex: 1;
 }
 
+/* 让日期选择器与锻炼部位选择器完全一致 */
 input[type="date"],
 select {
   width: 100%;
+  height: 44px;              /* 关键：统一高度 */
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 16px;
   background: #fff;
+  box-sizing: border-box;
+}
+
+/* 锻炼部位按钮文字水平居中 */
+select {
+  text-align: center;
+  text-align-last: center;
 }
 
 /* 子项目行（今日训练） */
 .subitem-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center;       /* 锁定 - 数字 + 垂直居中 */
   margin-bottom: 8px;
   font-size: 15px;
 }
@@ -75,27 +84,46 @@ select {
   font-size: 15px;
 }
 
-/* 按钮基础样式 */
+/* 按钮基础样式（绿色） */
 button {
   width: 100%;
+  height: 44px;              /* 与输入框一致 */
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background: #4f46e5;
+  background: #22c55e;
   color: #fff;
   font-size: 16px;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:active {
-  opacity: 0.8;
+  background: #16a34a;
+  opacity: 0.95;
 }
 
 /* 小按钮（并排按钮） */
 .small-btn {
   flex: 1;
+  height: 44px;              /* 与大按钮一致 */
   padding: 10px;
   font-size: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #22c55e;
+}
+
+.small-btn:active {
+  background: #16a34a;
 }
 
 /* 按钮行（并排） */
@@ -105,14 +133,32 @@ button:active {
   gap: 10px;
 }
 
-/* 加减按钮 */
+/* 加减按钮（锁定位置） */
 .counter-btn {
-  width: auto;
-  padding: 4px 10px;
-  font-size: 16px;
-  background: #4f46e5;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 20px;
+  background: #22c55e;
   color: #fff;
   border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.counter-btn:active {
+  background: #16a34a;
+}
+
+/* 数字垂直居中 */
+.subitem-row span {
+  min-width: 32px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 历史记录标题 */
@@ -127,88 +173,3 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
-
-/* 让按钮在 iOS 上更像原生 */
-button {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* 修复按钮大小不一致 + 文字不居中（最小补丁） */
-button,
-.small-btn,
-.counter-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 让所有按钮高度一致 */
-button {
-  height: 44px; /* iOS 默认按钮高度 */
-}
-
-.small-btn {
-  height: 40px;
-}
-
-.counter-btn {
-  height: 32px;
-  padding: 0 12px;
-}
-
-/* 让日期选择器与锻炼部位选择器大小完全一致 */
-input[type="date"],
-select {
-  height: 44px;              /* 统一高度 */
-  padding: 10px;             /* 保持你原来的 padding */
-  box-sizing: border-box;    /* 防止高度被 padding 撑开 */
-}
-
-/* 锻炼部位按钮文字水平居中 */
-select {
-  text-align: center;        /* 水平居中 */
-  text-align-last: center;   /* 修复 Chrome/Safari 居中 */
-}
-
-/* 修复 - 数字 + 垂直居中 */
-.subitem-row span,
-.counter-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 让数字与按钮高度一致 */
-.subitem-row span {
-  height: 32px;              /* 与 counter-btn 高度一致 */
-  line-height: 32px;
-}
-
-/* 让日期选择器与锻炼部位选择器大小完全一致 */
-input[type="date"] {
-  height: 44px;            /* 与 select 完全一致 */
-  padding: 10px;           /* 与 select 一致 */
-  box-sizing: border-box;  /* 防止高度被 padding 撑开 */
-  font-size: 16px;         /* 与 select 一致 */
-}
-
-/* 让日期选择器与 select 完全一致 */
-.date-wrapper {
-  height: 44px;               /* 与 select 完全一致 */
-  display: flex;
-  align-items: center;
-}
-
-.date-wrapper input[type="date"] {
-  height: 100%;               /* 填满容器 */
-  width: 100%;
-  padding: 0 10px;            /* 与 select 一致 */
-  font-size: 16px;
-  box-sizing: border-box;
-
-  /* iOS 修复：缩小内部原生控件 */
-  transform: scale(0.92);
-  transform-origin: center;
-}
-
-
