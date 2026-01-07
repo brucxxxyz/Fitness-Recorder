@@ -173,3 +173,25 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
+
+/* 让日期按钮大小与锻炼部位按钮完全一致 */
+.date-wrapper {
+  height: 44px;               /* 与 select 完全一致 */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;           /* 防止内部控件溢出 */
+}
+
+.date-wrapper input[type="date"] {
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+
+  /* iOS 原生控件缩放，确保高度一致 */
+  transform: scale(0.88);
+  transform-origin: center;
+}
+
