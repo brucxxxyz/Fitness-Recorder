@@ -218,8 +218,9 @@ canvas {
   box-sizing: border-box;
 }
 
-/* 页面标题水平居中 */
-.page h2 {
-  text-align: center;
+/* 让每页标题水平居中（无论标签是什么） */
+.page-title {
   width: 100%;
+  text-align: center;
+  display: block;
 }
