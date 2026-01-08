@@ -81,9 +81,10 @@ function getMonthByOffset(offset) {
 }
 
 // 柱状图（数量）
+// 柱状图（能量消耗）
 function renderBar(dates) {
   const labels = dates.map(d => d.slice(5)); // 显示 MM-DD
-  const data = dates.map(d => getDayStats(d).totalReps);
+  const data = dates.map(d => getDayStats(d).totalCalories); // ← 改成卡路里
 
   if (chart) chart.destroy();
 
@@ -92,7 +93,7 @@ function renderBar(dates) {
     data: {
       labels,
       datasets: [{
-        label: "总次数",
+        label: "能量消耗（kcal）",   // ← 修改标题
         data,
         backgroundColor: "#4f46e5"
       }]
@@ -105,27 +106,60 @@ function renderBar(dates) {
   });
 }
 
-// 散点图（卡路里 + 次数大小）
+// 散点图（能量消耗 + 训练部位颜色）
 function renderScatter(dates) {
-  const data = dates.map(d => {
-    const { totalReps, totalCalories } = getDayStats(d);
-    return {
-      x: d.slice(5),
-      y: totalCalories || 0.1,
-      r: Math.max(5, totalReps / 15)
-    };
+  const colorMap = {
+    chest:   "rgba(255,99,132,0.7)",
+    back:    "rgba(54,162,235,0.7)",
+    legs:    "rgba(75,192,192,0.7)",
+    shoulder:"rgba(255,206,86,0.7)",
+    arms:    "rgba(153,102,255,0.7)",
+    core:    "rgba(255,159,64,0.7)",
+    other:   "rgba(120,120,120,0.7)"
+  };
+
+  // 生成散点数据（按训练部位分组）
+  const datasets = {};
+
+  dates.forEach(date => {
+    const items = history[date];
+    if (!items) return;
+
+    for (const itemName in items) {
+      const sets = items[itemName];
+      const reps = findReps(itemName);
+      const calories = caloriesPerSet(reps) * sets;
+
+      // 找训练部位
+      let part = "other";
+      for (const p in WORKOUT_GROUPS) {
+        if (WORKOUT_GROUPS[p].some(obj => obj.name === itemName)) {
+          part = p;
+          break;
+        }
+      }
+
+      if (!datasets[part]) {
+        datasets[part] = {
+          label: part,
+          data: [],
+          backgroundColor: colorMap[part] || colorMap.other
+        };
+      }
+
+      datasets[part].data.push({
+        x: date.slice(5),   // MM-DD
+        y: calories         // 只显示卡路里
+      });
+    }
   });
 
   if (chart) chart.destroy();
 
   chart = new Chart(ctx, {
-    type: "bubble",
+    type: "scatter",
     data: {
-      datasets: [{
-        label: "卡路里（点大小代表次数）",
-        data,
-        backgroundColor: "rgba(59,130,246,0.6)"
-      }]
+      datasets: Object.values(datasets)
     },
     options: {
       scales: {
@@ -134,6 +168,7 @@ function renderScatter(dates) {
     }
   });
 }
+
 
 // 当前模式：week / month，bar / scatter
 let currentMode = "week";   // 默认本周
