@@ -89,11 +89,30 @@ select {
 
 /* 子项目行（今日训练） */
 .subitem-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;        /* 锁定 - 数字 + 垂直居中 */
-  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.item-name {
   font-size: 15px;
+}
+
+.total-reps {
+  min-width: 60px;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.count-number {
+  min-width: 32px;
+  text-align: center;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
 }
 
 /* 历史记录行 */
