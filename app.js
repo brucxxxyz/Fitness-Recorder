@@ -17,6 +17,26 @@ for (const part in WORKOUT_GROUPS) {
   bodyPartSelect.appendChild(opt);
 }
 
+// 保存当前部位的 DOM 数据到 history
+function saveCurrentPartToHistory() {
+  const date = document.getElementById("datePicker").value;
+  if (!history[date]) history[date] = {};
+
+  const part = bodyPartSelect.value;
+  const items = WORKOUT_GROUPS[part];
+  const rows = document.querySelectorAll("#subItemContainer .subitem-row");
+
+  rows.forEach((row, index) => {
+    const name = items[index].name;
+    const sets = parseInt(row.children[4].textContent);
+
+    if (sets > 0) history[date][name] = sets;
+    else delete history[date][name];
+  });
+
+  saveHistory();
+}
+
 // 今日训练渲染
 function renderSubItems() {
   const part = bodyPartSelect.value;
@@ -58,12 +78,14 @@ function renderSubItems() {
 
     minus.onclick = () => {
       if (sets > 0) sets--;
+      syncToHistory();
       updateRow();
       updateFooter();
     };
 
     plus.onclick = () => {
       sets++;
+      syncToHistory();
       updateRow();
       updateFooter();
     };
@@ -71,6 +93,16 @@ function renderSubItems() {
     function updateRow() {
       count.textContent = sets;
       total.textContent = `${sets * item.reps} 次`;
+    }
+
+    function syncToHistory() {
+      const date = document.getElementById("datePicker").value;
+      if (!history[date]) history[date] = {};
+
+      if (sets > 0) history[date][item.name] = sets;
+      else delete history[date][item.name];
+
+      saveHistory();
     }
 
     row.appendChild(name);
@@ -86,7 +118,7 @@ function renderSubItems() {
   updateFooter();
 }
 
-// 今日统计（即时更新）
+// 今日统计（基于 history[当前日期]）
 function updateFooter() {
   const date = document.getElementById("datePicker").value;
   const todayData = history[date] || {};
@@ -116,27 +148,18 @@ function renderFooter(totalSets, totalReps, totalCalories) {
   `;
 }
 
-bodyPartSelect.onchange = renderSubItems;
+// 切换部位：先保存当前部位，再渲染新部位
+bodyPartSelect.onchange = () => {
+  saveCurrentPartToHistory();
+  renderSubItems();
+};
+
+// 初次渲染
 renderSubItems();
 
 // 保存今日训练 → 跳历史记录
 document.getElementById("gotoHistory").onclick = () => {
-  const date = document.getElementById("datePicker").value;
-  if (!history[date]) history[date] = {};
-
-  const part = bodyPartSelect.value;
-  const items = WORKOUT_GROUPS[part];
-
-  const rows = document.querySelectorAll("#subItemContainer .subitem-row");
-  rows.forEach((row, index) => {
-    const name = items[index].name;
-    const sets = parseInt(row.children[4].textContent);
-
-    if (sets > 0) history[date][name] = sets;
-    else delete history[date][name];
-  });
-
-  saveHistory();
+  saveCurrentPartToHistory();
   showHistoryPage();
 };
 
