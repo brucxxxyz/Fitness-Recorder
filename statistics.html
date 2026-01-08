@@ -2,14 +2,15 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>训练统计</title>
+  <title data-i18n="stats_title">训练统计</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-  
+
+<!-- 语言切换按钮 -->
 <div id="langSwitcher">
   <button onclick="setLanguage('zh')">国语</button>
   <button onclick="setLanguage('yue')">粤语</button>
@@ -18,20 +19,21 @@
 
 <div class="app">
 
-  <h2 class="page-title">训练统计</h2>
+  <!-- 页面标题 -->
+  <h2 class="page-title" data-i18n="stats_title">训练统计</h2>
 
   <!-- 周/月 和 上一周/下一周、上一月/下一月 -->
   <div class="card btn-row">
-    <button id="btnPrev" class="small-btn"><</button>
-    <button id="btnWeek" class="small-btn">每周</button>
-    <button id="btnMonth" class="small-btn">每月</button>
-    <button id="btnNext" class="small-btn">></button>
+    <button id="btnPrev" class="small-btn" data-i18n="prev"><</button>
+    <button id="btnWeek" class="small-btn" data-i18n="week">每周</button>
+    <button id="btnMonth" class="small-btn" data-i18n="month">每月</button>
+    <button id="btnNext" class="small-btn" data-i18n="next">></button>
   </div>
 
   <!-- 图表类型切换 -->
   <div class="card btn-row">
-    <button id="btnBar" class="small-btn">柱状图（能量）</button>
-    <button id="btnScatter" class="small-btn">散点图（能量）</button>
+    <button id="btnBar" class="small-btn" data-i18n="bar_energy">柱状图（能量）</button>
+    <button id="btnScatter" class="small-btn" data-i18n="scatter_energy">散点图（能量）</button>
   </div>
 
   <!-- 图表 -->
@@ -41,12 +43,15 @@
 
   <!-- 返回 -->
   <div class="card">
-    <button id="btnBack" class="small-btn">返回</button>
+    <button id="btnBack" class="small-btn" data-i18n="back">返回</button>
   </div>
 
 </div>
 
+<!-- JS 文件 -->
+<script src="app.js"></script>
 <script src="workouts.js"></script>
 <script src="statistics.js"></script>
+
 </body>
 </html>
