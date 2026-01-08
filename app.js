@@ -1,5 +1,3 @@
-// app.js — B 版本（正确布局 + 组数显示 + 删除当天数据）
-
 const STORAGE_KEY = "fitness_history_v13";
 
 // 读取历史记录
@@ -22,7 +20,7 @@ for (const part in WORKOUT_GROUPS) {
   bodyPartSelect.appendChild(option);
 }
 
-// 渲染子项目（动作列表）
+// 渲染今日训练动作
 function renderSubItems() {
   const part = bodyPartSelect.value;
   const container = document.getElementById("subItemContainer");
@@ -33,6 +31,7 @@ function renderSubItems() {
     row.className = "subitem-row";
 
     const name = document.createElement("span");
+    name.className = "item-name";
     name.textContent = item.name;
 
     const minus = document.createElement("button");
@@ -68,7 +67,6 @@ function renderSubItems() {
   });
 }
 
-// 切换部位时刷新动作列表
 bodyPartSelect.onchange = renderSubItems;
 renderSubItems();
 
@@ -96,7 +94,7 @@ document.getElementById("gotoHistory").onclick = () => {
   showHistoryPage();
 };
 
-// 显示历史记录页
+// 显示历史记录页（可编辑版本）
 function showHistoryPage() {
   document.getElementById("page-home").classList.remove("active");
   document.getElementById("page-history").classList.add("active");
@@ -110,26 +108,55 @@ function showHistoryPage() {
     const title = document.createElement("div");
     title.className = "history-title";
     title.textContent = date;
-
     list.appendChild(title);
 
     const items = history[date];
     for (const name in items) {
       const row = document.createElement("div");
-      row.className = "history-row";
+      row.className = "subitem-row"; // ★ 使用同样的布局
 
       const left = document.createElement("span");
+      left.className = "item-name";
       left.textContent = name;
 
-      const right = document.createElement("span");
-      right.textContent = items[name] + " 组";
+      const minus = document.createElement("button");
+      minus.className = "counter-btn";
+      minus.textContent = "-";
+
+      const count = document.createElement("span");
+      count.className = "count-number";
+      count.textContent = items[name];
+
+      const plus = document.createElement("button");
+      plus.className = "counter-btn";
+      plus.textContent = "+";
+
+      minus.onclick = () => {
+        let v = parseInt(count.textContent);
+        if (v > 0) v--;
+        count.textContent = v;
+        history[date][name] = v;
+        if (v === 0) delete history[date][name];
+        saveHistory();
+      };
+
+      plus.onclick = () => {
+        let v = parseInt(count.textContent);
+        v++;
+        count.textContent = v;
+        history[date][name] = v;
+        saveHistory();
+      };
 
       row.appendChild(left);
-      row.appendChild(right);
+      row.appendChild(minus);
+      row.appendChild(count);
+      row.appendChild(plus);
+
       list.appendChild(row);
     }
 
-    // ★ 恢复删除当天数据按钮
+    // 删除当天数据按钮
     const delCard = document.createElement("div");
     delCard.className = "card";
 
