@@ -155,7 +155,10 @@ function showHistoryPage() {
   const list = document.getElementById("historyList");
   list.innerHTML = "";
 
-  const dates = Object.keys(history).sort().reverse();
+  const dates = Object.keys(history)
+  .filter(date => Object.keys(history[date]).length > 0) // ★ 过滤掉空记录
+  .sort()
+  .reverse();
 
   dates.forEach(date => {
     const title = document.createElement("div");
@@ -164,26 +167,77 @@ function showHistoryPage() {
     list.appendChild(title);
 
     const items = history[date];
-    for (const name in items) {
-      const row = document.createElement("div");
-      row.className = "subitem-row";
+for (const name in items) {
+  const row = document.createElement("div");
+  row.className = "subitem-row";
 
-      const left = document.createElement("span");
-      left.className = "item-name";
-      left.textContent = name;
+  const left = document.createElement("span");
+  left.className = "item-name";
+  left.textContent = name;
 
-      const minus = document.createElement("button");
-      minus.className = "counter-btn";
-      minus.textContent = "-";
+  // 找 reps
+  const reps = findReps(name);
 
-      const count = document.createElement("span");
-      count.className = "count-number";
-      count.textContent = items[name];
+  const repsLabel = document.createElement("span");
+  repsLabel.className = "reps-label";
+  repsLabel.textContent = `${reps} 次/组`;
 
-      const plus = document.createElement("button");
-      plus.className = "counter-btn";
-      plus.textContent = "+";
+  const setsLabel = document.createElement("span");
+  setsLabel.className = "sets-label";
+  setsLabel.textContent = `${items[name]} 组`;
 
+  const totalLabel = document.createElement("span");
+  totalLabel.className = "total-reps";
+  totalLabel.textContent = `${items[name] * reps} 次`;
+
+  const minus = document.createElement("button");
+  minus.className = "counter-btn";
+  minus.textContent = "-";
+
+  const count = document.createElement("span");
+  count.className = "count-number";
+  count.textContent = items[name];
+
+  const plus = document.createElement("button");
+  plus.className = "counter-btn";
+  plus.textContent = "+";
+
+  minus.onclick = () => {
+    let v = parseInt(count.textContent);
+    if (v > 0) v--;
+    count.textContent = v;
+    setsLabel.textContent = `${v} 组`;
+    totalLabel.textContent = `${v * reps} 次`;
+
+    if (v === 0) delete history[date][name];
+    else history[date][name] = v;
+
+    saveHistory();
+    showHistoryPage();
+  };
+
+  plus.onclick = () => {
+    let v = parseInt(count.textContent);
+    v++;
+    count.textContent = v;
+    setsLabel.textContent = `${v} 组`;
+    totalLabel.textContent = `${v * reps} 次`;
+
+    history[date][name] = v;
+    saveHistory();
+  };
+
+  row.appendChild(left);
+  row.appendChild(repsLabel);
+  row.appendChild(setsLabel);
+  row.appendChild(totalLabel);
+  row.appendChild(minus);
+  row.appendChild(count);
+  row.appendChild(plus);
+
+  list.appendChild(row);
+}
+    
       minus.onclick = () => {
         let v = parseInt(count.textContent);
         if (v > 0) v--;
