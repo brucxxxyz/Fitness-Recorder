@@ -47,7 +47,7 @@ function getWeekByOffset(offset) {
   const today = new Date();
   today.setDate(today.getDate() + offset * 7);
 
-  const day = today.getDay(); // 0=周日,1=周一
+  const day = today.getDay(); 
   const monday = new Date(today);
 
   const diff = day === 0 ? -6 : 1 - day;
@@ -82,7 +82,7 @@ function getMonthByOffset(offset) {
 
 // 柱状图（能量消耗）
 function renderBar(dates) {
-  const labels = dates.map(d => d.slice(5)); // 显示 MM-DD
+  const labels = dates.map(d => d.slice(5));
   const data = dates.map(d => getDayStats(d).totalCalories);
 
   if (chart) chart.destroy();
@@ -105,15 +105,88 @@ function renderBar(dates) {
   });
 }
 
-// 散点图（卡路里 + 次数大小）
+// 散点图（四维：部位 → 能量 + 大小 + 强度透明度）
 function renderScatter(dates) {
-  const data = dates.map(d => {
-    const { totalReps, totalCalories } = getDayStats(d);
-    return {
-      x: d.slice(5),                 // MM-DD
-      y: totalCalories || 0.1,       // 卡路里
-      r: Math.max(5, totalReps / 15) // 点大小 = 次数
-    };
+  const allRecords = [];
+
+  dates.forEach(date => {
+    const items = history[date];
+    if (!items) return;
+
+    for (const itemName in items) {
+      const sets = items[itemName];
+      const reps = findReps(itemName);
+      const calories = caloriesPerSet(reps) * sets;
+
+      let part = "other";
+      for (const p in WORKOUT_GROUPS) {
+        if (WORKOUT_GROUPS[p].some(obj => obj.name === itemName)) {
+          part = p;
+          break;
+        }
+      }
+
+      allRecords.push({
+        part,
+        calories,
+        sets
+      });
+    }
+  });
+
+  if (allRecords.length === 0) {
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: "bubble",
+      data: { datasets: [] },
+      options: {
+        scales: {
+          x: { type: "category", labels: [] },
+          y: { beginAtZero: true }
+        }
+      }
+    });
+    return;
+  }
+
+  const parts = [...new Set(allRecords.map(r => r.part))];
+
+  const colorMap = {
+    chest: "255,99,132",
+    back: "54,162,235",
+    legs: "75,192,192",
+    shoulder: "255,206,86",
+    arms: "153,102,255",
+    core: "255,159,64",
+    other: "120,120,120"
+  };
+
+  const datasets = {};
+
+  allRecords.forEach(r => {
+    const { part, calories, sets } = r;
+
+    const intensity = calories / sets;
+    const alpha = Math.min(1, Math.max(0.25, intensity / 50));
+
+    if (!datasets[part]) {
+      datasets[part] = {
+        label: part,
+        data: [],
+        backgroundColor: [],
+        borderColor: [],
+        borderWidth: 1
+      };
+    }
+
+    datasets[part].data.push({
+      x: part,
+      y: calories,
+      r: Math.sqrt(calories) * 2
+    });
+
+    datasets[part].backgroundColor.push(`rgba(${colorMap[part]},${alpha})`);
+    datasets[part].borderColor.push(`rgba(${colorMap[part]},1)`);
   });
 
   if (chart) chart.destroy();
@@ -121,23 +194,27 @@ function renderScatter(dates) {
   chart = new Chart(ctx, {
     type: "bubble",
     data: {
-      datasets: [{
-        label: "卡路里（点大小代表次数）",
-        data,
-        backgroundColor: "rgba(59,130,246,0.6)"
-      }]
+      datasets: Object.values(datasets)
     },
     options: {
       scales: {
-        y: { beginAtZero: true }
+        x: {
+          type: "category",
+          labels: parts,
+          title: { display: true, text: "训练部位" }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "能量消耗 (kcal)" }
+        }
       }
     }
   });
 }
 
 // 当前模式：week / month，bar / scatter
-let currentMode = "week";   // 默认本周
-let currentChart = "bar";   // 默认柱状图
+let currentMode = "week";
+let currentChart = "bar";
 
 function refreshChart() {
   let dates;
