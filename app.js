@@ -1,4 +1,4 @@
-// app.js — 今日训练 & 历史记录逻辑（B 版本原样）
+// app.js — B 版本（漂亮界面 + 正确布局 + 删除当天数据）
 
 const STORAGE_KEY = "fitness_history_v13";
 
@@ -40,6 +40,7 @@ function renderSubItems() {
     minus.textContent = "-";
 
     const count = document.createElement("span");
+    count.className = "count-number";
     count.textContent = "0";
 
     const plus = document.createElement("button");
@@ -127,6 +128,23 @@ function showHistoryPage() {
       row.appendChild(right);
       list.appendChild(row);
     }
+
+    // ★ 恢复删除当天数据按钮
+    const delCard = document.createElement("div");
+    delCard.className = "card";
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "small-btn";
+    delBtn.textContent = "删除当天数据";
+
+    delBtn.onclick = () => {
+      delete history[date];
+      saveHistory();
+      showHistoryPage();
+    };
+
+    delCard.appendChild(delBtn);
+    list.appendChild(delCard);
   });
 }
 
