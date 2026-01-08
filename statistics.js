@@ -83,7 +83,7 @@ function getMonthByOffset(offset) {
 // 柱状图（能量消耗）
 function renderBar(dates) {
   const labels = dates.map(d => d.slice(5)); // 显示 MM-DD
-  const data = dates.map(d => getDayStats(d).totalCalories); // ← 改成卡路里
+  const data = dates.map(d => getDayStats(d).totalCalories);
 
   if (chart) chart.destroy();
 
@@ -92,7 +92,7 @@ function renderBar(dates) {
     data: {
       labels,
       datasets: [{
-        label: "能量消耗（kcal）",   // ← 修改标题
+        label: "能量消耗（kcal）",
         data,
         backgroundColor: "#4f46e5"
       }]
@@ -135,130 +135,6 @@ function renderScatter(dates) {
   });
 }
 
-  // 2. 如果没有任何数据 → 显示空图
-  if (allRecords.length === 0) {
-    if (chart) chart.destroy();
-    chart = new Chart(ctx, {
-      type: "bubble",
-      data: { datasets: [] },
-      options: {
-        scales: {
-          x: { type: "category", labels: [] },
-          y: { beginAtZero: true }
-        }
-      }
-    });
-    return;
-  }
-
-  // 3. 自动生成 X 轴分类（按实际出现的部位）
-  const parts = [...new Set(allRecords.map(r => r.part))];
-
-  // 4. 自动生成颜色（RGB）
-  const colorMap = {
-    chest:   "255,99,132",
-    back:    "54,162,235",
-    legs:    "75,192,192",
-    shoulder:"255,206,86",
-    arms:    "153,102,255",
-    core:    "255,159,64",
-    other:   "120,120,120"
-  };
-
-  // 5. 自动按部位分组
-  const datasets = {};
-
-  allRecords.forEach(r => {
-    const { part, calories, sets } = r;
-
-    // 强度 = 能量 / 组数
-    const intensity = calories / sets;
-    const alpha = Math.min(1, Math.max(0.25, intensity / 50));
-
-    if (!datasets[part]) {
-      datasets[part] = {
-        label: part,
-        data: [],
-        backgroundColor: [],
-        borderColor: [],
-        borderWidth: 1
-      };
-    }
-
-    datasets[part].data.push({
-      x: part,
-      y: calories,
-      r: Math.sqrt(calories) * 2
-    });
-
-    datasets[part].backgroundColor.push(`rgba(${colorMap[part] || colorMap.other},${alpha})`);
-    datasets[part].borderColor.push(`rgba(${colorMap[part] || colorMap.other},1)`);
-  });
-
-  // 6. 渲染图表
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: "bubble",
-    data: {
-      datasets: Object.values(datasets)
-    },
-    options: {
-      scales: {
-        x: {
-          type: "category",
-          labels: parts,
-          title: { display: true, text: "训练部位" }
-        },
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "能量消耗 (kcal)" }
-        }
-      }
-    }
-  });
-}
-
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: "bubble",
-    data: {
-      datasets: Object.values(datasets)
-    },
-    options: {
-      scales: {
-        x: {
-          type: "category",
-          labels: ["chest","back","legs","shoulder","arms","core","other"],
-          title: { display: true, text: "训练部位" }
-        },
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "能量消耗 (kcal)" }
-        }
-      }
-    }
-  });
-}
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: "scatter",
-    data: {
-      datasets: Object.values(datasets)
-    },
-    options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
-}
-
-
 // 当前模式：week / month，bar / scatter
 let currentMode = "week";   // 默认本周
 let currentChart = "bar";   // 默认柱状图
@@ -282,13 +158,13 @@ function refreshChart() {
 // 绑定按钮
 document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
-  weekOffset = 0;     // 回到本周
+  weekOffset = 0;
   refreshChart();
 };
 
 document.getElementById("btnMonth").onclick = () => {
   currentMode = "month";
-  monthOffset = 0;    // 回到本月
+  monthOffset = 0;
   refreshChart();
 };
 
@@ -303,20 +179,14 @@ document.getElementById("btnScatter").onclick = () => {
 };
 
 document.getElementById("btnPrev").onclick = () => {
-  if (currentMode === "week") {
-    weekOffset--;
-  } else {
-    monthOffset--;
-  }
+  if (currentMode === "week") weekOffset--;
+  else monthOffset--;
   refreshChart();
 };
 
 document.getElementById("btnNext").onclick = () => {
-  if (currentMode === "week") {
-    weekOffset++;
-  } else {
-    monthOffset++;
-  }
+  if (currentMode === "week") weekOffset++;
+  else monthOffset++;
   refreshChart();
 };
 
@@ -324,5 +194,5 @@ document.getElementById("btnBack").onclick = () => {
   window.location.href = "index.html";
 };
 
-// 默认本周 / 本月（currentMode="week" 时显示本周）
+// 默认显示本周
 refreshChart();
