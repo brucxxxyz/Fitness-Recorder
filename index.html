@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>健身记录器</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>今日训练</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -13,47 +13,53 @@
 
   <!-- 今日训练页 -->
   <div id="page-home" class="page active">
+
     <h2 class="page-title">今日训练</h2>
 
-    <div class="card">
-      <div class="form-row">
-        <label>锻炼日期</label>
-        <div class="input-box date-wrapper">
-          <input type="date" id="datePicker">
-        </div>
+    <div class="card form-row">
+      <label>日期</label>
+      <div class="date-wrapper">
+        <input type="date" id="datePicker">
       </div>
+    </div>
 
-      <div class="form-row">
-        <label>锻炼部位</label>
-        <div class="input-box">
-          <select id="bodyPartSelect"></select>
-        </div>
-      </div>
+    <div class="card form-row">
+      <label>部位</label>
+      <select id="bodyPartSelect"></select>
     </div>
 
     <div class="card" id="subItemContainer"></div>
 
+    <!-- 今日统计 -->
     <div class="card" id="todaySummary"></div>
 
     <div class="card">
       <button id="gotoHistory">查看历史记录</button>
     </div>
 
+    <div class="card">
+      <button id="gotoStats">训练统计</button>
+    </div>
+
+  </div>
+
   <!-- 历史记录页 -->
   <div id="page-history" class="page">
-    <h2 class="page-title">历史训练</h2>
+
+    <h2 class="page-title">历史记录</h2>
 
     <div class="card" id="historyList"></div>
 
-    <div class="card btn-row">
-      <button id="gotoStats" class="small-btn">统计</button>
-      <button id="backHome" class="small-btn">返回</button>
+    <div class="card">
+      <button id="backHome">返回</button>
     </div>
+
   </div>
 
 </div>
 
 <script src="workouts.js"></script>
 <script src="app.js"></script>
+
 </body>
 </html>
