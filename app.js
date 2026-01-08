@@ -26,11 +26,7 @@ function renderSubItems() {
   const date = document.getElementById("datePicker").value;
   const todayData = history[date] || {};
 
-  let totalSetsAll = 0;
-  let totalRepsAll = 0;
-  let totalCaloriesAll = 0;
-
-  WORKOUT_GROUPS[part].forEach(item => {
+  WORKOUT_GROUPS[part].forEach((item, index) => {
     const row = document.createElement("div");
     row.className = "subitem-row";
 
@@ -41,9 +37,6 @@ function renderSubItems() {
     const repsLabel = document.createElement("span");
     repsLabel.className = "reps-label";
     repsLabel.textContent = `${item.reps} 次/组`;
-
-    const setsLabel = document.createElement("span");
-    setsLabel.className = "sets-label";
 
     const total = document.createElement("span");
     total.className = "total-reps";
@@ -61,13 +54,7 @@ function renderSubItems() {
 
     let sets = todayData[item.name] || 0;
     count.textContent = sets;
-
-    setsLabel.textContent = `${sets} 组`;
     total.textContent = `${sets * item.reps} 次`;
-
-    totalSetsAll += sets;
-    totalRepsAll += sets * item.reps;
-    totalCaloriesAll += sets * item.reps * 0.6;
 
     minus.onclick = () => {
       if (sets > 0) sets--;
@@ -83,13 +70,11 @@ function renderSubItems() {
 
     function updateRow() {
       count.textContent = sets;
-      setsLabel.textContent = `${sets} 组`;
       total.textContent = `${sets * item.reps} 次`;
     }
 
     row.appendChild(name);
     row.appendChild(repsLabel);
-    row.appendChild(setsLabel);
     row.appendChild(total);
     row.appendChild(minus);
     row.appendChild(count);
@@ -98,10 +83,29 @@ function renderSubItems() {
     container.appendChild(row);
   });
 
-  renderFooter(totalSetsAll, totalRepsAll, totalCaloriesAll);
+  updateFooter();
 }
 
-// 今日统计
+// 今日统计（即时更新）
+function updateFooter() {
+  const rows = document.querySelectorAll("#subItemContainer .subitem-row");
+
+  let totalSets = 0;
+  let totalReps = 0;
+  let totalCalories = 0;
+
+  rows.forEach((row, index) => {
+    const sets = parseInt(row.children[4].textContent);
+    const reps = WORKOUT_GROUPS[bodyPartSelect.value][index].reps;
+
+    totalSets += sets;
+    totalReps += sets * reps;
+    totalCalories += sets * reps * 0.6;
+  });
+
+  renderFooter(totalSets, totalReps, totalCalories);
+}
+
 function renderFooter(totalSets, totalReps, totalCalories) {
   const box = document.getElementById("todaySummary");
   box.innerHTML = `
@@ -125,7 +129,7 @@ document.getElementById("gotoHistory").onclick = () => {
   const rows = document.querySelectorAll("#subItemContainer .subitem-row");
   rows.forEach((row, index) => {
     const name = items[index].name;
-    const sets = parseInt(row.children[5].textContent);
+    const sets = parseInt(row.children[4].textContent);
 
     if (sets > 0) history[date][name] = sets;
     else delete history[date][name];
@@ -170,10 +174,6 @@ function showHistoryPage() {
       repsLabel.className = "reps-label";
       repsLabel.textContent = `${reps} 次/组`;
 
-      const setsLabel = document.createElement("span");
-      setsLabel.className = "sets-label";
-      setsLabel.textContent = `${items[name]} 组`;
-
       const totalLabel = document.createElement("span");
       totalLabel.className = "total-reps";
       totalLabel.textContent = `${items[name] * reps} 次`;
@@ -194,7 +194,6 @@ function showHistoryPage() {
         let v = parseInt(count.textContent);
         if (v > 0) v--;
         count.textContent = v;
-        setsLabel.textContent = `${v} 组`;
         totalLabel.textContent = `${v * reps} 次`;
 
         if (v === 0) delete history[date][name];
@@ -208,7 +207,6 @@ function showHistoryPage() {
         let v = parseInt(count.textContent);
         v++;
         count.textContent = v;
-        setsLabel.textContent = `${v} 组`;
         totalLabel.textContent = `${v * reps} 次`;
 
         history[date][name] = v;
@@ -217,7 +215,6 @@ function showHistoryPage() {
 
       row.appendChild(left);
       row.appendChild(repsLabel);
-      row.appendChild(setsLabel);
       row.appendChild(totalLabel);
       row.appendChild(minus);
       row.appendChild(count);
