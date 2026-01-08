@@ -6,26 +6,7 @@ function saveHistory() {
 }
 
 // 初始化日期
-document.getElementById("datePicker").onchange = () => {
-  // 1. 保存当前日期的数据
-  saveCurrentPartToHistory();
-
-  // 2. 获取新日期
-  const date = document.getElementById("datePicker").value;
-
-  // 3. 如果新日期没有数据 → 初始化为空对象
-  if (!history[date]) {
-    history[date] = {};
-    saveHistory();
-  }
-
-  // 4. 重新渲染动作列表（会根据 history[date] 自动填入组数）
-  renderSubItems();
-
-  // 5. 重新计算今日统计
-  updateFooter();
-};
-
+document.getElementById("datePicker").value = new Date().toISOString().slice(0, 10);
 
 // 填充部位下拉菜单
 const bodyPartSelect = document.getElementById("bodyPartSelect");
@@ -34,26 +15,6 @@ for (const part in WORKOUT_GROUPS) {
   opt.value = part;
   opt.textContent = part;
   bodyPartSelect.appendChild(opt);
-}
-
-// 保存当前部位的 DOM 数据到 history
-function saveCurrentPartToHistory() {
-  const date = document.getElementById("datePicker").value;
-  if (!history[date]) history[date] = {};
-
-  const part = bodyPartSelect.value;
-  const items = WORKOUT_GROUPS[part];
-  const rows = document.querySelectorAll("#subItemContainer .subitem-row");
-
-  rows.forEach((row, index) => {
-    const name = items[index].name;
-    const sets = parseInt(row.children[4].textContent);
-
-    if (sets > 0) history[date][name] = sets;
-    else delete history[date][name];
-  });
-
-  saveHistory();
 }
 
 // 今日训练渲染
@@ -97,24 +58,15 @@ function renderSubItems() {
 
     minus.onclick = () => {
       if (sets > 0) sets--;
-      syncToHistory();
-      updateRow();
-      updateFooter();
+      autoSave();
     };
 
     plus.onclick = () => {
       sets++;
-      syncToHistory();
-      updateRow();
-      updateFooter();
+      autoSave();
     };
 
-    function updateRow() {
-      count.textContent = sets;
-      total.textContent = `${sets * item.reps} 次`;
-    }
-
-    function syncToHistory() {
+    function autoSave() {
       const date = document.getElementById("datePicker").value;
       if (!history[date]) history[date] = {};
 
@@ -122,6 +74,13 @@ function renderSubItems() {
       else delete history[date][item.name];
 
       saveHistory();
+      updateRow();
+      updateFooter();
+    }
+
+    function updateRow() {
+      count.textContent = sets;
+      total.textContent = `${sets * item.reps} 次`;
     }
 
     row.appendChild(name);
@@ -167,22 +126,25 @@ function renderFooter(totalSets, totalReps, totalCalories) {
   `;
 }
 
-// 切换部位：先保存当前部位，再渲染新部位
+// 切换部位 → 重新渲染
 bodyPartSelect.onchange = () => {
-  saveCurrentPartToHistory();
   renderSubItems();
+};
+
+// 切换日期 → 加载该日期的数据
+document.getElementById("datePicker").onchange = () => {
+  renderSubItems();
+  updateFooter();
 };
 
 // 初次渲染
 renderSubItems();
 
-// 保存今日训练 → 跳历史记录
+// 历史记录页
 document.getElementById("gotoHistory").onclick = () => {
-  saveCurrentPartToHistory();
   showHistoryPage();
 };
 
-// 历史记录页
 function showHistoryPage() {
   document.getElementById("page-home").classList.remove("active");
   document.getElementById("page-history").classList.add("active");
