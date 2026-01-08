@@ -1,4 +1,4 @@
-// app.js — B 版本（漂亮界面 + 正确布局 + 删除当天数据）
+// app.js — B 版本（正确布局 + 组数显示 + 删除当天数据）
 
 const STORAGE_KEY = "fitness_history_v13";
 
