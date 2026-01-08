@@ -26,6 +26,13 @@ function renderSubItems() {
   const container = document.getElementById("subItemContainer");
   container.innerHTML = "";
 
+  const date = document.getElementById("datePicker").value;
+  const todayData = history[date] || {};
+
+  let totalSetsAll = 0;
+  let totalRepsAll = 0;
+  let totalCaloriesAll = 0;
+
   WORKOUT_GROUPS[part].forEach(item => {
     const row = document.createElement("div");
     row.className = "subitem-row";
@@ -34,37 +41,73 @@ function renderSubItems() {
     name.className = "item-name";
     name.textContent = item.name;
 
+    const repsLabel = document.createElement("span");
+    repsLabel.className = "reps-label";
+    repsLabel.textContent = `${item.reps} 次/组`;
+
+    const setsLabel = document.createElement("span");
+    setsLabel.className = "sets-label";
+
+    const total = document.createElement("span");
+    total.className = "total-reps";
+
     const minus = document.createElement("button");
     minus.className = "counter-btn";
     minus.textContent = "-";
 
     const count = document.createElement("span");
     count.className = "count-number";
-    count.textContent = "0";
 
     const plus = document.createElement("button");
     plus.className = "counter-btn";
     plus.textContent = "+";
 
+    // ★ 读取历史记录
+    let sets = todayData[item.name] || 0;
+    count.textContent = sets;
+
+    // ★ 显示组数
+    setsLabel.textContent = `${sets} 组`;
+
+    // ★ 显示总次数
+    total.textContent = `${sets * item.reps} 次`;
+
+    // ★ 更新今日统计
+    totalSetsAll += sets;
+    totalRepsAll += sets * item.reps;
+    totalCaloriesAll += sets * item.reps * 0.6;
+
     minus.onclick = () => {
-      let v = parseInt(count.textContent);
-      if (v > 0) v--;
-      count.textContent = v;
+      if (sets > 0) sets--;
+      updateRow();
+      updateFooter();
     };
 
     plus.onclick = () => {
-      let v = parseInt(count.textContent);
-      v++;
-      count.textContent = v;
+      sets++;
+      updateRow();
+      updateFooter();
     };
 
+    function updateRow() {
+      count.textContent = sets;
+      setsLabel.textContent = `${sets} 组`;
+      total.textContent = `${sets * item.reps} 次`;
+    }
+
     row.appendChild(name);
+    row.appendChild(repsLabel);
+    row.appendChild(setsLabel);
+    row.appendChild(total);
     row.appendChild(minus);
     row.appendChild(count);
     row.appendChild(plus);
 
     container.appendChild(row);
   });
+
+  // ★ 渲染底部统计
+  renderFooter(totalSetsAll, totalRepsAll, totalCaloriesAll);
 }
 
 bodyPartSelect.onchange = renderSubItems;
