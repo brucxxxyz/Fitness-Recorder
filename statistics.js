@@ -106,19 +106,18 @@ function renderBar(dates) {
   });
 }
 
-// 散点图（能量消耗 + 训练部位颜色）
+// 散点图（部位 → 能量；点大小=能量；透明度=强度）
 function renderScatter(dates) {
   const colorMap = {
-    chest:   "rgba(255,99,132,0.7)",
-    back:    "rgba(54,162,235,0.7)",
-    legs:    "rgba(75,192,192,0.7)",
-    shoulder:"rgba(255,206,86,0.7)",
-    arms:    "rgba(153,102,255,0.7)",
-    core:    "rgba(255,159,64,0.7)",
-    other:   "rgba(120,120,120,0.7)"
+    chest:   "255,99,132",
+    back:    "54,162,235",
+    legs:    "75,192,192",
+    shoulder:"255,206,86",
+    arms:    "153,102,255",
+    core:    "255,159,64",
+    other:   "120,120,120"
   };
 
-  // 生成散点数据（按训练部位分组）
   const datasets = {};
 
   dates.forEach(date => {
@@ -129,6 +128,11 @@ function renderScatter(dates) {
       const sets = items[itemName];
       const reps = findReps(itemName);
       const calories = caloriesPerSet(reps) * sets;
+
+      // 强度（Intensity）= 能量 / 组数
+      const intensity = calories / sets;  
+      const alpha = Math.min(1, Math.max(0.2, intensity / 50)); 
+      // 强度越高 → 越不透明；最低透明度 0.2
 
       // 找训练部位
       let part = "other";
@@ -143,16 +147,43 @@ function renderScatter(dates) {
         datasets[part] = {
           label: part,
           data: [],
-          backgroundColor: colorMap[part] || colorMap.other
+          backgroundColor: `rgba(${colorMap[part]},0.7)`,
+          borderColor: `rgba(${colorMap[part]},1)`,
+          borderWidth: 1
         };
       }
 
       datasets[part].data.push({
-        x: date.slice(5),   // MM-DD
-        y: calories         // 只显示卡路里
+        x: part,               // X 轴 = 训练部位
+        y: calories,           // Y 轴 = 能量
+        r: Math.sqrt(calories) * 2,  // 点大小 = 能量（平方根缩放）
+        backgroundColor: `rgba(${colorMap[part]},${alpha})` // 透明度 = 强度
       });
     }
   });
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: "bubble",
+    data: {
+      datasets: Object.values(datasets)
+    },
+    options: {
+      scales: {
+        x: {
+          type: "category",
+          labels: ["chest","back","legs","shoulder","arms","core","other"],
+          title: { display: true, text: "训练部位" }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "能量消耗 (kcal)" }
+        }
+      }
+    }
+  });
+}
 
   if (chart) chart.destroy();
 
