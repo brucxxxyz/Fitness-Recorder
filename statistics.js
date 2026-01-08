@@ -151,14 +151,15 @@ function renderScatter(dates) {
 
   const parts = [...new Set(allRecords.map(r => r.part))];
 
+  // ★ 修复：使用中文 key 的颜色映射
   const colorMap = {
-    chest: "255,99,132",
-    back: "54,162,235",
-    legs: "75,192,192",
-    shoulder: "255,206,86",
-    arms: "153,102,255",
-    core: "255,159,64",
-    other: "120,120,120"
+    "胸部": "255,99,132",
+    "背部": "54,162,235",
+    "腿部": "75,192,192",
+    "肩部": "255,206,86",
+    "手臂": "153,102,255",
+    "核心": "255,159,64",
+    "other": "120,120,120"
   };
 
   const datasets = {};
