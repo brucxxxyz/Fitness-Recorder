@@ -47,7 +47,7 @@ function getWeekByOffset(offset) {
   const today = new Date();
   today.setDate(today.getDate() + offset * 7);
 
-  const day = today.getDay(); 
+  const day = today.getDay();
   const monday = new Date(today);
 
   const diff = day === 0 ? -6 : 1 - day;
@@ -82,6 +82,8 @@ function getMonthByOffset(offset) {
 
 // 柱状图（能量消耗）
 function renderBar(dates) {
+  const lang = localStorage.getItem("app_lang") || "zh";
+
   const labels = dates.map(d => d.slice(5));
   const data = dates.map(d => getDayStats(d).totalCalories);
 
@@ -92,7 +94,7 @@ function renderBar(dates) {
     data: {
       labels,
       datasets: [{
-        label: "能量消耗（kcal）",
+        label: i18n[lang].calories,
         data,
         backgroundColor: "#4f46e5"
       }]
@@ -107,6 +109,7 @@ function renderBar(dates) {
 
 // 散点图（四维：部位 → 能量 + 大小 + 强度透明度）
 function renderScatter(dates) {
+  const lang = localStorage.getItem("app_lang") || "zh";
   const allRecords = [];
 
   dates.forEach(date => {
@@ -171,7 +174,7 @@ function renderScatter(dates) {
 
     if (!datasets[part]) {
       datasets[part] = {
-        label: part,
+        label: i18n[lang][part] || part,
         data: [],
         backgroundColor: [],
         borderColor: [],
@@ -180,7 +183,7 @@ function renderScatter(dates) {
     }
 
     datasets[part].data.push({
-      x: part,
+      x: i18n[lang][part] || part,
       y: calories,
       r: Math.sqrt(calories) * 2
     });
@@ -200,12 +203,12 @@ function renderScatter(dates) {
       scales: {
         x: {
           type: "category",
-          labels: parts,
-          title: { display: true, text: "训练部位" }
+          labels: parts.map(p => i18n[lang][p] || p),
+          title: { display: true, text: i18n[lang].part }
         },
         y: {
           beginAtZero: true,
-          title: { display: true, text: "能量消耗 (kcal)" }
+          title: { display: true, text: i18n[lang].calories }
         }
       }
     }
