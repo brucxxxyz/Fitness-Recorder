@@ -88,20 +88,21 @@ function renderSubItems() {
 
 // 今日统计（即时更新）
 function updateFooter() {
-  const rows = document.querySelectorAll("#subItemContainer .subitem-row");
+  const date = document.getElementById("datePicker").value;
+  const todayData = history[date] || {};
 
   let totalSets = 0;
   let totalReps = 0;
   let totalCalories = 0;
 
-  rows.forEach((row, index) => {
-    const sets = parseInt(row.children[4].textContent);
-    const reps = WORKOUT_GROUPS[bodyPartSelect.value][index].reps;
+  for (const name in todayData) {
+    const sets = todayData[name];
+    const reps = findReps(name);
 
     totalSets += sets;
     totalReps += sets * reps;
     totalCalories += sets * reps * 0.6;
-  });
+  }
 
   renderFooter(totalSets, totalReps, totalCalories);
 }
