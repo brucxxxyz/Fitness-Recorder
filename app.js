@@ -1,3 +1,20 @@
+const i18n = { zh: {...}, yue: {...}, en: {...} };
+
+function applyLanguage(lang) {
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    el.textContent = i18n[lang][key] || key;
+  });
+}
+
+function setLanguage(lang) {
+  localStorage.setItem("app_lang", lang);
+  applyLanguage(lang);
+}
+
+const savedLang = localStorage.getItem("app_lang") || "zh";
+applyLanguage(savedLang);
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const STORAGE_KEY = "fitness_history_v13";
