@@ -62,17 +62,17 @@ function renderSubItems() {
     plus.className = "counter-btn";
     plus.textContent = "+";
 
-    // ★ 读取历史记录
+    // 读取历史记录
     let sets = todayData[item.name] || 0;
     count.textContent = sets;
 
-    // ★ 显示组数
+    // 显示组数
     setsLabel.textContent = `${sets} 组`;
 
-    // ★ 显示总次数
+    // 显示总次数
     total.textContent = `${sets * item.reps} 次`;
 
-    // ★ 更新今日统计
+    // 累加今日统计
     totalSetsAll += sets;
     totalRepsAll += sets * item.reps;
     totalCaloriesAll += sets * item.reps * 0.6;
@@ -106,8 +106,18 @@ function renderSubItems() {
     container.appendChild(row);
   });
 
-  // ★ 渲染底部统计
+  // 渲染底部统计
   renderFooter(totalSetsAll, totalRepsAll, totalCaloriesAll);
+}
+
+// 底部统计卡片
+function renderFooter(totalSets, totalReps, totalCalories) {
+  const box = document.getElementById("todaySummary");
+  box.innerHTML = `
+    <div>今日总组数： <b>${totalSets}</b> 组</div>
+    <div>今日总次数： <b>${totalReps}</b> 次</div>
+    <div>今日总能量： <b>${totalCalories.toFixed(1)}</b> kcal</div>
+  `;
 }
 
 bodyPartSelect.onchange = renderSubItems;
@@ -124,7 +134,7 @@ document.getElementById("gotoHistory").onclick = () => {
   const rows = document.querySelectorAll("#subItemContainer .subitem-row");
   rows.forEach((row, index) => {
     const name = items[index].name;
-    const sets = parseInt(row.children[2].textContent);
+    const sets = parseInt(row.children[5].textContent); // count-number
 
     if (sets > 0) {
       history[date][name] = sets;
@@ -137,7 +147,7 @@ document.getElementById("gotoHistory").onclick = () => {
   showHistoryPage();
 };
 
-// 显示历史记录页（可编辑版本）
+// 显示历史记录页
 function showHistoryPage() {
   document.getElementById("page-home").classList.remove("active");
   document.getElementById("page-history").classList.add("active");
@@ -156,7 +166,7 @@ function showHistoryPage() {
     const items = history[date];
     for (const name in items) {
       const row = document.createElement("div");
-      row.className = "subitem-row"; // ★ 使用同样的布局
+      row.className = "subitem-row";
 
       const left = document.createElement("span");
       left.className = "item-name";
