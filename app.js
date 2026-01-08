@@ -1,26 +1,23 @@
 const STORAGE_KEY = "fitness_history_v13";
-
-// 读取历史记录
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
-// 保存历史记录
 function saveHistory() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 }
 
-// 初始化日期为今天
+// 初始化日期
 document.getElementById("datePicker").value = new Date().toISOString().slice(0, 10);
 
-// 填充锻炼部位下拉菜单
+// 填充部位下拉菜单
 const bodyPartSelect = document.getElementById("bodyPartSelect");
 for (const part in WORKOUT_GROUPS) {
-  const option = document.createElement("option");
-  option.value = part;
-  option.textContent = part;
-  bodyPartSelect.appendChild(option);
+  const opt = document.createElement("option");
+  opt.value = part;
+  opt.textContent = part;
+  bodyPartSelect.appendChild(opt);
 }
 
-// 渲染今日训练动作
+// 今日训练渲染
 function renderSubItems() {
   const part = bodyPartSelect.value;
   const container = document.getElementById("subItemContainer");
@@ -62,17 +59,12 @@ function renderSubItems() {
     plus.className = "counter-btn";
     plus.textContent = "+";
 
-    // 读取历史记录
     let sets = todayData[item.name] || 0;
     count.textContent = sets;
 
-    // 显示组数
     setsLabel.textContent = `${sets} 组`;
-
-    // 显示总次数
     total.textContent = `${sets * item.reps} 次`;
 
-    // 累加今日统计
     totalSetsAll += sets;
     totalRepsAll += sets * item.reps;
     totalCaloriesAll += sets * item.reps * 0.6;
@@ -106,11 +98,10 @@ function renderSubItems() {
     container.appendChild(row);
   });
 
-  // 渲染底部统计
   renderFooter(totalSetsAll, totalRepsAll, totalCaloriesAll);
 }
 
-// 底部统计卡片
+// 今日统计
 function renderFooter(totalSets, totalReps, totalCalories) {
   const box = document.getElementById("todaySummary");
   box.innerHTML = `
@@ -123,7 +114,7 @@ function renderFooter(totalSets, totalReps, totalCalories) {
 bodyPartSelect.onchange = renderSubItems;
 renderSubItems();
 
-// 保存今日训练
+// 保存今日训练 → 跳历史记录
 document.getElementById("gotoHistory").onclick = () => {
   const date = document.getElementById("datePicker").value;
   if (!history[date]) history[date] = {};
@@ -134,20 +125,17 @@ document.getElementById("gotoHistory").onclick = () => {
   const rows = document.querySelectorAll("#subItemContainer .subitem-row");
   rows.forEach((row, index) => {
     const name = items[index].name;
-    const sets = parseInt(row.children[5].textContent); // count-number
+    const sets = parseInt(row.children[5].textContent);
 
-    if (sets > 0) {
-      history[date][name] = sets;
-    } else {
-      delete history[date][name];
-    }
+    if (sets > 0) history[date][name] = sets;
+    else delete history[date][name];
   });
 
   saveHistory();
   showHistoryPage();
 };
 
-// 显示历史记录页
+// 历史记录页
 function showHistoryPage() {
   document.getElementById("page-home").classList.remove("active");
   document.getElementById("page-history").classList.add("active");
@@ -156,9 +144,9 @@ function showHistoryPage() {
   list.innerHTML = "";
 
   const dates = Object.keys(history)
-  .filter(date => Object.keys(history[date]).length > 0) // ★ 过滤掉空记录
-  .sort()
-  .reverse();
+    .filter(d => Object.keys(history[d]).length > 0)
+    .sort()
+    .reverse();
 
   dates.forEach(date => {
     const title = document.createElement("div");
@@ -167,95 +155,70 @@ function showHistoryPage() {
     list.appendChild(title);
 
     const items = history[date];
-for (const name in items) {
-  const row = document.createElement("div");
-  row.className = "subitem-row";
 
-  const left = document.createElement("span");
-  left.className = "item-name";
-  left.textContent = name;
+    for (const name in items) {
+      const reps = findReps(name);
 
-  // 找 reps
-  const reps = findReps(name);
+      const row = document.createElement("div");
+      row.className = "subitem-row";
 
-  const repsLabel = document.createElement("span");
-  repsLabel.className = "reps-label";
-  repsLabel.textContent = `${reps} 次/组`;
+      const left = document.createElement("span");
+      left.className = "item-name";
+      left.textContent = name;
 
-  const setsLabel = document.createElement("span");
-  setsLabel.className = "sets-label";
-  setsLabel.textContent = `${items[name]} 组`;
+      const repsLabel = document.createElement("span");
+      repsLabel.className = "reps-label";
+      repsLabel.textContent = `${reps} 次/组`;
 
-  const totalLabel = document.createElement("span");
-  totalLabel.className = "total-reps";
-  totalLabel.textContent = `${items[name] * reps} 次`;
+      const setsLabel = document.createElement("span");
+      setsLabel.className = "sets-label";
+      setsLabel.textContent = `${items[name]} 组`;
 
-  const minus = document.createElement("button");
-  minus.className = "counter-btn";
-  minus.textContent = "-";
+      const totalLabel = document.createElement("span");
+      totalLabel.className = "total-reps";
+      totalLabel.textContent = `${items[name] * reps} 次`;
 
-  const count = document.createElement("span");
-  count.className = "count-number";
-  count.textContent = items[name];
+      const minus = document.createElement("button");
+      minus.className = "counter-btn";
+      minus.textContent = "-";
 
-  const plus = document.createElement("button");
-  plus.className = "counter-btn";
-  plus.textContent = "+";
+      const count = document.createElement("span");
+      count.className = "count-number";
+      count.textContent = items[name];
 
-  minus.onclick = () => {
-    let v = parseInt(count.textContent);
-    if (v > 0) v--;
-    count.textContent = v;
-    setsLabel.textContent = `${v} 组`;
-    totalLabel.textContent = `${v * reps} 次`;
+      const plus = document.createElement("button");
+      plus.className = "counter-btn";
+      plus.textContent = "+";
 
-    if (v === 0) delete history[date][name];
-    else history[date][name] = v;
-
-    saveHistory();
-    showHistoryPage();
-  };
-
-  plus.onclick = () => {
-    let v = parseInt(count.textContent);
-    v++;
-    count.textContent = v;
-    setsLabel.textContent = `${v} 组`;
-    totalLabel.textContent = `${v * reps} 次`;
-
-    history[date][name] = v;
-    saveHistory();
-  };
-
-  row.appendChild(left);
-  row.appendChild(repsLabel);
-  row.appendChild(setsLabel);
-  row.appendChild(totalLabel);
-  row.appendChild(minus);
-  row.appendChild(count);
-  row.appendChild(plus);
-
-  list.appendChild(row);
-}
-    
       minus.onclick = () => {
         let v = parseInt(count.textContent);
         if (v > 0) v--;
         count.textContent = v;
-        history[date][name] = v;
+        setsLabel.textContent = `${v} 组`;
+        totalLabel.textContent = `${v * reps} 次`;
+
         if (v === 0) delete history[date][name];
+        else history[date][name] = v;
+
         saveHistory();
+        showHistoryPage();
       };
 
       plus.onclick = () => {
         let v = parseInt(count.textContent);
         v++;
         count.textContent = v;
+        setsLabel.textContent = `${v} 组`;
+        totalLabel.textContent = `${v * reps} 次`;
+
         history[date][name] = v;
         saveHistory();
       };
 
       row.appendChild(left);
+      row.appendChild(repsLabel);
+      row.appendChild(setsLabel);
+      row.appendChild(totalLabel);
       row.appendChild(minus);
       row.appendChild(count);
       row.appendChild(plus);
@@ -263,7 +226,6 @@ for (const name in items) {
       list.appendChild(row);
     }
 
-    // 删除当天数据按钮
     const delCard = document.createElement("div");
     delCard.className = "card";
 
@@ -282,13 +244,21 @@ for (const name in items) {
   });
 }
 
-// 返回首页
 document.getElementById("backHome").onclick = () => {
   document.getElementById("page-history").classList.remove("active");
   document.getElementById("page-home").classList.add("active");
 };
 
-// 跳转到统计页
 document.getElementById("gotoStats").onclick = () => {
   window.location.href = "statistics.html";
 };
+
+// 查 reps
+function findReps(itemName) {
+  for (const part in WORKOUT_GROUPS) {
+    for (const obj of WORKOUT_GROUPS[part]) {
+      if (obj.name === itemName) return obj.reps;
+    }
+  }
+  return 0;
+}
