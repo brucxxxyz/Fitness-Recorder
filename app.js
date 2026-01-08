@@ -1,244 +1,142 @@
-const i18n = { zh: {...}, yue: {...}, en: {...} };
+// app.js — 今日训练 & 历史记录逻辑（无语言系统）
 
-function applyLanguage(lang) {
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.getAttribute("data-i18n");
-    el.textContent = i18n[lang][key] || key;
+const STORAGE_KEY = "fitness_history_v13";
+
+// 读取历史记录
+let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+// 保存历史记录
+function saveHistory() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
+// 初始化日期为今天
+document.getElementById("datePicker").value = new Date().toISOString().slice(0, 10);
+
+// 填充锻炼部位下拉菜单
+const bodyPartSelect = document.getElementById("bodyPartSelect");
+for (const part in WORKOUT_GROUPS) {
+  const option = document.createElement("option");
+  option.value = part;
+  option.textContent = part;
+  bodyPartSelect.appendChild(option);
+}
+
+// 渲染子项目（动作列表）
+function renderSubItems() {
+  const part = bodyPartSelect.value;
+  const container = document.getElementById("subItemContainer");
+  container.innerHTML = "";
+
+  WORKOUT_GROUPS[part].forEach(item => {
+    const row = document.createElement("div");
+    row.className = "subitem-row";
+
+    const name = document.createElement("span");
+    name.textContent = item.name;
+
+    const minus = document.createElement("button");
+    minus.className = "counter-btn";
+    minus.textContent = "-";
+
+    const count = document.createElement("span");
+    count.textContent = "0";
+
+    const plus = document.createElement("button");
+    plus.className = "counter-btn";
+    plus.textContent = "+";
+
+    minus.onclick = () => {
+      let v = parseInt(count.textContent);
+      if (v > 0) v--;
+      count.textContent = v;
+    };
+
+    plus.onclick = () => {
+      let v = parseInt(count.textContent);
+      v++;
+      count.textContent = v;
+    };
+
+    row.appendChild(name);
+    row.appendChild(minus);
+    row.appendChild(count);
+    row.appendChild(plus);
+
+    container.appendChild(row);
   });
 }
 
-function setLanguage(lang) {
-  localStorage.setItem("app_lang", lang);
-  applyLanguage(lang);
-}
+// 切换部位时刷新动作列表
+bodyPartSelect.onchange = renderSubItems;
+renderSubItems();
 
-const savedLang = localStorage.getItem("app_lang") || "zh";
-applyLanguage(savedLang);
+// 保存今日训练
+document.getElementById("gotoHistory").onclick = () => {
+  const date = document.getElementById("datePicker").value;
+  if (!history[date]) history[date] = {};
 
-document.addEventListener("DOMContentLoaded", () => {
+  const part = bodyPartSelect.value;
+  const items = WORKOUT_GROUPS[part];
 
-  const STORAGE_KEY = "fitness_history_v13";
-  let history = {};
+  const rows = document.querySelectorAll("#subItemContainer .subitem-row");
+  rows.forEach((row, index) => {
+    const name = items[index].name;
+    const sets = parseInt(row.children[2].textContent);
 
-  const datePicker = document.getElementById("datePicker");
-  const bodyPartSelect = document.getElementById("bodyPartSelect");
-  const selectBox = document.getElementById("selectBox");
-  const subItemContainer = document.getElementById("subItemContainer");
+    if (sets > 0) {
+      history[date][name] = sets;
+    } else {
+      delete history[date][name];
+    }
+  });
 
-  const gotoHistory = document.getElementById("gotoHistory");
-  const backHome = document.getElementById("backHome");
-  const gotoStats = document.getElementById("gotoStats");
-  const historyList = document.getElementById("historyList");
+  saveHistory();
+  showHistoryPage();
+};
 
-  const todayStr = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-  };
+// 显示历史记录页
+function showHistoryPage() {
+  document.getElementById("page-home").classList.remove("active");
+  document.getElementById("page-history").classList.add("active");
 
-  const getDateKey = () => datePicker.value || todayStr();
+  const list = document.getElementById("historyList");
+  list.innerHTML = "";
 
-  const loadStorage = () => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) history = JSON.parse(raw);
-  };
+  const dates = Object.keys(history).sort().reverse();
 
-  const saveStorage = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  };
+  dates.forEach(date => {
+    const title = document.createElement("div");
+    title.className = "history-title";
+    title.textContent = date;
 
-  function updateSelectLabel() {
-    const text = bodyPartSelect.options[bodyPartSelect.selectedIndex].text;
-    selectBox.setAttribute("data-value", text);
-  }
+    list.appendChild(title);
 
-  function renderSubItems() {
-    const part = bodyPartSelect.value;
-    const items = WORKOUT_GROUPS[part];
-    const dateKey = getDateKey();
-
-    subItemContainer.innerHTML = "";
-
-    items.forEach(obj => {
-      const item = obj.name;
-      const reps = obj.reps;
-      const count = history[dateKey]?.[item] ?? 0;
-      const total = reps * count;
-
+    const items = history[date];
+    for (const name in items) {
       const row = document.createElement("div");
-      row.className = "subitem-row";
+      row.className = "history-row";
 
-      const left = document.createElement("div");
-      left.textContent = `${item}   ${reps}次 × ${count}组 = ${total}次`;
+      const left = document.createElement("span");
+      left.textContent = name;
 
-      const right = document.createElement("div");
-      right.className = "btn-row";
-
-      const sub = document.createElement("button");
-      sub.className = "counter-btn";
-      sub.textContent = "-";
-      sub.onclick = () => adjustItem(item, -1);
-
-      const countLabel = document.createElement("span");
-      countLabel.style.margin = "0 6px";
-      countLabel.textContent = count;
-
-      const add = document.createElement("button");
-      add.className = "counter-btn";
-      add.textContent = "+";
-      add.onclick = () => adjustItem(item, +1);
-
-      right.appendChild(sub);
-      right.appendChild(countLabel);
-      right.appendChild(add);
+      const right = document.createElement("span");
+      right.textContent = items[name] + " 组";
 
       row.appendChild(left);
       row.appendChild(right);
-      subItemContainer.appendChild(row);
-    });
-  }
-
-  function adjustItem(item, delta) {
-    const dateKey = getDateKey();
-    if (!history[dateKey]) history[dateKey] = {};
-
-    const newValue = (history[dateKey][item] ?? 0) + delta;
-
-    if (newValue <= 0) {
-      delete history[dateKey][item];
-      if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
-    } else {
-      history[dateKey][item] = newValue;
+      list.appendChild(row);
     }
-
-    saveStorage();
-    renderSubItems();
-  }
-
-  function renderHistoryPage() {
-    historyList.innerHTML = "";
-    const dates = Object.keys(history).sort();
-
-    if (dates.length === 0) {
-      historyList.innerHTML = "<div class='card'>暂无记录</div>";
-      return;
-    }
-
-    dates.forEach(dateKey => {
-      const card = document.createElement("div");
-      card.className = "card";
-
-      const title = document.createElement("div");
-      title.style.fontWeight = "bold";
-      title.style.marginBottom = "6px";
-      title.textContent = dateKey;
-      card.appendChild(title);
-
-      // 清除当天数据按钮
-      const clearBtn = document.createElement("button");
-      clearBtn.textContent = "清除当天数据";
-      clearBtn.className = "small-btn";
-      clearBtn.style.marginBottom = "10px";
-      clearBtn.onclick = () => {
-        delete history[dateKey];
-        saveStorage();
-        renderHistoryPage();
-      };
-      card.appendChild(clearBtn);
-
-      const items = history[dateKey];
-
-      Object.keys(items).forEach(item => {
-        const count = items[item];
-        const reps = findReps(item);
-        const total = reps * count;
-
-        const row = document.createElement("div");
-        row.className = "history-row history-item";
-
-        const left = document.createElement("div");
-        left.textContent = `${item}  ${reps}次 × ${count}组 = ${total}次`;
-
-        const right = document.createElement("div");
-        right.className = "btn-row";
-
-        const sub = document.createElement("button");
-        sub.className = "counter-btn";
-        sub.textContent = "-";
-        sub.onclick = () => adjustHistoryItem(dateKey, item, -1);
-
-        const add = document.createElement("button");
-        add.className = "counter-btn";
-        add.textContent = "+";
-        add.onclick = () => adjustHistoryItem(dateKey, item, +1);
-
-        right.appendChild(sub);
-        right.appendChild(add);
-
-        row.appendChild(left);
-        row.appendChild(right);
-        card.appendChild(row);
-      });
-
-      historyList.appendChild(card);
-    });
-  }
-
-  function findReps(itemName) {
-    for (const part in WORKOUT_GROUPS) {
-      for (const obj of WORKOUT_GROUPS[part]) {
-        if (obj.name === itemName) return obj.reps;
-      }
-    }
-    return 0;
-  }
-
-  function adjustHistoryItem(dateKey, item, delta) {
-    const newValue = (history[dateKey][item] ?? 0) + delta;
-
-    if (newValue <= 0) {
-      delete history[dateKey][item];
-      if (Object.keys(history[dateKey]).length === 0) delete history[dateKey];
-    } else {
-      history[dateKey][item] = newValue;
-    }
-
-    saveStorage();
-    renderHistoryPage();
-  }
-
-  bodyPartSelect.onchange = () => {
-    updateSelectLabel();
-    renderSubItems();
-  };
-
-  datePicker.onchange = () => {
-    renderSubItems();
-  };
-
-  gotoHistory.onclick = () => {
-    renderHistoryPage();
-    document.getElementById("page-home").classList.remove("active");
-    document.getElementById("page-history").classList.add("active");
-  };
-
-  backHome.onclick = () => {
-    document.getElementById("page-history").classList.remove("active");
-    document.getElementById("page-home").classList.add("active");
-  };
-
-  gotoStats.onclick = () => {
-    window.location.href = "statistics.html";
-  };
-
-  loadStorage();
-
-  Object.keys(WORKOUT_GROUPS).forEach(part => {
-    const opt = document.createElement("option");
-    opt.value = opt.textContent = part;
-    bodyPartSelect.appendChild(opt);
   });
+}
 
-  datePicker.value = todayStr();
-  updateSelectLabel();
-  renderSubItems();
-});
+// 返回首页
+document.getElementById("backHome").onclick = () => {
+  document.getElementById("page-history").classList.remove("active");
+  document.getElementById("page-home").classList.add("active");
+};
+
+// 跳转到统计页
+document.getElementById("gotoStats").onclick = () => {
+  window.location.href = "statistics.html";
+};
