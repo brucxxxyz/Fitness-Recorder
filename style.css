@@ -101,7 +101,7 @@ select {
 /* 今日训练项目行布局 */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto;
+  grid-template-columns: 1fr auto auto auto auto auto auto;
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
@@ -109,6 +109,13 @@ select {
 
 .item-name {
   font-size: 15px;
+}
+
+.reps-label {
+  min-width: 70px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
 }
 
 .sets-label {
