@@ -1,4 +1,4 @@
-// app.js — 今日训练 & 历史记录逻辑（无语言系统）
+// app.js — 今日训练 & 历史记录逻辑（B 版本原样）
 
 const STORAGE_KEY = "fitness_history_v13";
 
