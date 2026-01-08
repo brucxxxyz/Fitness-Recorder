@@ -106,19 +106,11 @@ function renderBar(dates) {
   });
 }
 
-// 散点图（部位 → 能量；点大小=能量；透明度=强度）
+// 散点图（自动修复版：自动部位、自动分类、自动能量、自动强度）
 function renderScatter(dates) {
-  const colorMap = {
-    chest:   "255,99,132",
-    back:    "54,162,235",
-    legs:    "75,192,192",
-    shoulder:"255,206,86",
-    arms:    "153,102,255",
-    core:    "255,159,64",
-    other:   "120,120,120"
-  };
 
-  const datasets = {};
+  // 1. 自动收集所有训练记录
+  const allRecords = [];
 
   dates.forEach(date => {
     const items = history[date];
@@ -129,12 +121,7 @@ function renderScatter(dates) {
       const reps = findReps(itemName);
       const calories = caloriesPerSet(reps) * sets;
 
-      // 强度（Intensity）= 能量 / 组数
-      const intensity = calories / sets;  
-      const alpha = Math.min(1, Math.max(0.2, intensity / 50)); 
-      // 强度越高 → 越不透明；最低透明度 0.2
-
-      // 找训练部位
+      // 自动识别训练部位
       let part = "other";
       for (const p in WORKOUT_GROUPS) {
         if (WORKOUT_GROUPS[p].some(obj => obj.name === itemName)) {
@@ -143,24 +130,99 @@ function renderScatter(dates) {
         }
       }
 
-      if (!datasets[part]) {
-        datasets[part] = {
-          label: part,
-          data: [],
-          backgroundColor: `rgba(${colorMap[part]},0.7)`,
-          borderColor: `rgba(${colorMap[part]},1)`,
-          borderWidth: 1
-        };
-      }
-
-      datasets[part].data.push({
-        x: part,               // X 轴 = 训练部位
-        y: calories,           // Y 轴 = 能量
-        r: Math.sqrt(calories) * 2,  // 点大小 = 能量（平方根缩放）
-        backgroundColor: `rgba(${colorMap[part]},${alpha})` // 透明度 = 强度
+      allRecords.push({
+        part,
+        calories,
+        sets,
+        reps
       });
     }
   });
+
+  // 2. 如果没有任何数据 → 显示空图
+  if (allRecords.length === 0) {
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: "bubble",
+      data: { datasets: [] },
+      options: {
+        scales: {
+          x: { type: "category", labels: [] },
+          y: { beginAtZero: true }
+        }
+      }
+    });
+    return;
+  }
+
+  // 3. 自动生成 X 轴分类（按实际出现的部位）
+  const parts = [...new Set(allRecords.map(r => r.part))];
+
+  // 4. 自动生成颜色（RGB）
+  const colorMap = {
+    chest:   "255,99,132",
+    back:    "54,162,235",
+    legs:    "75,192,192",
+    shoulder:"255,206,86",
+    arms:    "153,102,255",
+    core:    "255,159,64",
+    other:   "120,120,120"
+  };
+
+  // 5. 自动按部位分组
+  const datasets = {};
+
+  allRecords.forEach(r => {
+    const { part, calories, sets } = r;
+
+    // 强度 = 能量 / 组数
+    const intensity = calories / sets;
+    const alpha = Math.min(1, Math.max(0.25, intensity / 50));
+
+    if (!datasets[part]) {
+      datasets[part] = {
+        label: part,
+        data: [],
+        backgroundColor: [],
+        borderColor: [],
+        borderWidth: 1
+      };
+    }
+
+    datasets[part].data.push({
+      x: part,
+      y: calories,
+      r: Math.sqrt(calories) * 2
+    });
+
+    datasets[part].backgroundColor.push(`rgba(${colorMap[part] || colorMap.other},${alpha})`);
+    datasets[part].borderColor.push(`rgba(${colorMap[part] || colorMap.other},1)`);
+  });
+
+  // 6. 渲染图表
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: "bubble",
+    data: {
+      datasets: Object.values(datasets)
+    },
+    options: {
+      scales: {
+        x: {
+          type: "category",
+          labels: parts,
+          title: { display: true, text: "训练部位" }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "能量消耗 (kcal)" }
+        }
+      }
+    }
+  });
+}
+
 
   if (chart) chart.destroy();
 
