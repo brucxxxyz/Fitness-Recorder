@@ -80,7 +80,6 @@ function getMonthByOffset(offset) {
   return arr;
 }
 
-// 柱状图（数量）
 // 柱状图（能量消耗）
 function renderBar(dates) {
   const labels = dates.map(d => d.slice(5)); // 显示 MM-DD
@@ -106,38 +105,35 @@ function renderBar(dates) {
   });
 }
 
-// 散点图（自动修复版：自动部位、自动分类、自动能量、自动强度）
+// 散点图（卡路里 + 次数大小）
 function renderScatter(dates) {
+  const data = dates.map(d => {
+    const { totalReps, totalCalories } = getDayStats(d);
+    return {
+      x: d.slice(5),                 // MM-DD
+      y: totalCalories || 0.1,       // 卡路里
+      r: Math.max(5, totalReps / 15) // 点大小 = 次数
+    };
+  });
 
-  // 1. 自动收集所有训练记录
-  const allRecords = [];
+  if (chart) chart.destroy();
 
-  dates.forEach(date => {
-    const items = history[date];
-    if (!items) return;
-
-    for (const itemName in items) {
-      const sets = items[itemName];
-      const reps = findReps(itemName);
-      const calories = caloriesPerSet(reps) * sets;
-
-      // 自动识别训练部位
-      let part = "other";
-      for (const p in WORKOUT_GROUPS) {
-        if (WORKOUT_GROUPS[p].some(obj => obj.name === itemName)) {
-          part = p;
-          break;
-        }
+  chart = new Chart(ctx, {
+    type: "bubble",
+    data: {
+      datasets: [{
+        label: "卡路里（点大小代表次数）",
+        data,
+        backgroundColor: "rgba(59,130,246,0.6)"
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true }
       }
-
-      allRecords.push({
-        part,
-        calories,
-        sets,
-        reps
-      });
     }
   });
+}
 
   // 2. 如果没有任何数据 → 显示空图
   if (allRecords.length === 0) {
