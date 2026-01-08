@@ -6,7 +6,26 @@ function saveHistory() {
 }
 
 // 初始化日期
-document.getElementById("datePicker").value = new Date().toISOString().slice(0, 10);
+document.getElementById("datePicker").onchange = () => {
+  // 1. 保存当前日期的数据
+  saveCurrentPartToHistory();
+
+  // 2. 获取新日期
+  const date = document.getElementById("datePicker").value;
+
+  // 3. 如果新日期没有数据 → 初始化为空对象
+  if (!history[date]) {
+    history[date] = {};
+    saveHistory();
+  }
+
+  // 4. 重新渲染动作列表（会根据 history[date] 自动填入组数）
+  renderSubItems();
+
+  // 5. 重新计算今日统计
+  updateFooter();
+};
+
 
 // 填充部位下拉菜单
 const bodyPartSelect = document.getElementById("bodyPartSelect");
