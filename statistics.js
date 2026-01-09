@@ -198,18 +198,28 @@ function renderScatter(dates) {
       datasets: Object.values(datasets)
     },
     options: {
-      scales: {
-        x: {
-          type: "category",
-          labels: parts,
-          title: { display: true, text: "训练部位" }
-        },
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "能量消耗 (kcal)" }
+  plugins: {
+    tooltip: {
+      callbacks: {
+        label: function(context) {
+          const calories = context.raw.y;
+          return `能量: ${calories.toFixed(1)} kcal`;
         }
       }
     }
+  },
+  scales: {
+    x: {
+      type: "category",
+      labels: parts,
+      title: { display: true, text: "训练部位" }
+    },
+    y: {
+      beginAtZero: true,
+      title: { display: true, text: "能量消耗 (kcal)" }
+    }
+  }
+}
   });
 }
 
