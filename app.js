@@ -5,10 +5,35 @@ function saveHistory() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 }
 
-// 初始化日期
-document.getElementById("datePicker").value = new Date().toISOString().slice(0, 10);
+/* -------------------------
+   初始化日期 = 今天
+-------------------------- */
+const datePicker = document.getElementById("datePicker");
+datePicker.value = new Date().toISOString().slice(0, 10);
 
-// 填充部位下拉菜单
+/* -------------------------
+   左右按钮切换日期（兼容版）
+-------------------------- */
+const prevDateBtn = document.getElementById("prevDate");
+const nextDateBtn = document.getElementById("nextDate");
+
+prevDateBtn.onclick = () => {
+  const d = new Date(datePicker.value);
+  d.setDate(d.getDate() - 1);
+  datePicker.value = d.toISOString().slice(0, 10);
+  datePicker.onchange();
+};
+
+nextDateBtn.onclick = () => {
+  const d = new Date(datePicker.value);
+  d.setDate(d.getDate() + 1);
+  datePicker.value = d.toISOString().slice(0, 10);
+  datePicker.onchange();
+};
+
+/* -------------------------
+   填充部位下拉菜单
+-------------------------- */
 const bodyPartSelect = document.getElementById("bodyPartSelect");
 for (const part in WORKOUT_GROUPS) {
   const opt = document.createElement("option");
@@ -17,16 +42,18 @@ for (const part in WORKOUT_GROUPS) {
   bodyPartSelect.appendChild(opt);
 }
 
-// 今日训练渲染
+/* -------------------------
+   今日训练渲染
+-------------------------- */
 function renderSubItems() {
   const part = bodyPartSelect.value;
   const container = document.getElementById("subItemContainer");
   container.innerHTML = "";
 
-  const date = document.getElementById("datePicker").value;
+  const date = datePicker.value;
   const todayData = history[date] || {};
 
-  WORKOUT_GROUPS[part].forEach((item, index) => {
+  WORKOUT_GROUPS[part].forEach((item) => {
     const row = document.createElement("div");
     row.className = "subitem-row";
 
@@ -67,7 +94,7 @@ function renderSubItems() {
     };
 
     function autoSave() {
-      const date = document.getElementById("datePicker").value;
+      const date = datePicker.value;
       if (!history[date]) history[date] = {};
 
       if (sets > 0) history[date][item.name] = sets;
@@ -96,9 +123,11 @@ function renderSubItems() {
   updateFooter();
 }
 
-// 今日统计（基于 history[当前日期]）
+/* -------------------------
+   今日统计
+-------------------------- */
 function updateFooter() {
-  const date = document.getElementById("datePicker").value;
+  const date = datePicker.value;
   const todayData = history[date] || {};
 
   let totalSets = 0;
@@ -126,21 +155,29 @@ function renderFooter(totalSets, totalReps, totalCalories) {
   `;
 }
 
-// 切换部位 → 重新渲染
+/* -------------------------
+   切换部位
+-------------------------- */
 bodyPartSelect.onchange = () => {
   renderSubItems();
 };
 
-// 切换日期 → 加载该日期的数据
-document.getElementById("datePicker").onchange = () => {
+/* -------------------------
+   切换日期
+-------------------------- */
+datePicker.onchange = () => {
   renderSubItems();
   updateFooter();
 };
 
-// 初次渲染
+/* -------------------------
+   初次渲染
+-------------------------- */
 renderSubItems();
 
-// 历史记录页
+/* -------------------------
+   历史记录页
+-------------------------- */
 document.getElementById("gotoHistory").onclick = () => {
   showHistoryPage();
 };
@@ -255,7 +292,9 @@ document.getElementById("gotoStats").onclick = () => {
   window.location.href = "statistics.html";
 };
 
-// 查 reps
+/* -------------------------
+   查 reps
+-------------------------- */
 function findReps(itemName) {
   for (const part in WORKOUT_GROUPS) {
     for (const obj of WORKOUT_GROUPS[part]) {
