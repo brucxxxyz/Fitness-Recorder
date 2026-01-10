@@ -224,7 +224,3 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
-
-.date-wrapper button {
-  min-width: 20px;         /* 按钮宽度更小 */
- }
