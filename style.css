@@ -224,3 +224,20 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
+
+.date-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.date-wrapper button {
+  font-size: 1.2em;
+  padding: 4px 12px;
+}
+
+#dateDisplay {
+  font-size: 1.1em;
+  font-weight: bold;
+}
