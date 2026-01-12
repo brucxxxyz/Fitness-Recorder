@@ -62,14 +62,13 @@ loadBodyParts();
 bodyPartSelect.onchange = renderPage;
 
 /* ============================
-   渲染动作列表
+   渲染动作列表（主页）
 ============================ */
 
 function renderPage() {
   const dateKey = datePicker.value;
   const part = bodyPartSelect.value;
 
-  // 关键：确保当天记录存在
   if (!history[dateKey]) {
     history[dateKey] = {};
   }
@@ -168,23 +167,19 @@ function renderSummary() {
 
   let totalSets = 0;
   let totalReps = 0;
-  let totalCalories = 0;
 
   for (const name in items) {
     const sets = items[name];
     const reps = findReps(name);
-    const cals = reps * 0.6;
 
     totalSets += sets;
     totalReps += reps * sets;
-    totalCalories += cals * sets;
   }
 
   todaySummary.innerHTML = `
     <div class="history-title">今日总结</div>
     <div>总组数：${totalSets} 组</div>
     <div>总次数：${totalReps} 次</div>
-    <div>总能量：${totalCalories.toFixed(1)} kcal</div>
   `;
 }
 
@@ -209,7 +204,7 @@ document.getElementById("gotoStats").onclick = () => {
 };
 
 /* ============================
-   历史记录
+   历史记录（可编辑）
 ============================ */
 
 function renderHistory() {
@@ -218,13 +213,11 @@ function renderHistory() {
 
   const dates = Object.keys(history).sort().reverse();
 
-  // 没有任何日期 → 不显示
   if (dates.length === 0) return;
 
   dates.forEach(date => {
     const dayData = history[date];
 
-    // 当天没有任何动作记录 → 不显示
     if (!dayData || Object.keys(dayData).length === 0) {
       return;
     }
@@ -232,137 +225,80 @@ function renderHistory() {
     const container = document.createElement("div");
     container.className = "card";
 
-    /* ============================
-       计算每日总组数 / 次数 / 能量
-    ============================= */
-    let totalSets = 0;
-    let totalReps = 0;
-    let totalCalories = 0;
-
-    for (const itemName in dayData) {
-      const sets = dayData[itemName];
-      const reps = findReps(itemName);
-      const cals = reps * 0.6;
-
-      totalSets += sets;
-      totalReps += reps * sets;
-      totalCalories += cals * sets;
-    }
-
-    /* ============================
-       标题行（日期 + 总计 + 删除按钮）
-    ============================= */
     const header = document.createElement("div");
     header.className = "history-row";
 
     const left = document.createElement("div");
     left.textContent = date;
 
-    const right = document.createElement("div");
-    right.innerHTML = `
-      ${totalSets} 组<br>
-      ${totalReps} 次<br>
-      ${totalCalories.toFixed(1)} kcal
-    `;
-
     const delBtn = document.createElement("button");
     delBtn.textContent = "删除";
-    delBtn.style.width = "60px";
-    delBtn.style.height = "32px";
-    delBtn.style.fontSize = "14px";
-    delBtn.style.marginLeft = "10px";
     delBtn.onclick = () => {
       delete history[date];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
       renderHistory();
     };
 
-    const headerRight = document.createElement("div");
-    headerRight.style.display = "flex";
-    headerRight.style.flexDirection = "column";
-    headerRight.style.alignItems = "flex-end";
-    headerRight.appendChild(right);
-    headerRight.appendChild(delBtn);
-
     header.appendChild(left);
-    header.appendChild(headerRight);
-
+    header.appendChild(delBtn);
     container.appendChild(header);
-
-    /* ============================
-       每个动作的可编辑行
-    ============================= */
-    const detailBox = document.createElement("div");
-    detailBox.style.marginTop = "10px";
 
     for (const itemName in dayData) {
       const sets = dayData[itemName];
       const reps = findReps(itemName);
+      const totalReps = sets * reps;
 
       const row = document.createElement("div");
-      row.className = "history-row";
+      row.className = "subitem-row";
 
       const name = document.createElement("div");
+      name.className = "item-name";
       name.textContent = itemName;
 
+      const repsLabel = document.createElement("div");
+      repsLabel.className = "reps-label";
+      repsLabel.textContent = `${reps} 次/组`;
+
+      const totalLabel = document.createElement("div");
+      totalLabel.className = "total-reps";
+      totalLabel.textContent = `${totalReps} 次`;
+
       const minus = document.createElement("button");
-      minus.textContent = "-";
       minus.className = "counter-btn";
-      minus.style.width = "32px";
-      minus.style.height = "32px";
+      minus.textContent = "-";
 
       const count = document.createElement("div");
+      count.className = "count-number";
       count.textContent = sets;
-      count.style.minWidth = "24px";
-      count.style.textAlign = "center";
 
       const plus = document.createElement("button");
-      plus.textContent = "+";
       plus.className = "counter-btn";
-      plus.style.width = "32px";
-      plus.style.height = "32px";
-
-      const detail = document.createElement("div");
-      detail.textContent = `${sets} 组 × ${reps} 次 = ${sets * reps}`;
+      plus.textContent = "+";
 
       minus.onclick = () => {
         let v = parseInt(count.textContent);
         if (v > 0) v--;
-        count.textContent = v;
-
-        if (v === 0) delete history[date][itemName];
-        else history[date][itemName] = v;
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        saveItem(itemName, v);
         renderHistory();
       };
 
       plus.onclick = () => {
         let v = parseInt(count.textContent);
         v++;
-        count.textContent = v;
-
-        history[date][itemName] = v;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        saveItem(itemName, v);
         renderHistory();
       };
 
-      const rightBox = document.createElement("div");
-      rightBox.style.display = "flex";
-      rightBox.style.alignItems = "center";
-      rightBox.style.gap = "6px";
-      rightBox.appendChild(minus);
-      rightBox.appendChild(count);
-      rightBox.appendChild(plus);
-
       row.appendChild(name);
-      row.appendChild(rightBox);
-      row.appendChild(detail);
+      row.appendChild(repsLabel);
+      row.appendChild(totalLabel);
+      row.appendChild(minus);
+      row.appendChild(count);
+      row.appendChild(plus);
 
-      detailBox.appendChild(row);
+      container.appendChild(row);
     }
 
-    container.appendChild(detailBox);
     list.appendChild(container);
   });
 }
