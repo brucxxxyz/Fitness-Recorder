@@ -75,6 +75,11 @@ function renderPage() {
   subItemContainer.innerHTML = "";
 
   items.forEach(obj => {
+    const sets = saved[obj.name] || 0;
+    const reps = obj.reps;
+    const totalReps = sets * reps;
+    const totalCalories = totalReps * 0.6;
+
     const row = document.createElement("div");
     row.className = "subitem-row";
 
@@ -82,9 +87,9 @@ function renderPage() {
     name.className = "item-name";
     name.textContent = obj.name;
 
-    const reps = document.createElement("div");
-    reps.className = "reps-label";
-    reps.textContent = obj.reps + " 次";
+    const repsLabel = document.createElement("div");
+    repsLabel.className = "reps-label";
+    repsLabel.textContent = `${reps} 次`;
 
     const minus = document.createElement("button");
     minus.className = "counter-btn";
@@ -92,17 +97,22 @@ function renderPage() {
 
     const count = document.createElement("div");
     count.className = "count-number";
-    count.textContent = saved[obj.name] || 0;
+    count.textContent = sets;
 
     const plus = document.createElement("button");
     plus.className = "counter-btn";
     plus.textContent = "+";
+
+    const detail = document.createElement("div");
+    detail.className = "total-reps";
+    detail.textContent = `${totalReps} 次 / ${totalCalories.toFixed(1)} kcal`;
 
     minus.onclick = () => {
       let v = parseInt(count.textContent);
       if (v > 0) v--;
       count.textContent = v;
       saveItem(obj.name, v);
+      renderPage();
     };
 
     plus.onclick = () => {
@@ -110,13 +120,15 @@ function renderPage() {
       v++;
       count.textContent = v;
       saveItem(obj.name, v);
+      renderPage();
     };
 
     row.appendChild(name);
-    row.appendChild(reps);
+    row.appendChild(repsLabel);
     row.appendChild(minus);
     row.appendChild(count);
     row.appendChild(plus);
+    row.appendChild(detail);
 
     subItemContainer.appendChild(row);
   });
@@ -151,28 +163,26 @@ function renderSummary() {
   const dateKey = datePicker.value;
   const items = history[dateKey] || {};
 
+  let totalSets = 0;
   let totalReps = 0;
+  let totalCalories = 0;
 
   for (const name in items) {
     const sets = items[name];
     const reps = findReps(name);
+    const cals = reps * 0.6;
+
+    totalSets += sets;
     totalReps += reps * sets;
+    totalCalories += cals * sets;
   }
 
   todaySummary.innerHTML = `
-    <div class="history-title">今日总次数</div>
-    <div>${totalReps} 次</div>
+    <div class="history-title">今日总结</div>
+    <div>总组数：${totalSets} 组</div>
+    <div>总次数：${totalReps} 次</div>
+    <div>总能量：${totalCalories.toFixed(1)} kcal</div>
   `;
-}
-
-/* 查 reps */
-function findReps(itemName) {
-  for (const part in WORKOUT_GROUPS) {
-    for (const obj of WORKOUT_GROUPS[part]) {
-      if (obj.name === itemName) return obj.reps;
-    }
-  }
-  return 0;
 }
 
 /* ============================
