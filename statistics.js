@@ -44,14 +44,14 @@ let monthOffset = 0;
 
 // 根据偏移获取一周（周一~周日）
 function getWeekByOffset(offset) {
-  const today = new Date();
-  today.setDate(today.getDate() + offset * 7);
+  const base = new Date();
+  base.setDate(base.getDate() + offset * 7);
 
-  const day = today.getDay();
-  const monday = new Date(today);
+  let day = base.getDay(); // 0=周日, 1=周一, ..., 6=周六
+  if (day === 0) day = 7;  // 把周日当成 7
 
-  const diff = day === 0 ? -6 : 1 - day;
-  monday.setDate(today.getDate() + diff);
+  const monday = new Date(base);
+  monday.setDate(base.getDate() - (day - 1)); // 回到周一
 
   const arr = [];
   for (let i = 0; i < 7; i++) {
