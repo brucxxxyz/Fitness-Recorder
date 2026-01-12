@@ -12,7 +12,7 @@
 
 <div class="app">
 
-  <!-- ★★★ 主页容器（非常关键） ★★★ -->
+  <!-- ★★★ 主页 ★★★ -->
   <div id="page-home" class="page active">
 
     <h2 class="page-title">今日训练</h2>
@@ -33,7 +33,7 @@
 
     <div class="card" id="subItemContainer"></div>
 
-    <div class="card" id="todaySummary"></div>
+    <div class="card" id="todaySummary">加载中...</div>
 
     <div class="card">
       <button id="gotoHistory">查看历史记录</button>
@@ -51,7 +51,8 @@
   <div id="page-history" class="page">
     <h2 class="page-title">历史记录</h2>
 
-    <div class="card" id="historyList"></div>
+    <!-- 修复：historyList 不应该是 card -->
+    <div id="historyList"></div>
 
     <div class="card">
       <button id="backHome">返回</button>
