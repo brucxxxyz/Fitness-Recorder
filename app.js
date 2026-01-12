@@ -1,287 +1,234 @@
 /* ============================
-   初始化
+   本地存储
 ============================ */
-
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
-const datePicker = document.getElementById("datePicker");
-const bodyPartSelect = document.getElementById("bodyPartSelect");
-const subItemContainer = document.getElementById("subItemContainer");
-const todaySummary = document.getElementById("todaySummary");
+function saveHistory() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
 
 /* ============================
-   日期初始化
+   初始化日期 = 今天
 ============================ */
+const datePicker = document.getElementById("datePicker");
+datePicker.value = new Date().toISOString().slice(0, 10);
 
-function formatDate(d) {
-  return d.toISOString().slice(0, 10);
-}
+/* ============================
+   左右按钮切换日期
+============================ */
+const prevDateBtn = document.getElementById("prevDate");
+const nextDateBtn = document.getElementById("nextDate");
 
-function loadToday() {
-  const today = new Date();
-  datePicker.value = formatDate(today);
-}
-
-loadToday();
-
-/* 上一天 / 下一天 */
-document.getElementById("prevDate").onclick = () => {
+prevDateBtn.onclick = () => {
   const d = new Date(datePicker.value);
   d.setDate(d.getDate() - 1);
-  datePicker.value = formatDate(d);
-  renderPage();
+  datePicker.value = d.toISOString().slice(0, 10);
+  datePicker.onchange();
 };
 
-document.getElementById("nextDate").onclick = () => {
+nextDateBtn.onclick = () => {
   const d = new Date(datePicker.value);
   d.setDate(d.getDate() + 1);
-  datePicker.value = formatDate(d);
-  renderPage();
+  datePicker.value = d.toISOString().slice(0, 10);
+  datePicker.onchange();
 };
 
-datePicker.onchange = renderPage;
-
 /* ============================
-   部位选择
+   填充部位下拉菜单
 ============================ */
-
-function loadBodyParts() {
-  bodyPartSelect.innerHTML = "";
-
-  for (const part in WORKOUT_GROUPS) {
-    const opt = document.createElement("option");
-    opt.value = part;
-    opt.textContent = part;
-    bodyPartSelect.appendChild(opt);
-  }
+const bodyPartSelect = document.getElementById("bodyPartSelect");
+for (const part in WORKOUT_GROUPS) {
+  const opt = document.createElement("option");
+  opt.value = part;
+  opt.textContent = part;
+  bodyPartSelect.appendChild(opt);
 }
 
-loadBodyParts();
-
-bodyPartSelect.onchange = renderPage;
-
 /* ============================
-   渲染动作列表（主页）
+   今日训练渲染
 ============================ */
-
-function renderPage() {
-  const dateKey = datePicker.value;
+function renderSubItems() {
   const part = bodyPartSelect.value;
+  const container = document.getElementById("subItemContainer");
+  container.innerHTML = "";
 
-  // 确保当天记录存在
-  if (!history[dateKey]) {
-    history[dateKey] = {};
-  }
+  const date = datePicker.value;
+  const todayData = history[date] || {};
 
-  const items = WORKOUT_GROUPS[part];
-  const saved = history[dateKey];
-
-  subItemContainer.innerHTML = "";
-
-  items.forEach(obj => {
-    const sets = saved[obj.name] || 0;
-    const reps = obj.reps;
-    const totalReps = sets * reps;
-
+  WORKOUT_GROUPS[part].forEach((item) => {
     const row = document.createElement("div");
     row.className = "subitem-row";
 
-    const name = document.createElement("div");
+    const name = document.createElement("span");
     name.className = "item-name";
-    name.textContent = obj.name;
+    name.textContent = item.name;
 
-    const repsLabel = document.createElement("div");
+    const repsLabel = document.createElement("span");
     repsLabel.className = "reps-label";
-    repsLabel.textContent = `${reps} 次/组`;
+    repsLabel.textContent = `${item.reps} 次/组`;
 
-    const totalLabel = document.createElement("div");
-    totalLabel.className = "total-reps";
-    totalLabel.textContent = `${totalReps} 次`;
+    const total = document.createElement("span");
+    total.className = "total-reps";
 
     const minus = document.createElement("button");
     minus.className = "counter-btn";
     minus.textContent = "-";
 
-    const count = document.createElement("div");
+    const count = document.createElement("span");
     count.className = "count-number";
-    count.textContent = sets;
 
     const plus = document.createElement("button");
     plus.className = "counter-btn";
     plus.textContent = "+";
 
+    let sets = todayData[item.name] || 0;
+    count.textContent = sets;
+    total.textContent = `${sets * item.reps} 次`;
+
     minus.onclick = () => {
-      let v = parseInt(count.textContent);
-      if (v > 0) v--;
-      saveItem(obj.name, v);
-      renderPage();
+      if (sets > 0) sets--;
+      autoSave();
     };
 
     plus.onclick = () => {
-      let v = parseInt(count.textContent);
-      v++;
-      saveItem(obj.name, v);
-      renderPage();
+      sets++;
+      autoSave();
     };
+
+    function autoSave() {
+      const date = datePicker.value;
+      if (!history[date]) history[date] = {};
+
+      if (sets > 0) history[date][item.name] = sets;
+      else delete history[date][item.name];
+
+      saveHistory();
+      updateRow();
+      updateFooter();
+    }
+
+    function updateRow() {
+      count.textContent = sets;
+      total.textContent = `${sets * item.reps} 次`;
+    }
 
     row.appendChild(name);
     row.appendChild(repsLabel);
-    row.appendChild(totalLabel);
+    row.appendChild(total);
     row.appendChild(minus);
     row.appendChild(count);
     row.appendChild(plus);
 
-    subItemContainer.appendChild(row);
+    container.appendChild(row);
   });
 
-  renderSummary();
+  updateFooter();
 }
 
 /* ============================
-   保存数据（关键修复：强制刷新 summary）
+   今日统计
 ============================ */
-
-function saveItem(name, sets) {
-  const dateKey = datePicker.value;
-
-  if (!history[dateKey]) {
-    history[dateKey] = {};
-  }
-
-  if (sets === 0) {
-    delete history[dateKey][name];
-  } else {
-    history[dateKey][name] = sets;
-  }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-
-  // 强制刷新今日总结（修复 summary 不联动）
-  renderSummary();
-}
-
-/* ============================
-   今日总结（永不消失 + 永远联动）
-============================ */
-
-function renderSummary() {
-  const dateKey = datePicker.value;
-
-  if (!history[dateKey]) {
-    history[dateKey] = {};
-  }
-
-  const items = history[dateKey];
+function updateFooter() {
+  const date = datePicker.value;
+  const todayData = history[date] || {};
 
   let totalSets = 0;
   let totalReps = 0;
+  let totalCalories = 0;
 
-  for (const name in items) {
-    const sets = items[name];
+  for (const name in todayData) {
+    const sets = todayData[name];
     const reps = findReps(name);
 
     totalSets += sets;
-    totalReps += reps * sets;
+    totalReps += sets * reps;
+    totalCalories += sets * reps * 0.6;
   }
 
-  todaySummary.innerHTML = `
-    <div class="history-title">今日总结</div>
-    <div>总组数：${totalSets} 组</div>
-    <div>总次数：${totalReps} 次</div>
+  renderFooter(totalSets, totalReps, totalCalories);
+}
+
+function renderFooter(totalSets, totalReps, totalCalories) {
+  const box = document.getElementById("todaySummary");
+  box.innerHTML = `
+    <div>今日总组数： <b>${totalSets}</b> 组</div>
+    <div>今日总次数： <b>${totalReps}</b> 次</div>
+    <div>今日总能量： <b>${totalCalories.toFixed(1)}</b> kcal</div>
   `;
 }
 
 /* ============================
-   页面跳转
+   切换部位
 ============================ */
-
-document.getElementById("gotoHistory").onclick = () => {
-  document.getElementById("page-home").classList.remove("active");
-  document.getElementById("page-history").classList.add("active");
-
-  renderHistory();
-};
-
-document.getElementById("backHome").onclick = () => {
-  document.getElementById("page-history").classList.remove("active");
-  document.getElementById("page-home").classList.add("active");
-
-  // 修复：返回主页时 summary 不会消失
-  renderSummary();
-};
-
-document.getElementById("gotoStats").onclick = () => {
-  window.location.href = "statistics.html";
+bodyPartSelect.onchange = () => {
+  renderSubItems();
 };
 
 /* ============================
-   历史记录（可编辑 + 无记录不显示）
+   切换日期
 ============================ */
+datePicker.onchange = () => {
+  renderSubItems();
+};
 
-function renderHistory() {
+/* ============================
+   初次渲染
+============================ */
+renderSubItems();
+
+/* ============================
+   历史记录页
+============================ */
+document.getElementById("gotoHistory").onclick = () => {
+  showHistoryPage();
+};
+
+function showHistoryPage() {
+  document.getElementById("page-home").classList.remove("active");
+  document.getElementById("page-history").classList.add("active");
+
   const list = document.getElementById("historyList");
   list.innerHTML = "";
 
-  const dates = Object.keys(history).sort().reverse();
-
-  if (dates.length === 0) return;
+  const dates = Object.keys(history)
+    .filter(d => Object.keys(history[d]).length > 0)
+    .sort()
+    .reverse();
 
   dates.forEach(date => {
-    const dayData = history[date];
+    const title = document.createElement("div");
+    title.className = "history-title";
+    title.textContent = date;
+    list.appendChild(title);
 
-    if (!dayData || Object.keys(dayData).length === 0) {
-      return;
-    }
+    const items = history[date];
 
-    const container = document.createElement("div");
-    container.className = "card";
-
-    const header = document.createElement("div");
-    header.className = "history-row";
-
-    const left = document.createElement("div");
-    left.textContent = date;
-
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "删除";
-    delBtn.onclick = () => {
-      delete history[date];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-      renderHistory();
-    };
-
-    header.appendChild(left);
-    header.appendChild(delBtn);
-    container.appendChild(header);
-
-    for (const itemName in dayData) {
-      const sets = dayData[itemName];
-      const reps = findReps(itemName);
-      const totalReps = sets * reps;
+    for (const name in items) {
+      const reps = findReps(name);
 
       const row = document.createElement("div");
       row.className = "subitem-row";
 
-      const name = document.createElement("div");
-      name.className = "item-name";
-      name.textContent = itemName;
+      const left = document.createElement("span");
+      left.className = "item-name";
+      left.textContent = name;
 
-      const repsLabel = document.createElement("div");
+      const repsLabel = document.createElement("span");
       repsLabel.className = "reps-label";
       repsLabel.textContent = `${reps} 次/组`;
 
-      const totalLabel = document.createElement("div");
+      const totalLabel = document.createElement("span");
       totalLabel.className = "total-reps";
-      totalLabel.textContent = `${totalReps} 次`;
+      totalLabel.textContent = `${items[name] * reps} 次`;
 
       const minus = document.createElement("button");
       minus.className = "counter-btn";
       minus.textContent = "-";
 
-      const count = document.createElement("div");
+      const count = document.createElement("span");
       count.className = "count-number";
-      count.textContent = sets;
+      count.textContent = items[name];
 
       const plus = document.createElement("button");
       plus.className = "counter-btn";
@@ -290,34 +237,79 @@ function renderHistory() {
       minus.onclick = () => {
         let v = parseInt(count.textContent);
         if (v > 0) v--;
-        saveItem(itemName, v);
-        renderHistory();
+        count.textContent = v;
+        totalLabel.textContent = `${v * reps} 次`;
+
+        if (v === 0) delete history[date][name];
+        else history[date][name] = v;
+
+        saveHistory();
+        showHistoryPage();
       };
 
       plus.onclick = () => {
         let v = parseInt(count.textContent);
         v++;
-        saveItem(itemName, v);
-        renderHistory();
+        count.textContent = v;
+        totalLabel.textContent = `${v * reps} 次`;
+
+        history[date][name] = v;
+        saveHistory();
       };
 
-      row.appendChild(name);
+      row.appendChild(left);
       row.appendChild(repsLabel);
       row.appendChild(totalLabel);
       row.appendChild(minus);
       row.appendChild(count);
       row.appendChild(plus);
 
-      container.appendChild(row);
+      list.appendChild(row);
     }
 
-    list.appendChild(container);
+    const delCard = document.createElement("div");
+    delCard.className = "card";
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "small-btn";
+    delBtn.textContent = "删除当天数据";
+
+    delBtn.onclick = () => {
+      delete history[date];
+      saveHistory();
+      showHistoryPage();
+    };
+
+    delCard.appendChild(delBtn);
+    list.appendChild(delCard);
   });
 }
 
 /* ============================
-   初始化渲染
+   返回主页
 ============================ */
+document.getElementById("backHome").onclick = () => {
+  document.getElementById("page-history").classList.remove("active");
+  document.getElementById("page-home").classList.add("active");
+  renderSubItems();
+  updateFooter();
+};
 
-renderPage();
-renderSummary();
+/* ============================
+   跳转统计页
+============================ */
+document.getElementById("gotoStats").onclick = () => {
+  window.location.href = "statistics.html";
+};
+
+/* ============================
+   查 reps
+============================ */
+function findReps(itemName) {
+  for (const part in WORKOUT_GROUPS) {
+    for (const obj of WORKOUT_GROUPS[part]) {
+      if (obj.name === itemName) return obj.reps;
+    }
+  }
+  return 0;
+}
