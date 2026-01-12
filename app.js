@@ -291,9 +291,14 @@ function showHistoryPage() {
 document.getElementById("backHome").onclick = () => {
   document.getElementById("page-history").classList.remove("active");
   document.getElementById("page-home").classList.add("active");
+
+  // ★ 每次回主页都强制回到今天
+  datePicker.value = new Date().toISOString().slice(0, 10);
+
   renderSubItems();
   updateFooter();
 };
+
 
 /* ============================
    跳转统计页
