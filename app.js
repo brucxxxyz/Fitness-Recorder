@@ -205,34 +205,151 @@ function renderHistory() {
 
   const dates = Object.keys(history).sort().reverse();
 
+  // 没有记录 → 不显示任何卡片
+  if (dates.length === 0) return;
+
   dates.forEach(date => {
-    const row = document.createElement("div");
-    row.className = "history-row";
+    const dayData = history[date];
+    if (!dayData) return;
+
+    const container = document.createElement("div");
+    container.className = "card";
+
+    /* ============================
+       计算每日总组数 / 次数 / 能量
+    ============================= */
+    let totalSets = 0;
+    let totalReps = 0;
+    let totalCalories = 0;
+
+    for (const itemName in dayData) {
+      const sets = dayData[itemName];
+      const reps = findReps(itemName);
+      const cals = reps * 0.6;
+
+      totalSets += sets;
+      totalReps += reps * sets;
+      totalCalories += cals * sets;
+    }
+
+    /* ============================
+       标题行（日期 + 总计 + 删除按钮）
+    ============================= */
+    const header = document.createElement("div");
+    header.className = "history-row";
 
     const left = document.createElement("div");
     left.textContent = date;
 
     const right = document.createElement("div");
-    right.textContent = getDayTotal(date) + " 次";
+    right.innerHTML = `
+      ${totalSets} 组<br>
+      ${totalReps} 次<br>
+      ${totalCalories.toFixed(1)} kcal
+    `;
 
-    row.appendChild(left);
-    row.appendChild(right);
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "删除";
+    delBtn.style.width = "60px";
+    delBtn.style.height = "32px";
+    delBtn.style.fontSize = "14px";
+    delBtn.style.marginLeft = "10px";
+    delBtn.onclick = () => {
+      delete history[date];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      renderHistory();
+    };
 
-    list.appendChild(row);
+    const headerRight = document.createElement("div");
+    headerRight.style.display = "flex";
+    headerRight.style.flexDirection = "column";
+    headerRight.style.alignItems = "flex-end";
+    headerRight.appendChild(right);
+    headerRight.appendChild(delBtn);
+
+    header.appendChild(left);
+    header.appendChild(headerRight);
+
+    container.appendChild(header);
+
+    /* ============================
+       每个动作的可编辑行
+    ============================= */
+    const detailBox = document.createElement("div");
+    detailBox.style.marginTop = "10px";
+
+    for (const itemName in dayData) {
+      const sets = dayData[itemName];
+      const reps = findReps(itemName);
+
+      const row = document.createElement("div");
+      row.className = "history-row";
+
+      const name = document.createElement("div");
+      name.textContent = itemName;
+
+      const minus = document.createElement("button");
+      minus.textContent = "-";
+      minus.className = "counter-btn";
+      minus.style.width = "32px";
+      minus.style.height = "32px";
+
+      const count = document.createElement("div");
+      count.textContent = sets;
+      count.style.minWidth = "24px";
+      count.style.textAlign = "center";
+
+      const plus = document.createElement("button");
+      plus.textContent = "+";
+      plus.className = "counter-btn";
+      plus.style.width = "32px";
+      plus.style.height = "32px";
+
+      const detail = document.createElement("div");
+      detail.textContent = `${sets} 组 × ${reps} 次 = ${sets * reps}`;
+
+      // 修改历史记录（减少）
+      minus.onclick = () => {
+        let v = parseInt(count.textContent);
+        if (v > 0) v--;
+        count.textContent = v;
+
+        if (v === 0) delete history[date][itemName];
+        else history[date][itemName] = v;
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        renderHistory();
+      };
+
+      // 修改历史记录（增加）
+      plus.onclick = () => {
+        let v = parseInt(count.textContent);
+        v++;
+        count.textContent = v;
+
+        history[date][itemName] = v;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        renderHistory();
+      };
+
+      const rightBox = document.createElement("div");
+      rightBox.style.display = "flex";
+      rightBox.style.alignItems = "center";
+      rightBox.style.gap = "6px";
+      rightBox.appendChild(minus);
+      rightBox.appendChild(count);
+      rightBox.appendChild(plus);
+
+      row.appendChild(name);
+      row.appendChild(rightBox);
+      row.appendChild(detail);
+
+      detailBox.appendChild(row);
+    }
+
+    container.appendChild(detailBox);
+    list.appendChild(container);
   });
-}
-
-function getDayTotal(dateKey) {
-  const items = history[dateKey] || {};
-  let total = 0;
-
-  for (const name in items) {
-    const sets = items[name];
-    const reps = findReps(name);
-    total += reps * sets;
-  }
-
-  return total;
 }
 
 /* ============================
