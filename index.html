@@ -1,69 +1,36 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <title>今日训练</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <link rel="apple-touch-icon" sizes="180x180" href="fitness.png">
-</head>
+<h2 class="page-title">今日训练</h2>
 
-<body>
-
-<div class="app">
-
-  <!-- ★★★ 主页 ★★★ -->
-  <div id="page-home" class="page active">
-
-    <h2 class="page-title">今日训练</h2>
-
-    <div class="card form-row">
-      <label>日期</label>
-      <div class="date-wrapper">
-        <button id="prevDate">&lt;</button>
-        <input type="date" id="datePicker">
-        <button id="nextDate">&gt;</button>
-      </div>
-    </div>
-
-    <div class="card form-row">
-      <label>部位</label>
-      <select id="bodyPartSelect"></select>
-    </div>
-
-    <div class="card" id="subItemContainer"></div>
-
-    <div class="card" id="todaySummary">加载中...</div>
-
-    <div class="card">
-      <button id="gotoHistory">查看历史记录</button>
-    </div>
-
-    <div class="card">
-      <button id="gotoStats">训练统计</button>
-    </div>
-
+<div class="card form-row">
+  <label>日期</label>
+  <div class="date-wrapper">
+    <button id="prevDate">&lt;</button>
+    <input type="date" id="datePicker">
+    <button id="nextDate">&gt;</button>
   </div>
-  <!-- ★★★ 主页结束 ★★★ -->
-
-
-  <!-- ★★★ 历史记录页 ★★★ -->
-  <div id="page-history" class="page">
-    <h2 class="page-title">历史记录</h2>
-
-    <!-- 修复：historyList 不应该是 card -->
-    <div id="historyList"></div>
-
-    <div class="card">
-      <button id="backHome">返回</button>
-    </div>
-  </div>
-  <!-- ★★★ 历史记录页结束 ★★★ -->
-
 </div>
 
-<script src="workouts.js"></script>
-<script src="app.js"></script>
+<div class="card form-row">
+  <label>部位</label>
+  <select id="bodyPartSelect"></select>
+</div>
 
-</body>
-</html>
+<div class="card" id="subItemContainer"></div>
+
+<!-- 今日统计 -->
+<div class="card" id="todaySummary"></div>
+
+<div class="card">
+  <button id="gotoHistory">查看历史记录</button>
+</div>
+
+<div class="card">
+  <button id="gotoStats">训练统计</button>
+</div>
+
+<h2 class="page-title">历史记录</h2>
+
+<div class="card" id="historyList"></div>
+
+<div class="card">
+  <button id="backHome">返回</button>
+</div>
