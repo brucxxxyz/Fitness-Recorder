@@ -12,42 +12,52 @@
 
 <div class="app">
 
-  <h2 class="page-title">今日训练</h2>
+  <!-- ★★★ 主页容器（非常关键） ★★★ -->
+  <div id="page-home" class="page active">
 
-  <div class="card form-row">
-    <label>日期</label>
-    <div class="date-wrapper">
-      <button id="prevDate">&lt;</button>
-      <input type="date" id="datePicker">
-      <button id="nextDate">&gt;</button>
+    <h2 class="page-title">今日训练</h2>
+
+    <div class="card form-row">
+      <label>日期</label>
+      <div class="date-wrapper">
+        <button id="prevDate">&lt;</button>
+        <input type="date" id="datePicker">
+        <button id="nextDate">&gt;</button>
+      </div>
     </div>
+
+    <div class="card form-row">
+      <label>部位</label>
+      <select id="bodyPartSelect"></select>
+    </div>
+
+    <div class="card" id="subItemContainer"></div>
+
+    <div class="card" id="todaySummary"></div>
+
+    <div class="card">
+      <button id="gotoHistory">查看历史记录</button>
+    </div>
+
+    <div class="card">
+      <button id="gotoStats">训练统计</button>
+    </div>
+
   </div>
+  <!-- ★★★ 主页结束 ★★★ -->
 
-  <div class="card form-row">
-    <label>部位</label>
-    <select id="bodyPartSelect"></select>
-  </div>
 
-  <div class="card" id="subItemContainer"></div>
-
-  <div class="card" id="todaySummary"></div>
-
-  <div class="card">
-    <button id="gotoHistory">查看历史记录</button>
-  </div>
-
-  <div class="card">
-    <button id="gotoStats">训练统计</button>
-  </div>
-
-  <!-- 历史记录页 -->
+  <!-- ★★★ 历史记录页 ★★★ -->
   <div id="page-history" class="page">
     <h2 class="page-title">历史记录</h2>
+
     <div class="card" id="historyList"></div>
+
     <div class="card">
       <button id="backHome">返回</button>
     </div>
   </div>
+  <!-- ★★★ 历史记录页结束 ★★★ -->
 
 </div>
 
