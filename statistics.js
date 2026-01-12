@@ -1,15 +1,83 @@
+/* ============================
+   初始化
+============================ */
+
 let chart;
 const ctx = document.getElementById("chartCanvas").getContext("2d");
 
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
-// 自动卡路里：B 方案
+/* ============================
+   🌙 暗夜模式初始化
+============================ */
+if (isDarkMode()) {
+  document.body.classList.add("dark");
+  document.getElementById("themeBtn").textContent = "☀️";
+}
+
+/* ============================
+   🌐 语言菜单
+============================ */
+const langBtn = document.getElementById("langBtn");
+const langMenu = document.getElementById("langMenu");
+
+langBtn.onclick = () => {
+  langMenu.style.display = langMenu.style.display === "block" ? "none" : "block";
+};
+
+document.querySelectorAll(".lang-item").forEach(item => {
+  item.onclick = () => {
+    const lang = item.dataset.lang;
+    setLang(lang);
+    langMenu.style.display = "none";
+    applyLangStats();
+    refreshChart(); // 图表语言也更新
+  };
+});
+
+/* ============================
+   🌙 暗夜模式按钮
+============================ */
+const themeBtn = document.getElementById("themeBtn");
+themeBtn.onclick = () => {
+  toggleTheme();
+  themeBtn.textContent = isDarkMode() ? "☀️" : "🌙";
+  refreshChart(); // 图表颜色更新
+};
+
+/* ============================
+   🌐 应用语言到统计页
+============================ */
+function applyLangStats() {
+  const L = LANG[currentLang];
+
+  document.getElementById("htmlTitleStats").textContent = L.stats_title;
+  document.getElementById("statsTitle").textContent = L.stats_title;
+
+  document.getElementById("btnWeek").textContent = L.stats_week;
+  document.getElementById("btnMonth").textContent = L.stats_month;
+
+  document.getElementById("btnBar").textContent = L.stats_bar;
+  document.getElementById("btnScatter").textContent = L.stats_scatter;
+
+  document.getElementById("btnBack").textContent = L.back;
+}
+
+/* ============================
+   返回首页
+============================ */
+document.getElementById("btnBack").onclick = () => {
+  window.location.href = "index.html";
+};
+
+/* ============================
+   计算卡路里
+============================ */
 function caloriesPerSet(reps) {
   return reps * 0.6;
 }
 
-// 计算某天总次数 & 总卡路里
 function getDayStats(dateKey) {
   const items = history[dateKey];
   if (!items) return { totalReps: 0, totalCalories: 0 };
@@ -38,11 +106,12 @@ function findReps(itemName) {
   return 0;
 }
 
-// 偏移量：0=本周/本月，-1=上周/上月，+1=下周/下月
+/* ============================
+   周/月偏移
+============================ */
 let weekOffset = 0;
 let monthOffset = 0;
 
-// 根据偏移获取一周（周一~周日）
 function getWeekByOffset(offset) {
   const today = new Date();
   today.setDate(today.getDate() + offset * 7);
@@ -62,7 +131,6 @@ function getWeekByOffset(offset) {
   return arr;
 }
 
-// 根据偏移获取一个月所有日期
 function getMonthByOffset(offset) {
   const today = new Date();
   today.setMonth(today.getMonth() + offset);
@@ -80,8 +148,12 @@ function getMonthByOffset(offset) {
   return arr;
 }
 
-// 柱状图（能量消耗）
+/* ============================
+   柱状图（能量）
+============================ */
 function renderBar(dates) {
+  const L = LANG[currentLang];
+
   const labels = dates.map(d => d.slice(5));
   const data = dates.map(d => getDayStats(d).totalCalories);
 
@@ -92,21 +164,37 @@ function renderBar(dates) {
     data: {
       labels,
       datasets: [{
-        label: "能量消耗（kcal）",
+        label: L.stats_energy,
         data,
-        backgroundColor: "#4f46e5"
+        backgroundColor: isDarkMode() ? "#4e8cff" : "#4f46e5"
       }]
     },
     options: {
+      plugins: {
+        title: {
+          display: true,
+          text: L.stats_title,
+          color: isDarkMode() ? "#fff" : "#000"
+        }
+      },
       scales: {
-        y: { beginAtZero: true }
+        y: {
+          beginAtZero: true,
+          ticks: { color: isDarkMode() ? "#fff" : "#000" }
+        },
+        x: {
+          ticks: { color: isDarkMode() ? "#fff" : "#000" }
+        }
       }
     }
   });
 }
 
-// 散点图（四维：部位 → 能量 + 大小 + 强度透明度）
+/* ============================
+   散点图（能量 + 部位）
+============================ */
 function renderScatter(dates) {
+  const L = LANG[currentLang];
   const allRecords = [];
 
   dates.forEach(date => {
@@ -126,32 +214,22 @@ function renderScatter(dates) {
         }
       }
 
-      allRecords.push({
-        part,
-        calories,
-        sets
-      });
+      allRecords.push({ part, calories, sets });
     }
   });
 
+  if (chart) chart.destroy();
+
   if (allRecords.length === 0) {
-    if (chart) chart.destroy();
     chart = new Chart(ctx, {
       type: "bubble",
-      data: { datasets: [] },
-      options: {
-        scales: {
-          x: { type: "category", labels: [] },
-          y: { beginAtZero: true }
-        }
-      }
+      data: { datasets: [] }
     });
     return;
   }
 
   const parts = [...new Set(allRecords.map(r => r.part))];
 
-  // ★ 修复：使用中文 key 的颜色映射
   const colorMap = {
     "胸部": "255,99,132",
     "背部": "54,162,235",
@@ -190,40 +268,45 @@ function renderScatter(dates) {
     datasets[part].borderColor.push(`rgba(${colorMap[part]},1)`);
   });
 
-  if (chart) chart.destroy();
-
   chart = new Chart(ctx, {
     type: "bubble",
-    data: {
-      datasets: Object.values(datasets)
-    },
+    data: { datasets: Object.values(datasets) },
     options: {
-  plugins: {
-    tooltip: {
-      callbacks: {
-        label: function(context) {
-          const calories = context.raw.y;
-          return `能量: ${calories.toFixed(1)} kcal`;
+      plugins: {
+        title: {
+          display: true,
+          text: L.stats_title,
+          color: isDarkMode() ? "#fff" : "#000"
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const calories = context.raw.y;
+              return `${L.stats_energy}: ${calories.toFixed(1)} kcal`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: "category",
+          labels: parts,
+          title: { display: true, text: L.stats_part },
+          ticks: { color: isDarkMode() ? "#fff" : "#000" }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: L.stats_energy },
+          ticks: { color: isDarkMode() ? "#fff" : "#000" }
         }
       }
     }
-  },
-  scales: {
-    x: {
-      type: "category",
-      labels: parts,
-      title: { display: true, text: "训练部位" }
-    },
-    y: {
-      beginAtZero: true,
-      title: { display: true, text: "能量消耗 (kcal)" }
-    }
-  }
-}
   });
 }
 
-// 当前模式：week / month，bar / scatter
+/* ============================
+   刷新图表
+============================ */
 let currentMode = "week";
 let currentChart = "bar";
 
@@ -243,7 +326,9 @@ function refreshChart() {
   }
 }
 
-// 绑定按钮
+/* ============================
+   按钮绑定
+============================ */
 document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
   weekOffset = 0;
@@ -278,9 +363,8 @@ document.getElementById("btnNext").onclick = () => {
   refreshChart();
 };
 
-document.getElementById("btnBack").onclick = () => {
-  window.location.href = "index.html";
-};
-
-// 默认显示本周
+/* ============================
+   初始化
+============================ */
+applyLangStats();
 refreshChart();
