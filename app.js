@@ -69,6 +69,7 @@ function renderPage() {
   const dateKey = datePicker.value;
   const part = bodyPartSelect.value;
 
+  // 确保当天记录存在
   if (!history[dateKey]) {
     history[dateKey] = {};
   }
@@ -138,7 +139,7 @@ function renderPage() {
 }
 
 /* ============================
-   保存数据
+   保存数据（关键修复：强制刷新 summary）
 ============================ */
 
 function saveItem(name, sets) {
@@ -155,15 +156,23 @@ function saveItem(name, sets) {
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+  // 强制刷新今日总结（修复 summary 不联动）
+  renderSummary();
 }
 
 /* ============================
-   今日总结
+   今日总结（永不消失 + 永远联动）
 ============================ */
 
 function renderSummary() {
   const dateKey = datePicker.value;
-  const items = history[dateKey] || {};
+
+  if (!history[dateKey]) {
+    history[dateKey] = {};
+  }
+
+  const items = history[dateKey];
 
   let totalSets = 0;
   let totalReps = 0;
@@ -197,6 +206,9 @@ document.getElementById("gotoHistory").onclick = () => {
 document.getElementById("backHome").onclick = () => {
   document.getElementById("page-history").classList.remove("active");
   document.getElementById("page-home").classList.add("active");
+
+  // 修复：返回主页时 summary 不会消失
+  renderSummary();
 };
 
 document.getElementById("gotoStats").onclick = () => {
@@ -204,7 +216,7 @@ document.getElementById("gotoStats").onclick = () => {
 };
 
 /* ============================
-   历史记录（可编辑）
+   历史记录（可编辑 + 无记录不显示）
 ============================ */
 
 function renderHistory() {
@@ -308,3 +320,4 @@ function renderHistory() {
 ============================ */
 
 renderPage();
+renderSummary();
