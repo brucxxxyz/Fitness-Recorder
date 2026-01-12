@@ -1,4 +1,6 @@
-/* 全局布局 */
+/* ============================
+   全局布局
+============================ */
 body {
   margin: 0;
   padding: 0;
@@ -12,7 +14,9 @@ body {
   padding: 16px;
 }
 
-/* 页面切换 */
+/* ============================
+   页面切换
+============================ */
 .page {
   display: none;
 }
@@ -21,7 +25,9 @@ body {
   display: block;
 }
 
-/* 页面标题 */
+/* ============================
+   页面标题
+============================ */
 .page-title {
   width: 100%;
   text-align: center;
@@ -29,7 +35,9 @@ body {
   margin-bottom: 12px;
 }
 
-/* 卡片 */
+/* ============================
+   卡片
+============================ */
 .card {
   background: #fff;
   border-radius: 12px;
@@ -38,7 +46,9 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
-/* 表单行 */
+/* ============================
+   表单行
+============================ */
 .form-row {
   display: flex;
   align-items: center;
@@ -51,11 +61,9 @@ body {
   font-size: 16px;
 }
 
-.input-box {
-  flex: 1;
-}
-
-/* 输入框 & 下拉菜单 */
+/* ============================
+   输入框 & 下拉菜单
+============================ */
 input[type="date"],
 select {
   width: 100%;
@@ -74,7 +82,9 @@ select {
   text-align-last: center;
 }
 
-/* 日期选择器外层容器（最终稳定方案） */
+/* ============================
+   日期选择器外层容器
+============================ */
 .date-wrapper {
   height: 44px;
   width: 100%;
@@ -87,10 +97,9 @@ select {
   align-items: center;
 }
 
-/* 原生 date 控件填满容器，超出部分裁切 */
 .date-wrapper input[type="date"] {
   width: 100%;
-  height: 60px; /* 原生高度较大，裁切掉 */
+  height: 60px; /* 裁切原生高度 */
   padding: 10px;
   font-size: 16px;
   border: none;
@@ -98,10 +107,12 @@ select {
   box-sizing: border-box;
 }
 
-/* 今日训练项目行布局 */
+/* ============================
+   今日训练动作行（主页）
+============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto auto;
+  grid-template-columns: 1fr auto auto auto auto auto; /* 修复：6 列 */
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
@@ -116,13 +127,6 @@ select {
   text-align: center;
   font-size: 14px;
   color: #666;
-}
-
-.sets-label {
-  min-width: 40px;
-  text-align: center;
-  font-size: 14px;
-  color: #444;
 }
 
 .total-reps {
@@ -140,23 +144,32 @@ select {
   justify-content: center;
 }
 
-/* 历史记录标题 */
+/* ============================
+   今日总结
+============================ */
+#todaySummary {
+  min-height: 60px; /* 修复：避免 summary 消失 */
+}
+
 .history-title {
   font-weight: bold;
   margin-bottom: 6px;
   font-size: 16px;
 }
 
-/* 历史记录行（复用 subitem-row 布局） */
+/* ============================
+   历史记录行（标题行）
+============================ */
 .history-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
   font-size: 15px;
 }
 
-/* 按钮基础样式 */
+/* ============================
+   按钮基础样式
+============================ */
 button {
   width: 100%;
   height: 44px;
@@ -180,7 +193,9 @@ button:active {
   opacity: 0.95;
 }
 
-/* 小按钮（并排按钮） */
+/* ============================
+   小按钮
+============================ */
 .small-btn {
   flex: 1;
   height: 44px;
@@ -193,14 +208,18 @@ button:active {
   background: #16a34a;
 }
 
-/* 按钮行（并排） */
+/* ============================
+   按钮行
+============================ */
 .btn-row {
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-/* 加减按钮 */
+/* ============================
+   加减按钮
+============================ */
 .counter-btn {
   width: 36px;
   height: 36px;
@@ -219,7 +238,9 @@ button:active {
   background: #16a34a;
 }
 
-/* 图表 canvas */
+/* ============================
+   图表 canvas
+============================ */
 canvas {
   width: 100% !important;
   height: auto !important;
