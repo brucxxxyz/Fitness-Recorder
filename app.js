@@ -78,19 +78,26 @@ function renderPage() {
     const sets = saved[obj.name] || 0;
     const reps = obj.reps;
     const totalReps = sets * reps;
-    const totalCalories = totalReps * 0.6;
 
     const row = document.createElement("div");
     row.className = "subitem-row";
 
+    // 动作名称
     const name = document.createElement("div");
     name.className = "item-name";
     name.textContent = obj.name;
 
+    // 每组次数
     const repsLabel = document.createElement("div");
     repsLabel.className = "reps-label";
-    repsLabel.textContent = `${reps} 次`;
+    repsLabel.textContent = `${reps} 次/组`;
 
+    // 总次数
+    const totalLabel = document.createElement("div");
+    totalLabel.className = "total-reps";
+    totalLabel.textContent = `${totalReps} 次`;
+
+    // 按钮
     const minus = document.createElement("button");
     minus.className = "counter-btn";
     minus.textContent = "-";
@@ -103,10 +110,7 @@ function renderPage() {
     plus.className = "counter-btn";
     plus.textContent = "+";
 
-    const detail = document.createElement("div");
-    detail.className = "total-reps";
-    detail.textContent = `${totalReps} 次 / ${totalCalories.toFixed(1)} kcal`;
-
+    // 事件
     minus.onclick = () => {
       let v = parseInt(count.textContent);
       if (v > 0) v--;
@@ -123,12 +127,13 @@ function renderPage() {
       renderPage();
     };
 
+    // 组装
     row.appendChild(name);
     row.appendChild(repsLabel);
+    row.appendChild(totalLabel);
     row.appendChild(minus);
     row.appendChild(count);
     row.appendChild(plus);
-    row.appendChild(detail);
 
     subItemContainer.appendChild(row);
   });
