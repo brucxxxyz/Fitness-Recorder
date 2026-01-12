@@ -27,7 +27,7 @@ function formatLocal(d) {
 }
 
 /* ============================
-   初始化日期 = 今天（本地）
+   初始化日期 = 今天（仅软件启动时）
 ============================ */
 const datePicker = document.getElementById("datePicker");
 datePicker.value = todayLocal();
@@ -304,14 +304,11 @@ function showHistoryPage() {
 }
 
 /* ============================
-   返回主页
+   返回主页（不再重置日期）
 ============================ */
 document.getElementById("backHome").onclick = () => {
   document.getElementById("page-history").classList.remove("active");
   document.getElementById("page-home").classList.add("active");
-
-  // ★ 每次回主页都强制回到今天（本地）
-  datePicker.value = todayLocal();
 
   renderSubItems();
   updateFooter();
