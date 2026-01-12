@@ -224,12 +224,16 @@ function renderHistory() {
 
   const dates = Object.keys(history).sort().reverse();
 
-  // 没有记录 → 不显示任何卡片
+  // 没有任何日期 → 不显示
   if (dates.length === 0) return;
 
   dates.forEach(date => {
     const dayData = history[date];
-    if (!dayData) return;
+
+    // 当天没有任何动作记录 → 不显示
+    if (!dayData || Object.keys(dayData).length === 0) {
+      return;
+    }
 
     const container = document.createElement("div");
     container.className = "card";
@@ -327,7 +331,6 @@ function renderHistory() {
       const detail = document.createElement("div");
       detail.textContent = `${sets} 组 × ${reps} 次 = ${sets * reps}`;
 
-      // 修改历史记录（减少）
       minus.onclick = () => {
         let v = parseInt(count.textContent);
         if (v > 0) v--;
@@ -340,7 +343,6 @@ function renderHistory() {
         renderHistory();
       };
 
-      // 修改历史记录（增加）
       plus.onclick = () => {
         let v = parseInt(count.textContent);
         v++;
