@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>今日训练</title>
+  <title id="htmlTitle"></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <link rel="apple-touch-icon" sizes="180x180" href="fitness.png">
@@ -12,13 +12,31 @@
 
 <div class="app">
 
+  <!-- 顶部：语言 + 暗夜模式 -->
+  <div class="top-bar">
+    <div class="icon-btn" id="langBtn">🌐</div>
+
+    <!-- 下拉菜单 -->
+    <div id="langMenu">
+      <div style="padding:10px 16px; font-size:13px; color:#666; border-bottom:1px solid #eee;">
+        🌐 Language
+      </div>
+      <div class="lang-item" data-lang="zh-CN">🇨🇳 简体中文</div>
+      <div class="lang-item" data-lang="zh-HK">🇭🇰 粵語</div>
+      <div class="lang-item" data-lang="en">🇺🇸 English</div>
+    </div>
+
+    <div class="icon-btn" id="themeBtn">🌙</div>
+  </div>
+
+
   <!-- 今日训练页 -->
   <div id="page-home" class="page active">
 
-    <h2 class="page-title">今日训练</h2>
+    <h2 class="page-title" id="titleToday"></h2>
 
     <div class="card form-row">
-      <label>日期</label>
+      <label id="labelDate"></label>
       <div class="date-wrapper">
         <button id="prevDate">&lt;</button>
         <input type="date" id="datePicker">
@@ -27,7 +45,7 @@
     </div>
 
     <div class="card form-row">
-      <label>部位</label>
+      <label id="labelPart"></label>
       <select id="bodyPartSelect"></select>
     </div>
 
@@ -37,32 +55,35 @@
     <div class="card" id="todaySummary"></div>
 
     <div class="card">
-      <button id="gotoHistory">查看历史记录</button>
+      <button id="gotoHistory"></button>
     </div>
 
     <div class="card">
-      <button id="gotoStats">训练统计</button>
+      <button id="gotoStats"></button>
     </div>
 
   </div>
 
+
   <!-- 历史记录页 -->
   <div id="page-history" class="page">
 
-    <h2 class="page-title">历史记录</h2>
+    <h2 class="page-title" id="titleHistory"></h2>
 
     <div class="card" id="historyList"></div>
 
     <div class="card">
-      <button id="backHome">返回</button>
+      <button id="backHome"></button>
     </div>
 
   </div>
 
 </div>
 
-<script src="workouts.js"></script>
-<script src="app.js"></script>
+<script type="module" src="workouts.js"></script>
+<script type="module" src="lang.js"></script>
+<script type="module" src="theme.js"></script>
+<script type="module" src="app.js"></script>
 
 </body>
 </html>
