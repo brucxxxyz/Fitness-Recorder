@@ -9,10 +9,28 @@ function saveHistory() {
 }
 
 /* ============================
-   初始化日期 = 今天
+   本地日期函数（避免 NZ 时区倒退一天）
+============================ */
+function todayLocal() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function formatLocal(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/* ============================
+   初始化日期 = 今天（本地）
 ============================ */
 const datePicker = document.getElementById("datePicker");
-datePicker.value = new Date().toISOString().slice(0, 10);
+datePicker.value = todayLocal();
 
 /* ============================
    左右按钮切换日期
@@ -23,14 +41,14 @@ const nextDateBtn = document.getElementById("nextDate");
 prevDateBtn.onclick = () => {
   const d = new Date(datePicker.value);
   d.setDate(d.getDate() - 1);
-  datePicker.value = d.toISOString().slice(0, 10);
+  datePicker.value = formatLocal(d);
   datePicker.onchange();
 };
 
 nextDateBtn.onclick = () => {
   const d = new Date(datePicker.value);
   d.setDate(d.getDate() + 1);
-  datePicker.value = d.toISOString().slice(0, 10);
+  datePicker.value = formatLocal(d);
   datePicker.onchange();
 };
 
@@ -292,13 +310,12 @@ document.getElementById("backHome").onclick = () => {
   document.getElementById("page-history").classList.remove("active");
   document.getElementById("page-home").classList.add("active");
 
-  // ★ 每次回主页都强制回到今天
-  datePicker.value = new Date().toISOString().slice(0, 10);
+  // ★ 每次回主页都强制回到今天（本地）
+  datePicker.value = todayLocal();
 
   renderSubItems();
   updateFooter();
 };
-
 
 /* ============================
    跳转统计页
