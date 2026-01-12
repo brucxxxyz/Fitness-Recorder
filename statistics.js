@@ -47,11 +47,11 @@ function getWeekByOffset(offset) {
   const base = new Date();
   base.setDate(base.getDate() + offset * 7);
 
-  let day = base.getDay(); // 0=周日, 1=周一, ..., 6=周六
-  if (day === 0) day = 7;  // 把周日当成 7
+  let day = base.getDay();
+  if (day === 0) day = 7;
 
   const monday = new Date(base);
-  monday.setDate(base.getDate() - (day - 1)); // 回到周一
+  monday.setDate(base.getDate() - (day - 1));
 
   const arr = [];
   for (let i = 0; i < 7; i++) {
