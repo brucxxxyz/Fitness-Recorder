@@ -69,13 +69,13 @@ function renderPage() {
   const dateKey = datePicker.value;
   const part = bodyPartSelect.value;
 
-  // 关键修复：确保当天记录存在
+  // 关键：确保当天记录存在
   if (!history[dateKey]) {
     history[dateKey] = {};
   }
 
   const items = WORKOUT_GROUPS[part];
-  const saved = history[dateKey]; // 不再用 {}
+  const saved = history[dateKey];
 
   subItemContainer.innerHTML = "";
 
@@ -145,23 +145,17 @@ function renderPage() {
 function saveItem(name, sets) {
   const dateKey = datePicker.value;
 
-  // 确保当天记录对象存在
   if (!history[dateKey]) {
     history[dateKey] = {};
   }
 
-  // 写入或删除动作
   if (sets === 0) {
     delete history[dateKey][name];
   } else {
     history[dateKey][name] = sets;
   }
 
-  // 保存
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-
-  // 重新渲染总结
-  renderSummary();
 }
 
 /* ============================
