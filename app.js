@@ -69,8 +69,13 @@ function renderPage() {
   const dateKey = datePicker.value;
   const part = bodyPartSelect.value;
 
+  // 关键修复：确保当天记录存在
+  if (!history[dateKey]) {
+    history[dateKey] = {};
+  }
+
   const items = WORKOUT_GROUPS[part];
-  const saved = history[dateKey] || {};
+  const saved = history[dateKey]; // 不再用 {}
 
   subItemContainer.innerHTML = "";
 
@@ -82,22 +87,18 @@ function renderPage() {
     const row = document.createElement("div");
     row.className = "subitem-row";
 
-    // 动作名称
     const name = document.createElement("div");
     name.className = "item-name";
     name.textContent = obj.name;
 
-    // 每组次数
     const repsLabel = document.createElement("div");
     repsLabel.className = "reps-label";
     repsLabel.textContent = `${reps} 次/组`;
 
-    // 总次数
     const totalLabel = document.createElement("div");
     totalLabel.className = "total-reps";
     totalLabel.textContent = `${totalReps} 次`;
 
-    // 按钮
     const minus = document.createElement("button");
     minus.className = "counter-btn";
     minus.textContent = "-";
@@ -110,11 +111,9 @@ function renderPage() {
     plus.className = "counter-btn";
     plus.textContent = "+";
 
-    // 事件
     minus.onclick = () => {
       let v = parseInt(count.textContent);
       if (v > 0) v--;
-      count.textContent = v;
       saveItem(obj.name, v);
       renderPage();
     };
@@ -122,12 +121,10 @@ function renderPage() {
     plus.onclick = () => {
       let v = parseInt(count.textContent);
       v++;
-      count.textContent = v;
       saveItem(obj.name, v);
       renderPage();
     };
 
-    // 组装
     row.appendChild(name);
     row.appendChild(repsLabel);
     row.appendChild(totalLabel);
@@ -148,15 +145,22 @@ function renderPage() {
 function saveItem(name, sets) {
   const dateKey = datePicker.value;
 
-  if (!history[dateKey]) history[dateKey] = {};
+  // 确保当天记录对象存在
+  if (!history[dateKey]) {
+    history[dateKey] = {};
+  }
 
+  // 写入或删除动作
   if (sets === 0) {
     delete history[dateKey][name];
   } else {
     history[dateKey][name] = sets;
   }
 
+  // 保存
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+  // 重新渲染总结
   renderSummary();
 }
 
