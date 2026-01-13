@@ -196,11 +196,8 @@ datePicker.onchange = () => {
 renderSubItems();
 
 /* ============================
-   历史记录页
+   历史记录页（原始版本）
 ============================ */
-
-function showHistoryPage() {
-  /* ======== 原版 showHistoryPage() 备份 ======== */
 
 document.getElementById("gotoHistory").onclick = () => {
   showHistoryPage();
