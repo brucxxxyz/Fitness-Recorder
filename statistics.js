@@ -105,9 +105,69 @@ function renderBar(dates) {
   });
 }
 
-// 散点图（四维：部位 → 能量 + 大小 + 强度透明度）
-function renderScatter(dates) {
-  const allRecords = [];
+/* -----------------------------
+   人体热点图渲染（Canvas）
+----------------------------- */
+function renderBodyHeatmap(partEnergy) {
+  const canvas = document.getElementById("bodyHeatCanvas");
+  const ctx = canvas.getContext("2d");
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 颜色映射（蓝→黄→红→白）
+  function energyToColor(value) {
+    if (value <= 0) return "rgba(0,0,255,0.25)";
+    if (value < 50) return "rgba(0,150,255,0.35)";
+    if (value < 120) return "rgba(255,200,0,0.45)";
+    if (value < 200) return "rgba(255,100,0,0.55)";
+    return "rgba(255,255,255,0.75)";
+  }
+
+  // 身体部位坐标（基于 wireframeBody.png）
+  const map = {
+    "胸部": { x: 80, y: 110, r: 40 },
+    "背部": { x: 80, y: 140, r: 40 },
+    "核心": { x: 80, y: 180, r: 35 },
+    "肩部": { x: 80, y: 70, r: 30 },
+    "手臂": { x: 40, y: 150, r: 25 },
+    "腿部": { x: 80, y: 260, r: 45 }
+  };
+
+  // 绘制热点
+  for (const part in partEnergy) {
+    const energy = partEnergy[part];
+    const color = energyToColor(energy);
+    const pos = map[part];
+
+    if (!pos) continue;
+
+    const gradient = ctx.createRadialGradient(
+      pos.x, pos.y, 5,
+      pos.x, pos.y, pos.r
+    );
+
+    gradient.addColorStop(0, color);
+    gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, pos.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+/* -----------------------------
+   热点图（替换散点图）
+----------------------------- */
+function renderHeatmap(dates) {
+  const partEnergy = {
+    "胸部": 0,
+    "背部": 0,
+    "腿部": 0,
+    "肩部": 0,
+    "手臂": 0,
+    "核心": 0
+  };
 
   dates.forEach(date => {
     const items = history[date];
@@ -118,112 +178,28 @@ function renderScatter(dates) {
       const reps = findReps(itemName);
       const calories = caloriesPerSet(reps) * sets;
 
-      let part = "other";
-      for (const p in WORKOUT_GROUPS) {
-        if (WORKOUT_GROUPS[p].some(obj => obj.name === itemName)) {
-          part = p;
-          break;
+      for (const part in WORKOUT_GROUPS) {
+        if (WORKOUT_GROUPS[part].some(obj => obj.name === itemName)) {
+          partEnergy[part] += calories;
         }
       }
-
-      allRecords.push({
-        part,
-        calories,
-        sets
-      });
     }
   });
 
-  if (allRecords.length === 0) {
-    if (chart) chart.destroy();
-    chart = new Chart(ctx, {
-      type: "bubble",
-      data: { datasets: [] },
-      options: {
-        scales: {
-          x: { type: "category", labels: [] },
-          y: { beginAtZero: true }
-        }
-      }
-    });
-    return;
-  }
-
-  const parts = [...new Set(allRecords.map(r => r.part))];
-
-  const colorMap = {
-    "胸部": "255,99,132",
-    "背部": "54,162,235",
-    "腿部": "75,192,192",
-    "肩部": "255,206,86",
-    "手臂": "153,102,255",
-    "核心": "255,159,64",
-    "other": "120,120,120"
-  };
-
-  const datasets = {};
-
-  allRecords.forEach(r => {
-    const { part, calories, sets } = r;
-
-    const intensity = calories / sets;
-    const alpha = Math.min(1, Math.max(0.25, intensity / 50));
-
-    if (!datasets[part]) {
-      datasets[part] = {
-        label: part,
-        data: [],
-        backgroundColor: [],
-        borderColor: [],
-        borderWidth: 1
-      };
-    }
-
-    datasets[part].data.push({
-      x: part,
-      y: calories,
-      r: Math.sqrt(calories) * 2
-    });
-
-    datasets[part].backgroundColor.push(`rgba(${colorMap[part]},${alpha})`);
-    datasets[part].borderColor.push(`rgba(${colorMap[part]},1)`);
-  });
-
+  // 清空 Chart.js 区域
   if (chart) chart.destroy();
-
   chart = new Chart(ctx, {
-    type: "bubble",
-    data: {
-      datasets: Object.values(datasets)
-    },
-    options: {
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const calories = context.raw.y;
-              return `能量: ${calories.toFixed(1)} kcal`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          type: "category",
-          labels: parts,
-          title: { display: true, text: "训练部位" }
-        },
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "能量消耗 (kcal)" }
-        }
-      }
-    }
+    type: "bar",
+    data: { labels: [], datasets: [] },
+    options: { plugins: { legend: { display: false } } }
   });
+
+  // 渲染人体热点图
+  renderBodyHeatmap(partEnergy);
 }
 
 /* -----------------------------
-   新增：雷达图渲染
+   雷达图渲染
 ----------------------------- */
 function renderRadar() {
   const ctxRadar = document.getElementById("radarCanvas").getContext("2d");
@@ -259,7 +235,7 @@ function renderRadar() {
   });
 }
 
-// 当前模式：week / month，bar / scatter
+// 当前模式：week / month，bar / heatmap
 let currentMode = "week";
 let currentChart = "bar";
 
@@ -274,11 +250,11 @@ function refreshChart() {
 
   if (currentChart === "bar") {
     renderBar(dates);
-  } else {
-    renderScatter(dates);
+  } else if (currentChart === "heatmap") {
+    renderHeatmap(dates);
   }
 
-  renderRadar(); // 新增：每次刷新同步更新雷达图
+  renderRadar();
 }
 
 // 绑定按钮
@@ -299,8 +275,8 @@ document.getElementById("btnBar").onclick = () => {
   refreshChart();
 };
 
-document.getElementById("btnScatter").onclick = () => {
-  currentChart = "scatter";
+document.getElementById("btnHeatmap").onclick = () => {
+  currentChart = "heatmap";
   refreshChart();
 };
 
