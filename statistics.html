@@ -28,19 +28,16 @@
     <button id="btnHeatmap" class="small-btn">热点图（能量）</button>
   </div>
 
-  <!-- 主图表区域 -->
-  <div class="card">
-    <canvas id="chartCanvas" height="300"></canvas>
-  </div>
+  <!-- 主图表区域：柱状图 / 人体热点图 互斥显示 -->
+  <div class="card" style="display:flex; justify-content:center; align-items:center;">
 
-  <!-- 雷达图 + 人体热点图 -->
-  <div class="card radar-body-wrapper">
+    <!-- 柱状图 Canvas（默认显示） -->
+    <canvas id="chartCanvas" height="300" style="display:block;"></canvas>
 
-    <!-- 雷达图 -->
-    <canvas id="radarCanvas" width="300" height="300"></canvas>
+    <!-- 人体热点图容器（默认隐藏） -->
+    <div id="bodyMainContainer"
+         style="position: relative; width:160px; height:400px; display:none;">
 
-    <!-- 人体热点图（图片 + Canvas 叠加） -->
-    <div style="position: relative; width:160px; height:400px;">
       <img src="wireframeBody.png"
            id="bodyImage"
            class="heatmap-body"
@@ -53,6 +50,11 @@
       </canvas>
     </div>
 
+  </div>
+
+  <!-- 雷达图单独一张卡片 -->
+  <div class="card radar-body-wrapper">
+    <canvas id="radarCanvas" width="300" height="300"></canvas>
   </div>
 
   <!-- 返回按钮 -->
