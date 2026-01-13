@@ -201,7 +201,6 @@ renderSubItems();
 
 function showHistoryPage() {
   /* ======== 原版 showHistoryPage() 备份 ======== */
-/* ======== 原版 showHistoryPage() 备份 ======== */
 
 document.getElementById("gotoHistory").onclick = () => {
   showHistoryPage();
