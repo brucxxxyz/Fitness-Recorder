@@ -278,7 +278,7 @@ document.getElementById("btnNext").onclick = () => {
 };
 
 document.getElementById("btnBack").onclick = () => {
-  window.location.href = "index.html";
+  history.back();
 };
 
 // 默认显示本周
