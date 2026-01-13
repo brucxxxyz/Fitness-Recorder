@@ -200,6 +200,14 @@ renderSubItems();
 ============================ */
 
 function showHistoryPage() {
+  /* ======== 原版 showHistoryPage() 备份 ======== */
+/* ======== 原版 showHistoryPage() 备份 ======== */
+
+document.getElementById("gotoHistory").onclick = () => {
+  showHistoryPage();
+};
+
+function showHistoryPage() {
   document.getElementById("page-home").classList.remove("active");
   document.getElementById("page-history").classList.add("active");
 
@@ -212,7 +220,6 @@ function showHistoryPage() {
     .reverse();
 
   dates.forEach(date => {
-    // 日期标题
     const title = document.createElement("div");
     title.className = "history-title";
     title.textContent = date;
@@ -220,108 +227,69 @@ function showHistoryPage() {
 
     const items = history[date];
 
-    // 1) 按部位分组（只分组存在于 WORKOUT_GROUPS 的动作）
-    const grouped = {};
-    for (const part in WORKOUT_GROUPS) grouped[part] = [];
-
     for (const name in items) {
-      let found = false;
+      const reps = findReps(name);
 
-      for (const part in WORKOUT_GROUPS) {
-        if (WORKOUT_GROUPS[part].some(obj => obj.name === name)) {
-          grouped[part].push(name);
-          found = true;
-          break;
-        }
-      }
+      const row = document.createElement("div");
+      row.className = "subitem-row";
 
-      // 如果动作不在 WORKOUT_GROUPS → 自动忽略（避免报错）
-      if (!found) {
-        console.warn(`历史记录中发现未定义动作：${name}（已忽略）`);
-      }
+      const left = document.createElement("span");
+      left.className = "item-name";
+      left.textContent = name;
+
+      const repsLabel = document.createElement("span");
+      repsLabel.className = "reps-label";
+      repsLabel.textContent = `${reps} 次/组`;
+
+      const totalLabel = document.createElement("span");
+      totalLabel.className = "total-reps";
+      totalLabel.textContent = `${items[name] * reps} 次`;
+
+      const minus = document.createElement("button");
+      minus.className = "counter-btn";
+      minus.textContent = "-";
+
+      const count = document.createElement("span");
+      count.className = "count-number";
+      count.textContent = items[name];
+
+      const plus = document.createElement("button");
+      plus.className = "counter-btn";
+      plus.textContent = "+";
+
+      minus.onclick = () => {
+        let v = parseInt(count.textContent);
+        if (v > 0) v--;
+        count.textContent = v;
+        totalLabel.textContent = `${v * reps} 次`;
+
+        if (v === 0) delete history[date][name];
+        else history[date][name] = v;
+
+        saveHistory();
+        showHistoryPage();
+      };
+
+      plus.onclick = () => {
+        let v = parseInt(count.textContent);
+        v++;
+        count.textContent = v;
+        totalLabel.textContent = `${v * reps} 次`;
+
+        history[date][name] = v;
+        saveHistory();
+      };
+
+      row.appendChild(left);
+      row.appendChild(repsLabel);
+      row.appendChild(totalLabel);
+      row.appendChild(minus);
+      row.appendChild(count);
+      row.appendChild(plus);
+
+      list.appendChild(row);
     }
 
-    // 2) 渲染每个部位
-    for (const part in grouped) {
-      if (grouped[part].length === 0) continue;
-
-      const partTitle = document.createElement("div");
-      partTitle.className = "history-title";
-      partTitle.style.fontSize = "16px";
-      partTitle.style.marginTop = "8px";
-      partTitle.textContent = part;
-      list.appendChild(partTitle);
-
-      // 3) 按 WORKOUT_GROUPS 顺序渲染动作
-      WORKOUT_GROUPS[part].forEach(obj => {
-        const name = obj.name;
-        if (!items[name]) return;
-
-        const reps = obj.reps;
-        const sets = items[name];
-
-        const row = document.createElement("div");
-        row.className = "subitem-row";
-
-        const left = document.createElement("span");
-        left.className = "item-name";
-        left.textContent = name;
-
-        const repsLabel = document.createElement("span");
-        repsLabel.className = "reps-label";
-        repsLabel.textContent = `${reps} 次/组`;
-
-        const totalLabel = document.createElement("span");
-        totalLabel.className = "total-reps";
-        totalLabel.textContent = `${sets * reps} 次`;
-
-        const minus = document.createElement("button");
-        minus.className = "counter-btn";
-        minus.textContent = "-";
-
-        const count = document.createElement("span");
-        count.className = "count-number";
-        count.textContent = sets;
-
-        const plus = document.createElement("button");
-        plus.className = "counter-btn";
-        plus.textContent = "+";
-
-        minus.onclick = () => {
-          let v = parseInt(count.textContent);
-          if (v > 0) v--;
-          count.textContent = v;
-          totalLabel.textContent = `${v * reps} 次`;
-
-          if (v === 0) delete history[date][name];
-          else history[date][name] = v;
-
-          saveHistory();
-          showHistoryPage();
-        };
-
-        plus.onclick = () => {
-          let v = parseInt(count.textContent);
-          v++;
-          count.textContent = v;
-          totalLabel.textContent = `${v * reps} 次`;
-
-          history[date][name] = v;
-          saveHistory();
-        };
-
-        row.appendChild(left);
-        row.appendChild(repsLabel);
-        row.appendChild(totalLabel);
-        row.appendChild(minus);
-        row.appendChild(count);
-        row.appendChild(plus);
-
-        list.appendChild(row);
-      });
-    }
-
-    // 删除当天数据按钮
     const delCard = document.createElement("div");
     delCard.className = "card";
 
