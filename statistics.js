@@ -278,7 +278,11 @@ document.getElementById("btnNext").onclick = () => {
 };
 
 document.getElementById("btnBack").onclick = () => {
-  history.back();
+  if (document.referrer && document.referrer.includes("index.html")) {
+    history.back();
+  } else {
+    window.location.href = "index.html";
+  }
 };
 
 // 默认显示本周
