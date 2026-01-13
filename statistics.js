@@ -1,8 +1,21 @@
 let chart;
+let radarChart = null;
+let lastPartEnergy = null;
+
 const ctx = document.getElementById("chartCanvas").getContext("2d");
 
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+// 身体部位坐标（基于 wireframeBody.png 的 160x400 尺寸）
+const BODY_PART_MAP = {
+  "胸部": { x: 80, y: 110, r: 40 },
+  "背部": { x: 80, y: 140, r: 40 },
+  "核心": { x: 80, y: 180, r: 35 },
+  "肩部": { x: 80, y: 70, r: 30 },
+  "手臂": { x: 40, y: 150, r: 25 },
+  "腿部": { x: 80, y: 260, r: 45 }
+};
 
 // 自动卡路里：B 方案
 function caloriesPerSet(reps) {
@@ -80,86 +93,10 @@ function getMonthByOffset(offset) {
   return arr;
 }
 
-// 柱状图（能量消耗）
-function renderBar(dates) {
-  const labels = dates.map(d => d.slice(5));
-  const data = dates.map(d => getDayStats(d).totalCalories);
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "能量消耗（kcal）",
-        data,
-        backgroundColor: "#4f46e5"
-      }]
-    },
-    options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
-}
-
 /* -----------------------------
-   人体热点图渲染（Canvas）
+   根据日期集合计算各部位能量
 ----------------------------- */
-function renderBodyHeatmap(partEnergy) {
-  const canvas = document.getElementById("bodyHeatCanvas");
-  const ctx = canvas.getContext("2d");
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 颜色映射（蓝→黄→红→白）
-  function energyToColor(value) {
-    if (value <= 0) return "rgba(0,0,255,0.25)";
-    if (value < 50) return "rgba(0,150,255,0.35)";
-    if (value < 120) return "rgba(255,200,0,0.45)";
-    if (value < 200) return "rgba(255,100,0,0.55)";
-    return "rgba(255,255,255,0.75)";
-  }
-
-  // 身体部位坐标（基于 wireframeBody.png）
-  const map = {
-    "胸部": { x: 80, y: 110, r: 40 },
-    "背部": { x: 80, y: 140, r: 40 },
-    "核心": { x: 80, y: 180, r: 35 },
-    "肩部": { x: 80, y: 70, r: 30 },
-    "手臂": { x: 40, y: 150, r: 25 },
-    "腿部": { x: 80, y: 260, r: 45 }
-  };
-
-  // 绘制热点
-  for (const part in partEnergy) {
-    const energy = partEnergy[part];
-    const color = energyToColor(energy);
-    const pos = map[part];
-
-    if (!pos) continue;
-
-    const gradient = ctx.createRadialGradient(
-      pos.x, pos.y, 5,
-      pos.x, pos.y, pos.r
-    );
-
-    gradient.addColorStop(0, color);
-    gradient.addColorStop(1, "rgba(0,0,0,0)");
-
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, pos.r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-/* -----------------------------
-   热点图（替换散点图）
------------------------------ */
-function renderHeatmap(dates) {
+function computePartEnergy(dates) {
   const partEnergy = {
     "胸部": 0,
     "背部": 0,
@@ -186,6 +123,107 @@ function renderHeatmap(dates) {
     }
   });
 
+  return partEnergy;
+}
+
+/* -----------------------------
+   根据各部位能量计算雷达图六维数据
+----------------------------- */
+function computeRadarValues(partEnergy) {
+  const chest = partEnergy["胸部"];
+  const back = partEnergy["背部"];
+  const legs = partEnergy["腿部"];
+  const shoulder = partEnergy["肩部"];
+  const arm = partEnergy["手臂"];
+  const core = partEnergy["核心"];
+
+  return [
+    chest + back + legs,                                 // 肌肉力量
+    shoulder + arm,                                      // 爆发力
+    core,                                                // 冲衝
+    core + legs,                                         // 平衡性
+    shoulder + core,                                     // 灵活性
+    chest + back + legs + shoulder + arm + core          // 耐力
+  ];
+}
+
+/* -----------------------------
+   柱状图（能量消耗）
+----------------------------- */
+function renderBar(dates) {
+  const labels = dates.map(d => d.slice(5));
+  const data = dates.map(d => getDayStats(d).totalCalories);
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "能量消耗（kcal）",
+        data,
+        backgroundColor: "#4f46e5"
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // 联动：更新人体热点图 + 雷达图
+  const partEnergy = computePartEnergy(dates);
+  lastPartEnergy = partEnergy;
+  renderBodyHeatmap(partEnergy);
+  const radarValues = computeRadarValues(partEnergy);
+  renderRadar(radarValues);
+}
+
+/* -----------------------------
+   人体热点图渲染（高斯模糊）
+----------------------------- */
+function renderBodyHeatmap(partEnergy) {
+  const canvas = document.getElementById("bodyHeatCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 高斯模糊
+  ctx.filter = "blur(18px)";
+
+  function energyToColor(value) {
+    if (value <= 0) return "rgba(0,0,255,0.25)";
+    if (value < 50) return "rgba(0,150,255,0.35)";
+    if (value < 120) return "rgba(255,200,0,0.45)";
+    if (value < 200) return "rgba(255,100,0,0.55)";
+    return "rgba(255,255,255,0.75)";
+  }
+
+  for (const part in partEnergy) {
+    const energy = partEnergy[part];
+    const color = energyToColor(energy);
+    const pos = BODY_PART_MAP[part];
+    if (!pos) continue;
+
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.arc(pos.x, pos.y, pos.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.filter = "none";
+}
+
+/* -----------------------------
+   热点图（替换散点图）
+----------------------------- */
+function renderHeatmap(dates) {
+  const partEnergy = computePartEnergy(dates);
+  lastPartEnergy = partEnergy;
+
   // 清空 Chart.js 区域
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
@@ -194,43 +232,94 @@ function renderHeatmap(dates) {
     options: { plugins: { legend: { display: false } } }
   });
 
-  // 渲染人体热点图
+  // 人体热点图
   renderBodyHeatmap(partEnergy);
+
+  // 雷达图
+  const radarValues = computeRadarValues(partEnergy);
+  renderRadar(radarValues);
 }
 
 /* -----------------------------
-   雷达图渲染
+   雷达图渲染（支持过渡动画）
 ----------------------------- */
-function renderRadar() {
+function renderRadar(values) {
   const ctxRadar = document.getElementById("radarCanvas").getContext("2d");
-
   const labels = ["肌肉力量", "爆发力", "冲衝", "平衡性", "灵活性", "耐力"];
 
-  // 未来可改为动态计算
-  const values = [80, 65, 70, 60, 75, 85];
-
-  new Chart(ctxRadar, {
-    type: "radar",
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        backgroundColor: "rgba(59,130,246,0.25)",
-        borderColor: "rgba(59,130,246,1)",
-        borderWidth: 2,
-        pointBackgroundColor: "rgba(59,130,246,1)"
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        r: {
-          beginAtZero: true,
-          grid: { color: "#ccc" },
-          angleLines: { color: "#ccc" },
-          pointLabels: { font: { size: 12 } }
+  if (!radarChart) {
+    radarChart = new Chart(ctxRadar, {
+      type: "radar",
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: "rgba(59,130,246,0.25)",
+          borderColor: "rgba(59,130,246,1)",
+          borderWidth: 2,
+          pointBackgroundColor: "rgba(59,130,246,1)"
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        animation: {
+          duration: 600,
+          easing: "easeOutQuad"
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            grid: { color: "#ccc" },
+            angleLines: { color: "#ccc" },
+            pointLabels: { font: { size: 12 } }
+          }
         }
       }
+    });
+  } else {
+    radarChart.data.datasets[0].data = values;
+    radarChart.update({
+      duration: 600,
+      easing: "easeOutQuad"
+    });
+  }
+}
+
+/* -----------------------------
+   点击人体显示数据
+----------------------------- */
+function bindBodyClick() {
+  const canvas = document.getElementById("bodyHeatCanvas");
+  if (!canvas) return;
+
+  canvas.addEventListener("click", function (e) {
+    if (!lastPartEnergy) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    let nearestPart = null;
+    let nearestDist = Infinity;
+
+    for (const part in BODY_PART_MAP) {
+      const pos = BODY_PART_MAP[part];
+      const dx = x - pos.x;
+      const dy = y - pos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < pos.r * 1.2 && dist < nearestDist) {
+        nearestDist = dist;
+        nearestPart = part;
+      }
+    }
+
+    if (nearestPart) {
+      const energy = lastPartEnergy[nearestPart] || 0;
+      alert(`${nearestPart}\n能量消耗：${energy.toFixed(1)} kcal`);
     }
   });
 }
@@ -253,8 +342,6 @@ function refreshChart() {
   } else if (currentChart === "heatmap") {
     renderHeatmap(dates);
   }
-
-  renderRadar();
 }
 
 // 绑定按钮
@@ -296,5 +383,6 @@ document.getElementById("btnBack").onclick = () => {
   window.location.href = "index.html";
 };
 
-// 默认显示本周
+// 初始化
+bindBodyClick();
 refreshChart();
