@@ -198,7 +198,6 @@ renderSubItems();
 /* ============================
    历史记录页（原始版本）
 ============================ */
-
 document.getElementById("gotoHistory").onclick = () => {
   showHistoryPage();
 };
