@@ -8,6 +8,7 @@ const ctx = chartCanvas.getContext("2d");
 const bodyMainContainer = document.getElementById("bodyMainContainer");
 const bodyCanvas = document.getElementById("bodyHeatCanvas");
 const bodyCtx = bodyCanvas.getContext("2d");
+const bodyTooltip = document.getElementById("bodyTooltip");
 
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -149,12 +150,12 @@ function computeRadarValues(partEnergy) {
   const core = partEnergy["核心"];
 
   return [
-    chest + back + legs,                                 // 肌肉力量
-    shoulder + arm,                                      // 爆发力
-    core,                                                // 冲衝
-    core + legs,                                         // 平衡性
-    shoulder + core,                                     // 灵活性
-    chest + back + legs + shoulder + arm + core          // 耐力
+    chest + back + legs,
+    shoulder + arm,
+    core,
+    core + legs,
+    shoulder + core,
+    chest + back + legs + shoulder + arm + core
   ];
 }
 
@@ -162,7 +163,6 @@ function computeRadarValues(partEnergy) {
    柱状图（能量消耗）
 ----------------------------- */
 function renderBar(dates) {
-  // 显示柱状图区域，隐藏人体图
   chartCanvas.style.display = "block";
   bodyMainContainer.style.display = "none";
 
@@ -188,9 +188,8 @@ function renderBar(dates) {
 
   const partEnergy = computePartEnergy(dates);
   lastPartEnergy = partEnergy;
-  renderBodyHeatmap(partEnergy);        // 为后续切换热图准备
-  const radarValues = computeRadarValues(partEnergy);
-  renderRadar(radarValues);
+  renderBodyHeatmap(partEnergy);
+  renderRadar(computeRadarValues(partEnergy));
 }
 
 /* -----------------------------
@@ -199,7 +198,6 @@ function renderBar(dates) {
 function renderBodyHeatmap(partEnergy) {
   bodyCtx.clearRect(0, 0, bodyCanvas.width, bodyCanvas.height);
 
-  // 高斯模糊
   bodyCtx.filter = "blur(18px)";
 
   function energyToColor(value) {
@@ -226,28 +224,26 @@ function renderBodyHeatmap(partEnergy) {
 }
 
 /* -----------------------------
-   热点图模式（主卡片中显示人体）
+   热点图模式
 ----------------------------- */
 function renderHeatmap(dates) {
   const partEnergy = computePartEnergy(dates);
   lastPartEnergy = partEnergy;
 
-  // 隐藏柱状图，显示人体图容器
   if (chart) {
     chart.destroy();
     chart = null;
   }
+
   chartCanvas.style.display = "none";
   bodyMainContainer.style.display = "block";
 
   renderBodyHeatmap(partEnergy);
-
-  const radarValues = computeRadarValues(partEnergy);
-  renderRadar(radarValues);
+  renderRadar(computeRadarValues(partEnergy));
 }
 
 /* -----------------------------
-   雷达图渲染（支持过渡动画）
+   雷达图渲染
 ----------------------------- */
 function renderRadar(values) {
   const ctxRadar = document.getElementById("radarCanvas").getContext("2d");
@@ -268,10 +264,7 @@ function renderRadar(values) {
       },
       options: {
         plugins: { legend: { display: false } },
-        animation: {
-          duration: 600,
-          easing: "easeOutQuad"
-        },
+        animation: { duration: 600, easing: "easeOutQuad" },
         scales: {
           r: {
             beginAtZero: true,
@@ -284,15 +277,12 @@ function renderRadar(values) {
     });
   } else {
     radarChart.data.datasets[0].data = values;
-    radarChart.update({
-      duration: 600,
-      easing: "easeOutQuad"
-    });
+    radarChart.update({ duration: 600, easing: "easeOutQuad" });
   }
 }
 
 /* -----------------------------
-   点击人体显示数据
+   点击人体显示 tooltip（不弹窗）
 ----------------------------- */
 function bindBodyClick() {
   bodyCanvas.addEventListener("click", function (e) {
@@ -322,8 +312,22 @@ function bindBodyClick() {
 
     if (nearestPart) {
       const energy = lastPartEnergy[nearestPart] || 0;
-      alert(`${nearestPart}\n能量消耗：${energy.toFixed(1)} kcal`);
+
+      const containerRect = bodyMainContainer.getBoundingClientRect();
+      const relX = e.clientX - containerRect.left;
+      const relY = e.clientY - containerRect.top;
+
+      bodyTooltip.style.left = `${relX + 8}px`;
+      bodyTooltip.style.top = `${relY + 8}px`;
+      bodyTooltip.innerText = `${nearestPart}: ${energy.toFixed(1)} kcal`;
+      bodyTooltip.style.display = "block";
+    } else {
+      bodyTooltip.style.display = "none";
     }
+  });
+
+  bodyCanvas.addEventListener("mouseleave", () => {
+    bodyTooltip.style.display = "none";
   });
 }
 
