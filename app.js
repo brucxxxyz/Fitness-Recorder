@@ -198,6 +198,7 @@ renderSubItems();
 /* ============================
    历史记录页
 ============================ */
+
 function showHistoryPage() {
   document.getElementById("page-home").classList.remove("active");
   document.getElementById("page-history").classList.add("active");
@@ -219,27 +220,31 @@ function showHistoryPage() {
 
     const items = history[date];
 
-    // 1) 先按部位分组
+    // 1) 按部位分组（只分组存在于 WORKOUT_GROUPS 的动作）
     const grouped = {};
-
-    for (const part in WORKOUT_GROUPS) {
-      grouped[part] = [];
-    }
+    for (const part in WORKOUT_GROUPS) grouped[part] = [];
 
     for (const name in items) {
+      let found = false;
+
       for (const part in WORKOUT_GROUPS) {
         if (WORKOUT_GROUPS[part].some(obj => obj.name === name)) {
           grouped[part].push(name);
+          found = true;
           break;
         }
       }
+
+      // 如果动作不在 WORKOUT_GROUPS → 自动忽略（避免报错）
+      if (!found) {
+        console.warn(`历史记录中发现未定义动作：${name}（已忽略）`);
+      }
     }
 
-    // 2) 按部位顺序渲染
+    // 2) 渲染每个部位
     for (const part in grouped) {
       if (grouped[part].length === 0) continue;
 
-      // 部位标题
       const partTitle = document.createElement("div");
       partTitle.className = "history-title";
       partTitle.style.fontSize = "16px";
@@ -247,7 +252,7 @@ function showHistoryPage() {
       partTitle.textContent = part;
       list.appendChild(partTitle);
 
-      // 3) 按 WORKOUT_GROUPS 内部顺序渲染动作
+      // 3) 按 WORKOUT_GROUPS 顺序渲染动作
       WORKOUT_GROUPS[part].forEach(obj => {
         const name = obj.name;
         if (!items[name]) return;
@@ -334,7 +339,6 @@ function showHistoryPage() {
     list.appendChild(delCard);
   });
 }
-
 
 /* ============================
    返回主页（不再重置日期）
