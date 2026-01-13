@@ -7,22 +7,28 @@ const ctx = document.getElementById("chartCanvas").getContext("2d");
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
-// 身体部位坐标（基于 wireframeBody.png 的 160x400 尺寸）
+// ===============================
+// 1. 身体部位坐标（基于新版 160×400 虚线人体图）
+// ===============================
 const BODY_PART_MAP = {
-  "胸部": { x: 80, y: 110, r: 40 },
-  "背部": { x: 80, y: 140, r: 40 },
-  "核心": { x: 80, y: 180, r: 35 },
-  "肩部": { x: 80, y: 70, r: 30 },
-  "手臂": { x: 40, y: 150, r: 25 },
+  "胸部": { x: 80, y: 120, r: 38 },
+  "背部": { x: 80, y: 120, r: 38 },
+  "核心": { x: 80, y: 165, r: 32 },
+  "肩部": { x: 80, y: 85, r: 28 },
+  "手臂": { x: 40, y: 150, r: 26 },
   "腿部": { x: 80, y: 260, r: 45 }
 };
 
-// 自动卡路里：B 方案
+// ===============================
+// 2. 自动卡路里：B 方案
+// ===============================
 function caloriesPerSet(reps) {
   return reps * 0.6;
 }
 
-// 计算某天总次数 & 总卡路里
+// ===============================
+// 3. 计算某天总次数 & 总卡路里
+// ===============================
 function getDayStats(dateKey) {
   const items = history[dateKey];
   if (!items) return { totalReps: 0, totalCalories: 0 };
@@ -51,11 +57,12 @@ function findReps(itemName) {
   return 0;
 }
 
-// 偏移量：0=本周/本月，-1=上周/上月，+1=下周/下月
+// ===============================
+// 4. 周/月偏移
+// ===============================
 let weekOffset = 0;
 let monthOffset = 0;
 
-// 根据偏移获取一周（周一~周日）
 function getWeekByOffset(offset) {
   const base = new Date();
   base.setDate(base.getDate() + offset * 7);
@@ -75,7 +82,6 @@ function getWeekByOffset(offset) {
   return arr;
 }
 
-// 根据偏移获取一个月所有日期
 function getMonthByOffset(offset) {
   const today = new Date();
   today.setMonth(today.getMonth() + offset);
@@ -93,9 +99,9 @@ function getMonthByOffset(offset) {
   return arr;
 }
 
-/* -----------------------------
-   根据日期集合计算各部位能量
------------------------------ */
+// ===============================
+// 5. 计算各部位能量
+// ===============================
 function computePartEnergy(dates) {
   const partEnergy = {
     "胸部": 0,
@@ -126,9 +132,9 @@ function computePartEnergy(dates) {
   return partEnergy;
 }
 
-/* -----------------------------
-   根据各部位能量计算雷达图六维数据
------------------------------ */
+// ===============================
+// 6. 雷达图六维数据
+// ===============================
 function computeRadarValues(partEnergy) {
   const chest = partEnergy["胸部"];
   const back = partEnergy["背部"];
@@ -147,9 +153,9 @@ function computeRadarValues(partEnergy) {
   ];
 }
 
-/* -----------------------------
-   柱状图（能量消耗）
------------------------------ */
+// ===============================
+// 7. 柱状图
+// ===============================
 function renderBar(dates) {
   const labels = dates.map(d => d.slice(5));
   const data = dates.map(d => getDayStats(d).totalCalories);
@@ -167,31 +173,24 @@ function renderBar(dates) {
       }]
     },
     options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
+      scales: { y: { beginAtZero: true } }
     }
   });
 
-  // 联动：更新人体热点图 + 雷达图
   const partEnergy = computePartEnergy(dates);
   lastPartEnergy = partEnergy;
   renderBodyHeatmap(partEnergy);
-  const radarValues = computeRadarValues(partEnergy);
-  renderRadar(radarValues);
+  renderRadar(computeRadarValues(partEnergy));
 }
 
-/* -----------------------------
-   人体热点图渲染（高斯模糊）
------------------------------ */
+// ===============================
+// 8. 人体热力图（高斯模糊）
+// ===============================
 function renderBodyHeatmap(partEnergy) {
   const canvas = document.getElementById("bodyHeatCanvas");
-  if (!canvas) return;
   const ctx = canvas.getContext("2d");
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 高斯模糊
   ctx.filter = "blur(18px)";
 
   function energyToColor(value) {
@@ -217,14 +216,13 @@ function renderBodyHeatmap(partEnergy) {
   ctx.filter = "none";
 }
 
-/* -----------------------------
-   热点图（替换散点图）
------------------------------ */
+// ===============================
+// 9. 热点图模式
+// ===============================
 function renderHeatmap(dates) {
   const partEnergy = computePartEnergy(dates);
   lastPartEnergy = partEnergy;
 
-  // 清空 Chart.js 区域
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
     type: "bar",
@@ -232,17 +230,13 @@ function renderHeatmap(dates) {
     options: { plugins: { legend: { display: false } } }
   });
 
-  // 人体热点图
   renderBodyHeatmap(partEnergy);
-
-  // 雷达图
-  const radarValues = computeRadarValues(partEnergy);
-  renderRadar(radarValues);
+  renderRadar(computeRadarValues(partEnergy));
 }
 
-/* -----------------------------
-   雷达图渲染（支持过渡动画）
------------------------------ */
+// ===============================
+// 10. 雷达图
+// ===============================
 function renderRadar(values) {
   const ctxRadar = document.getElementById("radarCanvas").getContext("2d");
   const labels = ["肌肉力量", "爆发力", "冲衝", "平衡性", "灵活性", "耐力"];
@@ -262,10 +256,7 @@ function renderRadar(values) {
       },
       options: {
         plugins: { legend: { display: false } },
-        animation: {
-          duration: 600,
-          easing: "easeOutQuad"
-        },
+        animation: { duration: 600, easing: "easeOutQuad" },
         scales: {
           r: {
             beginAtZero: true,
@@ -278,19 +269,15 @@ function renderRadar(values) {
     });
   } else {
     radarChart.data.datasets[0].data = values;
-    radarChart.update({
-      duration: 600,
-      easing: "easeOutQuad"
-    });
+    radarChart.update({ duration: 600, easing: "easeOutQuad" });
   }
 }
 
-/* -----------------------------
-   点击人体显示数据
------------------------------ */
+// ===============================
+// 11. 点击人体显示能量
+// ===============================
 function bindBodyClick() {
   const canvas = document.getElementById("bodyHeatCanvas");
-  if (!canvas) return;
 
   canvas.addEventListener("click", function (e) {
     if (!lastPartEnergy) return;
@@ -324,27 +311,22 @@ function bindBodyClick() {
   });
 }
 
-// 当前模式：week / month，bar / heatmap
+// ===============================
+// 12. 模式切换
+// ===============================
 let currentMode = "week";
 let currentChart = "bar";
 
 function refreshChart() {
   let dates;
 
-  if (currentMode === "week") {
-    dates = getWeekByOffset(weekOffset);
-  } else {
-    dates = getMonthByOffset(monthOffset);
-  }
+  if (currentMode === "week") dates = getWeekByOffset(weekOffset);
+  else dates = getMonthByOffset(monthOffset);
 
-  if (currentChart === "bar") {
-    renderBar(dates);
-  } else if (currentChart === "heatmap") {
-    renderHeatmap(dates);
-  }
+  if (currentChart === "bar") renderBar(dates);
+  else renderHeatmap(dates);
 }
 
-// 绑定按钮
 document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
   weekOffset = 0;
@@ -383,6 +365,8 @@ document.getElementById("btnBack").onclick = () => {
   window.location.href = "index.html";
 };
 
-// 初始化
+// ===============================
+// 13. 初始化
+// ===============================
 bindBodyClick();
 refreshChart();
