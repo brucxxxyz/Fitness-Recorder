@@ -277,14 +277,8 @@ document.getElementById("btnNext").onclick = () => {
   refreshChart();
 };
 
-window.onload = () => {
-  document.getElementById("btnBack").onclick = () => {
-    if (document.referrer && document.referrer.includes("index.html")) {
-      history.back();
-    } else {
-      window.location.href = "index.html";
-    }
-  };
+document.getElementById("btnBack").onclick = () => {
+  window.location.href = "index.html";
 };
 
 // 默认显示本周
