@@ -318,7 +318,7 @@ document.getElementById("backHome").onclick = () => {
    跳转统计页
 ============================ */
 document.getElementById("gotoStats").onclick = () => {
-  window.location.href = "statistics.html";
+  window.location.assign("statistics.html");
 };
 
 /* ============================
