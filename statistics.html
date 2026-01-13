@@ -35,8 +35,24 @@
 
   <!-- 雷达图 + 人体热点图 -->
   <div class="card radar-body-wrapper">
+
+    <!-- 雷达图 -->
     <canvas id="radarCanvas" width="300" height="300"></canvas>
-    <img src="wireframeBody.png" id="bodyImage" class="heatmap-body" />
+
+    <!-- 人体热点图（图片 + Canvas 叠加） -->
+    <div style="position: relative; width:160px; height:400px;">
+      <img src="wireframeBody.png"
+           id="bodyImage"
+           class="heatmap-body"
+           style="position:absolute; left:0; top:0; width:160px; height:400px;" />
+
+      <canvas id="bodyHeatCanvas"
+              width="160"
+              height="400"
+              style="position:absolute; left:0; top:0; width:160px; height:400px;">
+      </canvas>
+    </div>
+
   </div>
 
   <!-- 返回按钮 -->
