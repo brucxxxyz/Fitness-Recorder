@@ -245,3 +245,24 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
+
+/* ============================
+   雷达图 + 人体图布局（新增）
+============================ */
+.radar-body-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+}
+
+#radarCanvas {
+  width: 140px;
+  height: 140px;
+}
+
+.heatmap-body {
+  width: 160px;
+  height: auto;
+  opacity: 0.95;
+}
