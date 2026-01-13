@@ -14,6 +14,7 @@
 
   <h2 class="page-title">训练统计</h2>
 
+  <!-- 时间切换 -->
   <div class="card btn-row">
     <button id="btnPrev" class="small-btn"><</button>
     <button id="btnWeek" class="small-btn">每周</button>
@@ -21,20 +22,24 @@
     <button id="btnNext" class="small-btn">></button>
   </div>
 
+  <!-- 图表类型切换 -->
   <div class="card btn-row">
     <button id="btnBar" class="small-btn">柱状图（能量）</button>
-    <button id="btnScatter" class="small-btn">散点图（能量）</button>
+    <button id="btnHeatmap" class="small-btn">热点图（能量）</button>
   </div>
 
+  <!-- 主图表区域 -->
   <div class="card">
     <canvas id="chartCanvas" height="300"></canvas>
   </div>
 
+  <!-- 雷达图 + 人体热点图 -->
   <div class="card radar-body-wrapper">
     <canvas id="radarCanvas" width="300" height="300"></canvas>
     <img src="wireframeBody.png" id="bodyImage" class="heatmap-body" />
   </div>
 
+  <!-- 返回按钮 -->
   <div class="card">
     <button id="btnBack" class="small-btn">返回</button>
   </div>
