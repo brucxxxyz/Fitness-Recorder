@@ -222,6 +222,43 @@ function renderScatter(dates) {
   });
 }
 
+/* -----------------------------
+   新增：雷达图渲染
+----------------------------- */
+function renderRadar() {
+  const ctxRadar = document.getElementById("radarCanvas").getContext("2d");
+
+  const labels = ["肌肉力量", "爆发力", "冲衝", "平衡性", "灵活性", "耐力"];
+
+  // 未来可改为动态计算
+  const values = [80, 65, 70, 60, 75, 85];
+
+  new Chart(ctxRadar, {
+    type: "radar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: "rgba(59,130,246,0.25)",
+        borderColor: "rgba(59,130,246,1)",
+        borderWidth: 2,
+        pointBackgroundColor: "rgba(59,130,246,1)"
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          beginAtZero: true,
+          grid: { color: "#ccc" },
+          angleLines: { color: "#ccc" },
+          pointLabels: { font: { size: 12 } }
+        }
+      }
+    }
+  });
+}
+
 // 当前模式：week / month，bar / scatter
 let currentMode = "week";
 let currentChart = "bar";
@@ -240,6 +277,8 @@ function refreshChart() {
   } else {
     renderScatter(dates);
   }
+
+  renderRadar(); // 新增：每次刷新同步更新雷达图
 }
 
 // 绑定按钮
