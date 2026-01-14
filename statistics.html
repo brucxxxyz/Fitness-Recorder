@@ -14,7 +14,6 @@
 
   <h2 class="page-title">训练统计</h2>
 
-  <!-- 时间切换 -->
   <div class="card btn-row">
     <button id="btnPrev" class="small-btn"><</button>
     <button id="btnWeek" class="small-btn">每周</button>
@@ -22,51 +21,15 @@
     <button id="btnNext" class="small-btn">></button>
   </div>
 
-  <!-- 图表类型切换 -->
   <div class="card btn-row">
     <button id="btnBar" class="small-btn">柱状图（能量）</button>
-    <button id="btnHeatmap" class="small-btn">热点图（能量）</button>
+    <button id="btnScatter" class="small-btn">散点图（能量）</button>
   </div>
 
-  <!-- 主图表区域：柱状图 / 人体热点图 互斥显示 -->
-  <div class="card" style="display:flex; justify-content:center; align-items:center;">
-
-    <!-- 柱状图 Canvas（默认显示） -->
-    <canvas id="chartCanvas" height="300" style="display:block;"></canvas>
-
-    <!-- 人体热点图容器（默认隐藏） -->
-    <div id="bodyMainContainer"
-         style="position: relative; width:266px; height:400px; display:none;">
-
-      <!-- 人体图（266×400） -->
-      <img src="wireframeBody.webp"
-           id="bodyImage"
-           style="position:absolute; left:0; top:0; width:266px; height:400px;" />
-
-      <!-- 热力图 Canvas（266×400） -->
-      <canvas id="bodyHeatCanvas"
-              width="266"
-              height="400"
-              style="position:absolute; left:0; top:0; width:266px; height:400px;">
-      </canvas>
-
-      <!-- tooltip（点击显示能量数据） -->
-      <div id="bodyTooltip"
-           style="position:absolute; display:none;
-                  background:rgba(0,0,0,0.8); color:#fff;
-                  padding:4px 8px; border-radius:4px;
-                  font-size:12px; pointer-events:none;
-                  white-space:nowrap;"></div>
-    </div>
-
+  <div class="card">
+    <canvas id="chartCanvas" height="300"></canvas>
   </div>
 
-  <!-- 雷达图单独一张卡片 -->
-  <div class="card radar-body-wrapper">
-    <canvas id="radarCanvas" width="300" height="300"></canvas>
-  </div>
-
-  <!-- 返回按钮 -->
   <div class="card">
     <button id="btnBack" class="small-btn">返回</button>
   </div>
