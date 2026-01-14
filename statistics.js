@@ -10,6 +10,14 @@ const bodyCanvas = document.getElementById("bodyHeatCanvas");
 const bodyCtx = bodyCanvas.getContext("2d");
 const bodyTooltip = document.getElementById("bodyTooltip");
 
+const bodyImage = document.getElementById("bodyImage");
+let bodyImageLoaded = false;
+
+// 预加载人体图
+bodyImage.onload = () => {
+  bodyImageLoaded = true;
+};
+
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
@@ -163,6 +171,11 @@ function computeRadarValues(partEnergy) {
    柱状图（能量消耗）
 ----------------------------- */
 function renderBar(dates) {
+  if (!bodyImageLoaded) {
+    bodyImage.onload = () => renderBar(dates);
+    return;
+  }
+
   chartCanvas.style.display = "block";
   bodyMainContainer.style.display = "none";
 
@@ -227,6 +240,11 @@ function renderBodyHeatmap(partEnergy) {
    热点图模式
 ----------------------------- */
 function renderHeatmap(dates) {
+  if (!bodyImageLoaded) {
+    bodyImage.onload = () => renderHeatmap(dates);
+    return;
+  }
+
   const partEnergy = computePartEnergy(dates);
   lastPartEnergy = partEnergy;
 
