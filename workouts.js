@@ -42,7 +42,7 @@ const WORKOUT_GROUPS = {
   "核心": [
     { name: "卷腹", reps: 20 },
     { name: "仰卧起坐", reps: 20 },
-    { name: "俄罗斯转体", reps: 20 },
+    { name: "俄式转体", reps: 20 },
     { name: "抬腿", reps: 15 },
     { name: "平板支撑", reps: 60 }
   ]
