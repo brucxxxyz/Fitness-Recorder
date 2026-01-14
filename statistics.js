@@ -7,6 +7,9 @@ const radarCtx = document.getElementById("radarCanvas").getContext("2d");
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
+// 当前选中的日期（用于雷达图联动）
+let selectedDate = null;
+
 // 自动卡路里：B 方案
 function caloriesPerSet(reps) {
   return reps * 0.6;
@@ -157,6 +160,17 @@ function renderBar(dates) {
       }]
     },
     options: {
+      onClick: (evt, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const date = dates[index];
+
+          // 点击同一天 → 取消选中
+          selectedDate = (selectedDate === date) ? null : date;
+
+          updateRadar();
+        }
+      },
       scales: {
         y: { beginAtZero: true }
       }
@@ -209,23 +223,46 @@ function renderRadar(values) {
 }
 
 /* -----------------------------
+   雷达图联动逻辑
+----------------------------- */
+function updateRadar() {
+  let dates;
+
+  if (selectedDate) {
+    dates = [selectedDate]; // 单日
+  } else {
+    dates = currentMode === "week"
+      ? getWeekByOffset(weekOffset)
+      : getMonthByOffset(monthOffset);
+  }
+
+  const partEnergy = computePartEnergy(dates);
+  const radarValues = computeRadarValues(partEnergy);
+
+  renderRadar(radarValues);
+}
+
+/* -----------------------------
    刷新图表
 ----------------------------- */
 let currentMode = "week";
 let currentChart = "bar";
 
 function refreshChart() {
+  selectedDate = null; // 切换周/月时清除选中
+
   let dates = currentMode === "week"
     ? getWeekByOffset(weekOffset)
     : getMonthByOffset(monthOffset);
 
-  const partEnergy = computePartEnergy(dates);
-  const radarValues = computeRadarValues(partEnergy);
-
   if (currentChart === "bar") {
+    document.getElementById("chartCanvas").style.display = "block";
+    document.getElementById("radarCanvas").style.display = "none";
     renderBar(dates);
   } else {
-    renderRadar(radarValues);
+    document.getElementById("chartCanvas").style.display = "none";
+    document.getElementById("radarCanvas").style.display = "block";
+    updateRadar();
   }
 }
 
