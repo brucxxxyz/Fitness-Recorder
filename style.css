@@ -1,4 +1,4 @@
-/* ============================
+* ============================
    全局布局
 ============================ */
 body {
@@ -76,6 +76,7 @@ select {
   box-sizing: border-box;
 }
 
+/* 下拉菜单文字居中 */
 select {
   text-align: center;
   text-align-last: center;
@@ -98,7 +99,7 @@ select {
 
 .date-wrapper input[type="date"] {
   width: 100%;
-  height: 60px;
+  height: 60px; /* 裁切原生高度 */
   padding: 10px;
   font-size: 16px;
   border: none;
@@ -111,7 +112,7 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto;
+  grid-template-columns: 1fr auto auto auto auto auto; /* 修复：6 列 */
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
@@ -147,7 +148,7 @@ select {
    今日总结
 ============================ */
 #todaySummary {
-  min-height: 60px;
+  min-height: 60px; /* 修复：避免 summary 消失 */
 }
 
 .history-title {
@@ -238,45 +239,9 @@ button:active {
 }
 
 /* ============================
-   图表 canvas（不要影响 Chart.js）
+   图表 canvas
 ============================ */
-/* 删除全局 canvas 样式，避免图表消失 */
-/*
 canvas {
   width: 100% !important;
   height: auto !important;
 }
-*/
-
-/* 雷达图单独控制 */
-#radarCanvas {
-  width: 140px;
-  height: 140px;
-}
-
-/* ============================
-   人体图（固定 266×400，不变形）
-============================ */
-#bodyMainContainer {
-  flex-shrink: 0;
-}
-
-#bodyImage {
-  width: 266px !important;
-  height: 400px !important;
-  object-fit: contain;
-}
-
-#bodyHeatCanvas {
-  width: 266px !important;
-  height: 400px !important;
-}
-
-/* 删除旧的 .heatmap-body（避免冲突） */
-/*
-.heatmap-body {
-  width: 160px;
-  height: auto;
-  opacity: 0.95;
-}
-*/
