@@ -266,3 +266,20 @@ canvas {
   height: auto;
   opacity: 0.95;
 }
+
+/* 防止人体图被压缩 */
+#bodyMainContainer {
+  flex-shrink: 0;
+}
+
+#bodyImage {
+  width: 266px !important;
+  height: 400px !important;
+  object-fit: contain;
+}
+
+#bodyHeatCanvas {
+  width: 266px !important;
+  height: 400px !important;
+}
+
