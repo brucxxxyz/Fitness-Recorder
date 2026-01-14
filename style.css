@@ -111,30 +111,19 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns:
-    minmax(0, 2fr)   /* 动作名称：可压缩，可扩展 */
-    90px             /* n 次/组：固定宽度 */
-    minmax(0, 1fr)   /* - 按钮 */
-    minmax(0, 1fr)   /* 数字 */
-    minmax(0, 1fr)   /* + 按钮 */
-    minmax(0, 1fr);  /* 删除按钮 */
+  grid-template-columns: 1fr auto auto auto auto auto; /* 修复：6 列 */
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 10px;
 }
 
 .item-name {
-  min-width: 0;      /* ⭐ 必须有：允许压缩 */
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 15px;
 }
 
 .reps-label {
-  width: 90px;
+  min-width: 70px;
   text-align: center;
-  white-space: nowrap;
   font-size: 14px;
   color: #666;
 }
