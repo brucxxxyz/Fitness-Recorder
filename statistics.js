@@ -160,16 +160,29 @@ function renderBar(dates) {
       datasets: [{
         label: "能量消耗（kcal）",
         data,
-        backgroundColor: "#4f46e5"
+        backgroundColor: labels.map((_, i) =>
+          i === selectedBarIndex ? "#1d4ed8" : "#4f46e5"   // ⭐ 高亮
+        )
       }]
     },
     options: {
       onClick: (evt, elements) => {
         if (elements.length > 0) {
           const index = elements[0].index;
-          const date = dates[index];
 
-          selectedDate = (selectedDate === date) ? null : date;
+          // ⭐ 点击同一天 → 取消选中
+          selectedBarIndex = (selectedBarIndex === index) ? null : index;
+
+          // ⭐ 更新雷达图选中日期
+          const date = dates[index];
+          selectedDate = (selectedBarIndex === null) ? null : date;
+
+          // ⭐ 更新柱状图颜色
+          chart.data.datasets[0].backgroundColor = labels.map((_, i) =>
+            i === selectedBarIndex ? "#1d4ed8" : "#4f46e5"
+          );
+          chart.update();
+
           updateRadar();
         }
       },
@@ -186,6 +199,18 @@ function renderBar(dates) {
 function renderRadar(values) {
   const labels = ["力量", "爆发", "核心", "平衡", "灵活", "耐力"];
 
+  // ⭐ 创建渐变填充
+  const gradient = radarCtx.createRadialGradient(
+    radarCtx.canvas.width / 2,
+    radarCtx.canvas.height / 2,
+    0,
+    radarCtx.canvas.width / 2,
+    radarCtx.canvas.height / 2,
+    radarCtx.canvas.width / 2
+  );
+  gradient.addColorStop(0, "rgba(59,130,246,0.45)");
+  gradient.addColorStop(1, "rgba(59,130,246,0.05)");
+
   if (!radarChart) {
     radarChart = new Chart(radarCtx, {
       type: "radar",
@@ -193,7 +218,7 @@ function renderRadar(values) {
         labels,
         datasets: [{
           data: values,
-          backgroundColor: "rgba(59,130,246,0.25)",
+          backgroundColor: gradient,   // ⭐ 使用渐变
           borderColor: "rgba(59,130,246,1)",
           borderWidth: 2,
           pointBackgroundColor: "rgba(59,130,246,1)"
@@ -217,6 +242,7 @@ function renderRadar(values) {
     });
   } else {
     radarChart.data.datasets[0].data = values;
+    radarChart.data.datasets[0].backgroundColor = gradient; // ⭐ 更新渐变
     radarChart.update({
       duration: 900,
       easing: "easeOutQuart"
