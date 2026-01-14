@@ -111,14 +111,20 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 2.2fr 90px auto auto auto auto;
+  grid-template-columns:
+    minmax(0, 2fr)   /* 动作名称：可压缩，可扩展 */
+    90px             /* n 次/组：固定宽度 */
+    minmax(0, 1fr)   /* - 按钮 */
+    minmax(0, 1fr)   /* 数字 */
+    minmax(0, 1fr)   /* + 按钮 */
+    minmax(0, 1fr);  /* 删除按钮 */
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
 }
 
 .item-name {
-  min-width: 0;
+  min-width: 0;      /* ⭐ 必须有：允许压缩 */
   width: 100%;
   white-space: nowrap;
   overflow: hidden;
@@ -126,9 +132,9 @@ select {
 }
 
 .reps-label {
-  width: 90px;          /* ⭐ 固定宽度，永不折叠 */
+  width: 90px;
   text-align: center;
-  white-space: nowrap;  /* ⭐ 禁止换行 */
+  white-space: nowrap;
   font-size: 14px;
   color: #666;
 }
