@@ -122,7 +122,8 @@ select {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;   /* ⭐ 关键：允许缩小，解决“俄罗斯转体”问题 */
+  min-width: 0;      /* ⭐ 关键：允许压缩 */
+  width: 100%;       /* ⭐ 让 ellipsis 生效 */
 }
 
 .reps-label {
