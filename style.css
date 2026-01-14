@@ -76,7 +76,6 @@ select {
   box-sizing: border-box;
 }
 
-/* 下拉菜单文字居中 */
 select {
   text-align: center;
   text-align-last: center;
@@ -239,23 +238,17 @@ button:active {
 }
 
 /* ============================
-   图表 canvas（排除人体热力图）
+   图表 canvas（不要影响 Chart.js）
 ============================ */
-canvas:not(#bodyHeatCanvas) {
+/* 删除全局 canvas 样式，避免图表消失 */
+/*
+canvas {
   width: 100% !important;
   height: auto !important;
 }
+*/
 
-/* ============================
-   雷达图 + 人体图布局
-============================ */
-.radar-body-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-}
-
+/* 雷达图单独控制 */
 #radarCanvas {
   width: 140px;
   height: 140px;
