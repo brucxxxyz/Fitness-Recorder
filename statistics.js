@@ -181,9 +181,8 @@ function renderBar(dates) {
 }
 
 /* -----------------------------
-   雷达图（带动画）
+   雷达图
 ----------------------------- */
-
 function renderRadar(values) {
   const labels = ["力量", "爆发", "核心", "平衡", "灵活", "耐力"];
 
