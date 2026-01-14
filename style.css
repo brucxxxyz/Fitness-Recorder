@@ -111,19 +111,18 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1.3fr 80px auto auto auto auto;
+  grid-template-columns: 2.2fr 90px auto auto auto auto;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
 .item-name {
-  font-size: 15px;
+  min-width: 0;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;      /* ⭐ 关键：允许压缩 */
-  width: 100%;       /* ⭐ 让 ellipsis 生效 */
 }
 
 .reps-label {
