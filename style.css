@@ -1,4 +1,4 @@
-* ============================
+/* ============================
    全局布局
 ============================ */
 body {
@@ -76,7 +76,6 @@ select {
   box-sizing: border-box;
 }
 
-/* 下拉菜单文字居中 */
 select {
   text-align: center;
   text-align-last: center;
@@ -99,7 +98,7 @@ select {
 
 .date-wrapper input[type="date"] {
   width: 100%;
-  height: 60px; /* 裁切原生高度 */
+  height: 60px;
   padding: 10px;
   font-size: 16px;
   border: none;
@@ -112,7 +111,7 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto; /* 修复：6 列 */
+  grid-template-columns: 2fr 1fr auto auto auto auto; /* ⭐ 新布局：名称更宽，n次/组居中 */
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
@@ -120,10 +119,12 @@ select {
 
 .item-name {
   font-size: 15px;
+  white-space: nowrap;        /* 不换行 */
+  overflow: hidden;           /* 超出隐藏 */
+  text-overflow: ellipsis;    /* 超出显示省略号 */
 }
 
 .reps-label {
-  min-width: 70px;
   text-align: center;
   font-size: 14px;
   color: #666;
@@ -148,7 +149,7 @@ select {
    今日总结
 ============================ */
 #todaySummary {
-  min-height: 60px; /* 修复：避免 summary 消失 */
+  min-height: 60px;
 }
 
 .history-title {
