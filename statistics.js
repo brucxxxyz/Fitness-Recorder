@@ -10,6 +10,10 @@ let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 // 当前选中的日期（用于雷达图联动）
 let selectedDate = null;
 
+// 图表显示开关（默认两个都显示）
+let showBar = true;
+let showRadar = true;
+
 // 自动卡路里：B 方案
 function caloriesPerSet(reps) {
   return reps * 0.6;
@@ -165,9 +169,7 @@ function renderBar(dates) {
           const index = elements[0].index;
           const date = dates[index];
 
-          // 点击同一天 → 取消选中
           selectedDate = (selectedDate === date) ? null : date;
-
           updateRadar();
         }
       },
@@ -243,10 +245,9 @@ function updateRadar() {
 }
 
 /* -----------------------------
-   刷新图表
+   刷新图表（支持同时显示）
 ----------------------------- */
 let currentMode = "week";
-let currentChart = "bar";
 
 function refreshChart() {
   selectedDate = null; // 切换周/月时清除选中
@@ -255,19 +256,25 @@ function refreshChart() {
     ? getWeekByOffset(weekOffset)
     : getMonthByOffset(monthOffset);
 
-  if (currentChart === "bar") {
+  // 柱状图
+  if (showBar) {
     document.getElementById("chartCanvas").style.display = "block";
-    document.getElementById("radarCanvas").style.display = "none";
     renderBar(dates);
   } else {
     document.getElementById("chartCanvas").style.display = "none";
+  }
+
+  // 雷达图
+  if (showRadar) {
     document.getElementById("radarCanvas").style.display = "block";
     updateRadar();
+  } else {
+    document.getElementById("radarCanvas").style.display = "none";
   }
 }
 
 /* -----------------------------
-   按钮绑定
+   按钮绑定（开关模式）
 ----------------------------- */
 document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
@@ -282,12 +289,12 @@ document.getElementById("btnMonth").onclick = () => {
 };
 
 document.getElementById("btnBar").onclick = () => {
-  currentChart = "bar";
+  showBar = !showBar;
   refreshChart();
 };
 
 document.getElementById("btnRadar").onclick = () => {
-  currentChart = "radar";
+  showRadar = !showRadar;
   refreshChart();
 };
 
