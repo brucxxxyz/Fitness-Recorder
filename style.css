@@ -99,7 +99,7 @@ select {
 
 .date-wrapper input[type="date"] {
   width: 100%;
-  height: 60px; /* 裁切原生高度 */
+  height: 60px;
   padding: 10px;
   font-size: 16px;
   border: none;
@@ -112,7 +112,7 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto; /* 修复：6 列 */
+  grid-template-columns: 1fr auto auto auto auto auto;
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
@@ -148,7 +148,7 @@ select {
    今日总结
 ============================ */
 #todaySummary {
-  min-height: 60px; /* 修复：避免 summary 消失 */
+  min-height: 60px;
 }
 
 .history-title {
@@ -239,15 +239,15 @@ button:active {
 }
 
 /* ============================
-   图表 canvas
+   图表 canvas（排除人体热力图）
 ============================ */
-canvas {
+canvas:not(#bodyHeatCanvas) {
   width: 100% !important;
   height: auto !important;
 }
 
 /* ============================
-   雷达图 + 人体图布局（新增）
+   雷达图 + 人体图布局
 ============================ */
 .radar-body-wrapper {
   display: flex;
@@ -261,13 +261,9 @@ canvas {
   height: 140px;
 }
 
-.heatmap-body {
-  width: 160px;
-  height: auto;
-  opacity: 0.95;
-}
-
-/* 防止人体图被压缩 */
+/* ============================
+   人体图（固定 266×400，不变形）
+============================ */
 #bodyMainContainer {
   flex-shrink: 0;
 }
@@ -283,3 +279,11 @@ canvas {
   height: 400px !important;
 }
 
+/* 删除旧的 .heatmap-body（避免冲突） */
+/*
+.heatmap-body {
+  width: 160px;
+  height: auto;
+  opacity: 0.95;
+}
+*/
