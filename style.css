@@ -111,7 +111,7 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto;
+  grid-template-columns: 1fr auto auto auto auto auto; /* 修复：6 列 */
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
@@ -119,10 +119,6 @@ select {
 
 .item-name {
   font-size: 15px;
-  white-space: nowrap;        /* ⭐ 保证永远一行 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;               /* ⭐ 防止被 auto 列挤爆 */
 }
 
 .reps-label {
