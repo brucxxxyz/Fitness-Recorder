@@ -36,18 +36,27 @@
 
     <!-- 人体热点图容器（默认隐藏） -->
     <div id="bodyMainContainer"
-         style="position: relative; width:160px; height:400px; display:none;">
+         style="position: relative; width:266px; height:400px; display:none;">
 
+      <!-- 人体图（266×400） -->
       <img src="wireframeBody.webp"
            id="bodyImage"
-           class="heatmap-body"
-           style="position:absolute; left:0; top:0; width:160px; height:400px;" />
+           style="position:absolute; left:0; top:0; width:266px; height:400px;" />
 
+      <!-- 热力图 Canvas（266×400） -->
       <canvas id="bodyHeatCanvas"
-              width="160"
+              width="266"
               height="400"
-              style="position:absolute; left:0; top:0; width:160px; height:400px;">
+              style="position:absolute; left:0; top:0; width:266px; height:400px;">
       </canvas>
+
+      <!-- tooltip（点击显示能量数据） -->
+      <div id="bodyTooltip"
+           style="position:absolute; display:none;
+                  background:rgba(0,0,0,0.8); color:#fff;
+                  padding:4px 8px; border-radius:4px;
+                  font-size:12px; pointer-events:none;
+                  white-space:nowrap;"></div>
     </div>
 
   </div>
