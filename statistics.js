@@ -1,5 +1,8 @@
 let chart;
+let radarChart = null;
+
 const ctx = document.getElementById("chartCanvas").getContext("2d");
+const radarCtx = document.getElementById("radarCanvas").getContext("2d");
 
 const STORAGE_KEY = "fitness_history_v13";
 let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -80,7 +83,63 @@ function getMonthByOffset(offset) {
   return arr;
 }
 
-// 柱状图（能量消耗）
+/* -----------------------------
+   计算各部位能量
+----------------------------- */
+function computePartEnergy(dates) {
+  const partEnergy = {
+    "胸部": 0,
+    "背部": 0,
+    "腿部": 0,
+    "肩部": 0,
+    "手臂": 0,
+    "核心": 0
+  };
+
+  dates.forEach(date => {
+    const items = history[date];
+    if (!items) return;
+
+    for (const itemName in items) {
+      const sets = items[itemName];
+      const reps = findReps(itemName);
+      const calories = caloriesPerSet(reps) * sets;
+
+      for (const part in WORKOUT_GROUPS) {
+        if (WORKOUT_GROUPS[part].some(obj => obj.name === itemName)) {
+          partEnergy[part] += calories;
+        }
+      }
+    }
+  });
+
+  return partEnergy;
+}
+
+/* -----------------------------
+   计算雷达图六维指标
+----------------------------- */
+function computeRadarValues(partEnergy) {
+  const chest = partEnergy["胸部"];
+  const back = partEnergy["背部"];
+  const legs = partEnergy["腿部"];
+  const shoulder = partEnergy["肩部"];
+  const arm = partEnergy["手臂"];
+  const core = partEnergy["核心"];
+
+  return [
+    chest + back + legs,                     // 力量
+    shoulder + arm,                          // 爆发
+    core,                                    // 核心
+    core + legs,                             // 平衡
+    shoulder + core,                         // 灵活
+    chest + back + legs + shoulder + arm + core // 耐力
+  ];
+}
+
+/* -----------------------------
+   柱状图（能量消耗）
+----------------------------- */
 function renderBar(dates) {
   const labels = dates.map(d => d.slice(5));
   const data = dates.map(d => getDayStats(d).totalCalories);
@@ -105,144 +164,74 @@ function renderBar(dates) {
   });
 }
 
-// 散点图（四维：部位 → 能量 + 大小 + 强度透明度）
-function renderScatter(dates) {
-  const allRecords = [];
+/* -----------------------------
+   雷达图（带动画）
+----------------------------- */
+function renderRadar(values) {
+  const labels = ["力量", "爆发", "核心", "平衡", "灵活", "耐力"];
 
-  dates.forEach(date => {
-    const items = history[date];
-    if (!items) return;
-
-    for (const itemName in items) {
-      const sets = items[itemName];
-      const reps = findReps(itemName);
-      const calories = caloriesPerSet(reps) * sets;
-
-      let part = "other";
-      for (const p in WORKOUT_GROUPS) {
-        if (WORKOUT_GROUPS[p].some(obj => obj.name === itemName)) {
-          part = p;
-          break;
-        }
-      }
-
-      allRecords.push({
-        part,
-        calories,
-        sets
-      });
-    }
-  });
-
-  if (allRecords.length === 0) {
-    if (chart) chart.destroy();
-    chart = new Chart(ctx, {
-      type: "bubble",
-      data: { datasets: [] },
+  if (!radarChart) {
+    radarChart = new Chart(radarCtx, {
+      type: "radar",
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: "rgba(59,130,246,0.25)",
+          borderColor: "rgba(59,130,246,1)",
+          borderWidth: 2,
+          pointBackgroundColor: "rgba(59,130,246,1)"
+        }]
+      },
       options: {
+        animation: {
+          duration: 900,
+          easing: "easeOutQuart"
+        },
+        plugins: { legend: { display: false } },
         scales: {
-          x: { type: "category", labels: [] },
-          y: { beginAtZero: true }
-        }
-      }
-    });
-    return;
-  }
-
-  const parts = [...new Set(allRecords.map(r => r.part))];
-
-  const colorMap = {
-    "胸部": "255,99,132",
-    "背部": "54,162,235",
-    "腿部": "75,192,192",
-    "肩部": "255,206,86",
-    "手臂": "153,102,255",
-    "核心": "255,159,64",
-    "other": "120,120,120"
-  };
-
-  const datasets = {};
-
-  allRecords.forEach(r => {
-    const { part, calories, sets } = r;
-
-    const intensity = calories / sets;
-    const alpha = Math.min(1, Math.max(0.25, intensity / 50));
-
-    if (!datasets[part]) {
-      datasets[part] = {
-        label: part,
-        data: [],
-        backgroundColor: [],
-        borderColor: [],
-        borderWidth: 1
-      };
-    }
-
-    datasets[part].data.push({
-      x: part,
-      y: calories,
-      r: Math.sqrt(calories) * 2
-    });
-
-    datasets[part].backgroundColor.push(`rgba(${colorMap[part]},${alpha})`);
-    datasets[part].borderColor.push(`rgba(${colorMap[part]},1)`);
-  });
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: "bubble",
-    data: {
-      datasets: Object.values(datasets)
-    },
-    options: {
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const calories = context.raw.y;
-              return `能量: ${calories.toFixed(1)} kcal`;
-            }
+          r: {
+            beginAtZero: true,
+            grid: { color: "#ccc" },
+            angleLines: { color: "#ccc" },
+            pointLabels: { font: { size: 12 } }
           }
         }
-      },
-      scales: {
-        x: {
-          type: "category",
-          labels: parts,
-          title: { display: true, text: "训练部位" }
-        },
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "能量消耗 (kcal)" }
-        }
       }
-    }
-  });
+    });
+  } else {
+    radarChart.data.datasets[0].data = values;
+    radarChart.update({
+      duration: 900,
+      easing: "easeOutQuart"
+    });
+  }
 }
 
-// 当前模式：week / month，bar / scatter
+/* -----------------------------
+   刷新图表
+----------------------------- */
 let currentMode = "week";
 let currentChart = "bar";
 
 function refreshChart() {
-  let dates;
+  let dates = currentMode === "week"
+    ? getWeekByOffset(weekOffset)
+    : getMonthByOffset(monthOffset);
 
-  if (currentMode === "week") {
-    dates = getWeekByOffset(weekOffset);
-  } else {
-    dates = getMonthByOffset(monthOffset);
-  }
+  const partEnergy = computePartEnergy(dates);
+  const radarValues = computeRadarValues(partEnergy);
 
   if (currentChart === "bar") {
     renderBar(dates);
   } else {
-    renderScatter(dates);
+    renderRadar(radarValues);
   }
 }
 
-// 绑定按钮
+/* -----------------------------
+   按钮绑定
+----------------------------- */
 document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
   weekOffset = 0;
@@ -260,8 +249,8 @@ document.getElementById("btnBar").onclick = () => {
   refreshChart();
 };
 
-document.getElementById("btnScatter").onclick = () => {
-  currentChart = "scatter";
+document.getElementById("btnRadar").onclick = () => {
+  currentChart = "radar";
   refreshChart();
 };
 
