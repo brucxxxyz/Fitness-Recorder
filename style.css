@@ -111,27 +111,26 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1.3fr 80px auto auto auto auto;
+  grid-template-columns: 1.6fr 90px auto auto auto auto;
   align-items: center;
-  gap: 8px;
+  gap: 10px;   /* ⭐ 让视觉更右一些 */
   margin-bottom: 10px;
 }
 
 .item-name {
-  font-size: 15px;
+  min-width: 0;         /* ⭐ 允许压缩（关键） */
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;      /* ⭐ 关键：允许压缩 */
-  width: 100%;       /* ⭐ 让 ellipsis 生效 */
 }
 
 .reps-label {
-  width: 80px;
+  width: 90px;          /* ⭐ 固定宽度，永不折叠 */
   text-align: center;
+  white-space: nowrap;  /* ⭐ 禁止换行 */
   font-size: 14px;
   color: #666;
-  white-space: nowrap;
 }
 
 .total-reps {
