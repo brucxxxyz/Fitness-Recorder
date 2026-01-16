@@ -106,6 +106,4 @@ Potential improvements for future versions:
 
 ---
 
-## 🖋️ Credits
-
-**— Designed by BY —**
+**Designed by BY**
