@@ -244,3 +244,17 @@ canvas {
   width: 100% !important;
   height: auto !important;
 }
+
+/* ============================
+   落款 footer
+============================ */
+.footer {
+  text-align: center;
+  padding: 12px 0;
+  color: #888;
+  font-size: 14px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
