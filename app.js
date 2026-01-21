@@ -332,3 +332,54 @@ function findReps(itemName) {
   }
   return 0;
 }
+
+
+/* ============================
+   🌐 语言菜单
+============================ */
+const langBtn = document.getElementById("langBtn");
+const langMenu = document.getElementById("langMenu");
+
+if (langBtn && langMenu) {
+  langBtn.onclick = () => {
+    langMenu.classList.toggle("hidden");
+  };
+
+  langMenu.querySelectorAll("[data-lang]").forEach(item => {
+    item.onclick = () => {
+      const lang = item.dataset.lang;
+      console.log("切换语言：", lang);
+
+      langMenu.classList.add("hidden");
+
+      // 未来可扩展：applyLanguage(lang)
+      // 目前只做 UI，不影响功能
+    };
+  });
+}
+
+/* ============================
+   🌙 暗夜模式切换
+============================ */
+const themeToggle = document.getElementById("themeToggle");
+
+if (themeToggle) {
+  themeToggle.onclick = () => {
+    document.documentElement.classList.toggle("dark");
+
+    // 保存状态
+    const isDark = document.documentElement.classList.contains("dark");
+    localStorage.setItem("fitness_theme", isDark ? "dark" : "light");
+  };
+}
+
+/* ============================
+   🌙 启动时恢复暗夜模式
+============================ */
+(function restoreTheme() {
+  const saved = localStorage.getItem("fitness_theme");
+  if (saved === "dark") {
+    document.documentElement.classList.add("dark");
+  }
+})();
+
