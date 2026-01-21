@@ -10,59 +10,79 @@
 
 <body>
 
-<div class="app">
+  <!-- 顶部按钮 -->
+  <div class="top-right">
 
-  <!-- 今日训练页 -->
-  <div id="page-home" class="page active">
-
-    <h2 class="page-title">今日训练</h2>
-
-    <div class="card form-row">
-      <label>日期</label>
-      <div class="date-wrapper">
-        <button id="prevDate">&lt;</button>
-        <input type="date" id="datePicker">
-        <button id="nextDate">&gt;</button>
+    <!-- 语言选择器 -->
+    <div class="lang-wrapper">
+      <button id="langBtn">🌐</button>
+      <div id="langMenu" class="lang-menu hidden">
+        <div class="lang-title">🌐 Language</div>
+        <div data-lang="zh">🇨🇳 简体中文</div>
+        <div data-lang="hk">🇭🇰 繁體中文</div>
+        <div data-lang="en">🇺🇸 English</div>
       </div>
     </div>
 
-    <div class="card form-row">
-      <label>部位</label>
-      <select id="bodyPartSelect"></select>
+    <!-- 暗夜模式按钮 -->
+    <button id="themeToggle">🌙</button>
+  </div>
+
+  <div class="app">
+
+    <!-- 今日训练页 -->
+    <div id="page-home" class="page active">
+
+      <h2 class="page-title">今日训练</h2>
+
+      <div class="card form-row">
+        <label>日期</label>
+        <div class="date-wrapper">
+          <button id="prevDate">&lt;</button>
+          <input type="date" id="datePicker">
+          <button id="nextDate">&gt;</button>
+        </div>
+      </div>
+
+      <div class="card form-row">
+        <label>部位</label>
+        <select id="bodyPartSelect"></select>
+      </div>
+
+      <div class="card" id="subItemContainer"></div>
+
+      <!-- 今日统计 -->
+      <div class="card" id="todaySummary"></div>
+
+      <div class="card">
+        <button id="gotoHistory">查看历史记录</button>
+      </div>
+
+      <div class="card">
+        <button id="gotoStats">训练统计</button>
+      </div>
+
     </div>
 
-    <div class="card" id="subItemContainer"></div>
+    <!-- 历史记录页 -->
+    <div id="page-history" class="page">
 
-    <!-- 今日统计 -->
-    <div class="card" id="todaySummary"></div>
+      <h2 class="page-title">历史记录</h2>
 
-    <div class="card">
-      <button id="gotoHistory">查看历史记录</button>
-    </div>
+      <div id="historyList" class="card"></div>
 
-    <div class="card">
-      <button id="gotoStats">训练统计</button>
+      <div class="card">
+        <button id="backHome">返回</button>
+      </div>
+
     </div>
 
   </div>
 
-  <!-- 历史记录页 -->
-  <div id="page-history" class="page">
+  <footer class="footer">— Designed by BY —</footer>
 
-    <h2 class="page-title">历史记录</h2>
-
-    <div id="historyList" class="card"></div>
-
-    <div class="card">
-      <button id="backHome">返回</button>
-    </div>
-
-  </div>
-
-<footer class="footer">— Designed by BY —</footer>
-
-<script src="workouts.js"></script>
-<script src="app.js"></script>
+  <script src="workouts.js"></script>
+  <script src="app.js"></script>
 
 </body>
 </html>
