@@ -59,7 +59,7 @@ const bodyPartSelect = document.getElementById("bodyPartSelect");
 for (const part in WORKOUT_GROUPS) {
   const opt = document.createElement("option");
   opt.value = part;
-  opt.textContent = part;
+  opt.textContent = part; // 部位翻译将来可在这里挂接
   bodyPartSelect.appendChild(opt);
 }
 
@@ -80,7 +80,7 @@ function renderSubItems() {
 
     const name = document.createElement("span");
     name.className = "item-name";
-    name.textContent = item.name;
+    name.textContent = item.name; // 动作翻译将来可在这里挂接
 
     const repsLabel = document.createElement("span");
     repsLabel.className = "reps-label";
@@ -230,7 +230,7 @@ function showHistoryPage() {
 
       const left = document.createElement("span");
       left.className = "item-name";
-      left.textContent = name;
+      left.textContent = name; // 将来可用翻译名替换
 
       const repsLabel = document.createElement("span");
       repsLabel.className = "reps-label";
@@ -333,9 +333,13 @@ function findReps(itemName) {
   return 0;
 }
 
+/* ============================
+   🌐 语言 & 🌙 主题：状态
+============================ */
+let currentLang = localStorage.getItem("fitness_lang") || "zh";
 
 /* ============================
-   🌐 语言菜单
+   🌐 语言菜单逻辑
 ============================ */
 const langBtn = document.getElementById("langBtn");
 const langMenu = document.getElementById("langMenu");
@@ -348,12 +352,10 @@ if (langBtn && langMenu) {
   langMenu.querySelectorAll("[data-lang]").forEach(item => {
     item.onclick = () => {
       const lang = item.dataset.lang;
-      console.log("切换语言：", lang);
-
+      currentLang = lang;
+      localStorage.setItem("fitness_lang", lang);
       langMenu.classList.add("hidden");
-
-      // 未来可扩展：applyLanguage(lang)
-      // 目前只做 UI，不影响功能
+      applyLanguage(lang);
     };
   });
 }
@@ -366,8 +368,6 @@ const themeToggle = document.getElementById("themeToggle");
 if (themeToggle) {
   themeToggle.onclick = () => {
     document.documentElement.classList.toggle("dark");
-
-    // 保存状态
     const isDark = document.documentElement.classList.contains("dark");
     localStorage.setItem("fitness_theme", isDark ? "dark" : "light");
   };
@@ -383,3 +383,77 @@ if (themeToggle) {
   }
 })();
 
+/* ============================
+   🌐 启动时恢复语言（UI 级）
+============================ */
+(function restoreLanguage() {
+  applyLanguage(currentLang);
+})();
+
+/* ============================
+   🌐 UI 翻译（Index 页）
+   👉 动作/部位翻译留给 workouts.js 提供映射
+============================ */
+const LANG_UI = {
+  zh: {
+    homeTitle: "今日训练",
+    historyTitle: "历史记录",
+    btnHistory: "查看历史记录",
+    btnStats: "训练统计",
+    btnBack: "返回",
+    deleteDay: "删除当天数据",
+    summary: (sets, reps, cal) => `
+      <div>今日总组数： <b>${sets}</b> 组</div>
+      <div>今日总次数： <b>${reps}</b> 次</div>
+      <div>今日总能量： <b>${cal.toFixed(1)}</b> kcal</div>
+    `
+  },
+  hk: {
+    homeTitle: "今日訓練",
+    historyTitle: "歷史記錄",
+    btnHistory: "查看歷史記錄",
+    btnStats: "訓練統計",
+    btnBack: "返回",
+    deleteDay: "刪除當天數據",
+    summary: (sets, reps, cal) => `
+      <div>今日總組數： <b>${sets}</b> 組</div>
+      <div>今日總次數： <b>${reps}</b> 次</div>
+      <div>今日總能量： <b>${cal.toFixed(1)}</b> kcal</div>
+    `
+  },
+  en: {
+    homeTitle: "Today's Workout",
+    historyTitle: "History",
+    btnHistory: "View History",
+    btnStats: "Statistics",
+    btnBack: "Back",
+    deleteDay: "Delete This Day",
+    summary: (sets, reps, cal) => `
+      <div>Total Sets: <b>${sets}</b></div>
+      <div>Total Reps: <b>${reps}</b></div>
+      <div>Total Energy: <b>${cal.toFixed(1)}</b> kcal</div>
+    `
+  }
+};
+
+function applyLanguage(lang) {
+  const t = LANG_UI[lang] || LANG_UI.zh;
+
+  // 页面标题（主页 / 历史）
+  const homeTitle = document.querySelector("#page-home .page-title");
+  const historyTitle = document.querySelector("#page-history .page-title");
+  if (homeTitle) homeTitle.innerText = t.homeTitle;
+  if (historyTitle) historyTitle.innerText = t.historyTitle;
+
+  // 按钮
+  const btnHistory = document.getElementById("gotoHistory");
+  const btnStats = document.getElementById("gotoStats");
+  const btnBackHome = document.getElementById("backHome");
+
+  if (btnHistory) btnHistory.innerText = t.btnHistory;
+  if (btnStats) btnStats.innerText = t.btnStats;
+  if (btnBackHome) btnBackHome.innerText = t.btnBack;
+
+  // 历史页删除按钮文本在 showHistoryPage 里用 t.deleteDay
+  // 今日统计区域在 renderFooter 里可改用 t.summary
+}
