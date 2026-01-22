@@ -403,20 +403,22 @@ html.dark .footer {
 }
 
 /* ============================
-   历史页：右侧按钮布局（不影响主页）
+   历史页：让 - n + 靠右（不影响主页）
 ============================ */
 #historyPage .card .subitem-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between;   /* 左右分布 */
   align-items: center;
-  padding: 6px 4px;
+  padding: 6px 4px;                 /* 保持在卡片内 */
 }
 
+/* 左侧动作名占据左侧空间 */
 #historyPage .card .subitem-row .item-name {
   flex: 1;
   padding-right: 10px;
 }
 
+/* 右侧按钮区保持紧凑 */
 #historyPage .card .subitem-row .counter-btn,
 #historyPage .card .subitem-row .count-number {
   margin-left: 8px;
