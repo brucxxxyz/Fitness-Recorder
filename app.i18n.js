@@ -1,6 +1,5 @@
 // =====================================
 // 三语言系统（UI + 动作 + 部位 + 统计页 + 六维能力）
-// 依赖：workouts.js（翻译表 + 数据）
 // =====================================
 
 /* ============================
@@ -116,7 +115,7 @@ function getLocalizedWorkout(name) {
 }
 
 /* ============================
-   翻译今日训练列表
+   翻译今日训练动作列表
 ============================ */
 function translateTodayList() {
   document.querySelectorAll(".subitem-row .item-name").forEach(el => {
@@ -189,25 +188,18 @@ function translateUI() {
   const historyTitle = document.querySelector("#page-history .page-title");
   if (historyTitle) historyTitle.textContent = t.historyTitle;
 
-  // 统计页标题（修复：只选 .stats-title）
+  // 统计页标题（只匹配 .stats-title）
   const statsTitle = document.querySelector(".stats-title");
   if (statsTitle) statsTitle.textContent = t.statsTitle;
 
-  // 按钮
+  // 按钮翻译
   const btnHistory = document.getElementById("gotoHistory");
   const btnStats = document.getElementById("gotoStats");
   const btnBack = document.getElementById("backHome");
-  const btnDelete = document.querySelectorAll(".small-btn");
 
   if (btnHistory) btnHistory.textContent = t.btnHistory;
   if (btnStats) btnStats.textContent = t.btnStats;
   if (btnBack) btnBack.textContent = t.btnBack;
-
-  btnDelete?.forEach(btn => {
-    if (btn.textContent.includes("删除") || btn.textContent.includes("刪除") || btn.textContent.includes("Delete")) {
-      btn.textContent = t.btnDeleteDay;
-    }
-  });
 
   // 统计页按钮
   const btnWeek = document.getElementById("btnWeek");
@@ -224,7 +216,7 @@ function translateUI() {
 }
 
 /* ============================
-   统计页图表标题接口
+   图表标题接口
 ============================ */
 function getChartTitle(type) {
   const t = UI_TEXT[currentLang];
@@ -255,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ============================
-   绑定语言按钮（修复版）
+   绑定语言按钮
 ============================ */
 const langBtn = document.getElementById("langBtn");
 const langMenu = document.getElementById("langMenu");
@@ -263,13 +255,11 @@ const langWrapper = document.querySelector(".lang-wrapper");
 
 if (langBtn && langMenu) {
 
-  // 展开/收回
   langBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     langMenu.classList.toggle("hidden");
   });
 
-  // 点击语言选项
   langMenu.querySelectorAll("[data-lang]").forEach(item => {
     item.addEventListener("click", () => {
       applyLanguage(item.dataset.lang);
@@ -277,7 +267,6 @@ if (langBtn && langMenu) {
     });
   });
 
-  // 点击外部关闭
   document.addEventListener("click", (e) => {
     if (!langWrapper.contains(e.target)) {
       langMenu.classList.add("hidden");
