@@ -106,19 +106,21 @@ function showHistoryPage() {
       plus.textContent = "+";
 
       minus.onclick = () => {
-        let v = parseInt(count.textContent);
-        if (v > 0) v--;
+  let v = parseInt(count.textContent);
+  if (v > 0) v--;
 
-        count.textContent = v;
+  count.textContent = v;
 
-        if (v === 0) delete history[date][nameZh];
-        else history[date][nameZh] = v;
+  if (v === 0) {
+    delete history[date][nameZh];
+    row.remove();  // ⭐ 直接移除这一行，不刷新整个页面
+  } else {
+    history[date][nameZh] = v;
+  }
 
-        saveHistory();
-        calories.textContent = t("history_calories", { cal: getDayCalories(date) });
-
-        if (v === 0) showHistoryPage();
-      };
+  saveHistory();
+  calories.textContent = t("history_calories", { cal: getDayCalories(date) });
+};
 
       plus.onclick = () => {
         let v = parseInt(count.textContent);
