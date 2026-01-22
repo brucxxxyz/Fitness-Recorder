@@ -10,7 +10,7 @@ body {
 
 .app {
   max-width: 480px;
-  margin: 0 auto; /* 让顶部按钮不被内容覆盖 */
+  margin: 0 auto;
   padding: 16px;
 }
 
@@ -111,14 +111,13 @@ select {
   font-weight: 600;
 
   border: none !important;
-  border-width: 0 !important;
   outline: none !important;
   box-shadow: none !important;
   -webkit-appearance: none !important;
   appearance: none !important;
   background-clip: padding-box !important;
 
-  width: auto;              /* 不继承通用 button 的 100% 宽度 */
+  width: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -261,12 +260,15 @@ canvas {
   right: 12px;
   display: flex;
   gap: 12px;
-  z-index: 99999;   /* 固定在最上层 */
-  /* 不再使用 pointer-events: none，避免影响菜单点击 */
+  z-index: 99999;
+
+  /* 关键：容器不接收点击，不会挡住历史/统计按钮 */
+  pointer-events: none;
 }
 
 #langBtn,
 #themeToggle {
+  pointer-events: auto; /* 按钮可点击 */
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -278,9 +280,9 @@ canvas {
   background: #fff;
   color: #000;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  cursor: pointer;
 }
 
-/* 暗夜模式下顶部按钮跟随主题 */
 html.dark #langBtn,
 html.dark #themeToggle {
   background: #333 !important;
@@ -291,18 +293,22 @@ html.dark #themeToggle {
 /* ============================
    语言菜单
 ============================ */
-.lang-wrapper { position: relative; }
+.lang-wrapper {
+  position: relative;
+  pointer-events: auto; /* 菜单可点击 */
+}
 
 .lang-menu {
   position: absolute;
-  top: 50px;
+  top: 48px; /* 菜单在按钮下方，不重叠 */
   right: 0;
   background: #fff;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 100000; /* 高于按钮，确保可点 */
+  z-index: 100000;
   min-width: 160px;
+  pointer-events: auto;
 }
 
 .lang-title {
