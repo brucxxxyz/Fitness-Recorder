@@ -166,7 +166,7 @@ function saveSet(date, name, sets) {
 }
 
 /* ============================
-   加载历史记录（可编辑 + 0 组不显示）
+   加载历史记录（可编辑 + 0 组不显示 + 仅显示有数据的日期）
 ============================ */
 function loadHistory() {
   const list = document.getElementById("historyList");
@@ -178,6 +178,11 @@ function loadHistory() {
 
   dates.forEach(date => {
     const dayData = history[date];
+
+    // ⭐ 如果当天所有动作都是 0，则不显示该日期
+    const hasData = Object.values(dayData).some(v => v > 0);
+    if (!hasData) return;
+
     const div = document.createElement("div");
     div.className = "history-day card";
 
@@ -212,17 +217,16 @@ function loadHistory() {
       const itemName = row.querySelector(".item-name").dataset.originalName;
       const minus = row.querySelector(".h-minus");
       const plus = row.querySelector(".h-plus");
-      const count = row.querySelector(".h-count");
 
       minus.addEventListener("click", () => {
-        let v = parseInt(count.textContent);
+        let v = parseInt(row.querySelector(".h-count").textContent);
         if (v > 0) v--;
         saveSet(date, itemName, v);
-        loadHistory(); // 自动刷新（0 组会消失）
+        loadHistory();
       });
 
       plus.addEventListener("click", () => {
-        let v = parseInt(count.textContent);
+        let v = parseInt(row.querySelector(".h-count").textContent);
         v++;
         saveSet(date, itemName, v);
         loadHistory();
