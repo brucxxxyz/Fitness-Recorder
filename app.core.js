@@ -72,8 +72,7 @@ if (bodyPartSelect) {
   for (const part in WORKOUT_GROUPS) {
     const opt = document.createElement("option");
     opt.value = part;
-    // 默认显示原始中文，语言层会覆盖显示
-    opt.textContent = part;
+    opt.textContent = part; // 语言层会覆盖
     bodyPartSelect.appendChild(opt);
   }
 }
@@ -99,7 +98,6 @@ function renderSubItems() {
 
     const name = document.createElement("span");
     name.className = "item-name";
-    // 默认显示原始中文，语言层可用 translateWorkout 覆盖
     name.textContent = item.name;
 
     const repsLabel = document.createElement("span");
@@ -193,7 +191,6 @@ function renderFooter(totalSets, totalReps, totalCalories) {
   const box = document.getElementById("todaySummary");
   if (!box) return;
 
-  // 默认中文文案，语言层会覆盖
   box.innerHTML = `
     <div>今日总组数： <b>${totalSets}</b> 组</div>
     <div>今日总次数： <b>${totalReps}</b> 次</div>
@@ -268,7 +265,7 @@ function showHistoryPage() {
 
       const left = document.createElement("span");
       left.className = "item-name";
-      left.textContent = name; // 语言层可替换为 translateWorkout(name)
+      left.textContent = name;
 
       const repsLabel = document.createElement("span");
       repsLabel.className = "reps-label";
@@ -328,7 +325,7 @@ function showHistoryPage() {
 
     const delBtn = document.createElement("button");
     delBtn.className = "small-btn";
-    delBtn.textContent = "删除当天数据"; // 语言层可覆盖
+    delBtn.textContent = "删除当天数据";
 
     delBtn.onclick = () => {
       delete history[date];
@@ -342,7 +339,7 @@ function showHistoryPage() {
 }
 
 /* ============================
-   返回主页（不再重置日期）
+   返回主页
 ============================ */
 const backHomeBtn = document.getElementById("backHome");
 
@@ -382,4 +379,51 @@ function findReps(itemName) {
     }
   }
   return 0;
+}
+
+/* ============================
+   六维能力能量计算（新增）
+============================ */
+function calcEnergyByDimension(data) {
+  const dimEnergy = {
+    balance: 0,
+    power: 0,
+    endurance: 0,
+    flexibility: 0,
+    stability: 0,
+    coordination: 0
+  };
+
+  for (const date in data) {
+    const items = data[date];
+
+    for (const name in items) {
+      const sets = items[name];
+      const reps = findReps(name);
+      const energy = sets * reps * 0.6;
+
+      const dim = WORKOUT_DIMENSION_MAP[name] || "endurance";
+      dimEnergy[dim] += energy;
+    }
+  }
+
+  return dimEnergy;
+}
+
+/* ============================
+   获取最近 N 天数据（统计页用）
+============================ */
+function getRecentDays(n) {
+  const result = {};
+  const today = new Date();
+
+  for (let i = 0; i < n; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+
+    const key = formatLocal(d);
+    if (history[key]) result[key] = history[key];
+  }
+
+  return result;
 }
