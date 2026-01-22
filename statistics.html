@@ -30,14 +30,12 @@
 
   <div class="app">
 
-    <h2 class="page-title">训练统计</h2>
+    <h2 class="page-title stats-title">训练统计</h2>
 
     <!-- 时间切换 -->
     <div class="card btn-row">
-      <button id="btnPrev" class="small-btn"><</button>
       <button id="btnWeek" class="small-btn">每周</button>
       <button id="btnMonth" class="small-btn">每月</button>
-      <button id="btnNext" class="small-btn">></button>
     </div>
 
     <!-- 图表类型切换 -->
@@ -46,24 +44,31 @@
       <button id="btnRadar" class="small-btn">雷达图（六维）</button>
     </div>
 
-    <!-- 主图表 -->
+    <!-- 柱状图 -->
     <div class="card">
-    <canvas id="barChart" height="300"></canvas>
+      <canvas id="barChart" height="300"></canvas>
     </div>
 
+    <!-- 雷达图 -->
     <div class="card">
-    <canvas id="radarChart" width="300" height="300"></canvas>
+      <canvas id="radarChart" width="300" height="300"></canvas>
+    </div>
+
+    <!-- 返回按钮 -->
+    <div class="card">
+      <button id="btnBack" class="small-btn">返回</button>
     </div>
 
   </div>
 
   <footer class="footer">— Designed by BY —</footer>
 
-<script src="workouts.js"></script>
-<script src="app.core.js"></script>
-<script src="app.i18n.js"></script>
-<script src="app.theme.js"></script>
-<script src="statistics.js"></script>
+  <!-- 加载顺序非常重要 -->
+  <script src="workouts.js"></script>
+  <script src="app.core.js"></script>
+  <script src="app.i18n.js"></script>
+  <script src="app.theme.js"></script>
+  <script src="statistics.js"></script>
 
 </body>
 </html>
