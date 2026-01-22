@@ -237,6 +237,9 @@ function applyLanguage(lang) {
   translateTodayList();
   translateHistoryList();
   translateSummary();
+
+  // ⭐ 通知统计页刷新图表
+  document.dispatchEvent(new Event("languageChanged"));
 }
 
 /* ============================
