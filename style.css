@@ -10,7 +10,7 @@ body {
 
 .app {
   max-width: 480px;
-  margin: 60px auto 0; /* 让顶部按钮不被内容覆盖 */
+  margin: 0 auto; /* 让顶部按钮不被内容覆盖 */
   padding: 16px;
 }
 
