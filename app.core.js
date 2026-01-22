@@ -1,4 +1,9 @@
 /* ============================
+   全局历史数据（必须放最顶部）
+============================ */
+let history = JSON.parse(localStorage.getItem("fitness_history") || "{}");
+
+/* ============================
    页面切换（仅 index.html 使用）
 ============================ */
 function showPage(pageId) {
@@ -8,18 +13,13 @@ function showPage(pageId) {
 }
 
 /* ============================
-   页面跳转按钮绑定（安全版）
+   页面跳转按钮绑定
 ============================ */
-
-// 首页 → 历史记录
 const btnHistory = document.getElementById("gotoHistory");
 if (btnHistory) {
-  btnHistory.addEventListener("click", () => {
-    showPage("page-history");
-  });
+  btnHistory.addEventListener("click", () => showPage("page-history"));
 }
 
-// 首页 → 训练统计（跳转到 statistics.html）
 const btnStats = document.getElementById("gotoStats");
 if (btnStats) {
   btnStats.addEventListener("click", () => {
@@ -27,38 +27,28 @@ if (btnStats) {
   });
 }
 
-// 历史记录 → 返回首页
 const btnBackHome = document.getElementById("backHome");
 if (btnBackHome) {
-  btnBackHome.addEventListener("click", () => {
-    showPage("page-home");
-  });
+  btnBackHome.addEventListener("click", () => showPage("page-home"));
 }
 
 /* ============================
-   日期选择器逻辑（安全版）
+   日期选择器逻辑
 ============================ */
-
 const datePicker = document.getElementById("datePicker");
 const prevDateBtn = document.getElementById("prevDate");
 const nextDateBtn = document.getElementById("nextDate");
 
-// 格式化日期 yyyy-mm-dd
 function formatDate(date) {
   return date.toISOString().split("T")[0];
 }
 
-// 设置日期并刷新今日训练
 function setDate(date) {
   if (!datePicker) return;
   datePicker.value = formatDate(date);
-
-  if (typeof loadTodayWorkout === "function") {
-    loadTodayWorkout();
-  }
+  loadTodayWorkout();
 }
 
-// 上一天
 if (prevDateBtn) {
   prevDateBtn.addEventListener("click", () => {
     const d = new Date(datePicker.value);
@@ -67,7 +57,6 @@ if (prevDateBtn) {
   });
 }
 
-// 下一天
 if (nextDateBtn) {
   nextDateBtn.addEventListener("click", () => {
     const d = new Date(datePicker.value);
@@ -76,55 +65,17 @@ if (nextDateBtn) {
   });
 }
 
-// 手动选择日期
 if (datePicker) {
-  datePicker.addEventListener("change", () => {
-    if (typeof loadTodayWorkout === "function") {
-      loadTodayWorkout();
-    }
-  });
+  datePicker.addEventListener("change", () => loadTodayWorkout());
 }
 
 /* ============================
-   初始化（安全版）
-============================ */
-function init() {
-  // 默认设置今天日期
-  if (datePicker) {
-    const today = new Date();
-    datePicker.value = formatDate(today);
-  }
-
-  // 加载今日训练
-  if (typeof loadTodayWorkout === "function") {
-    loadTodayWorkout();
-  }
-
-  // 加载历史记录
-  if (typeof loadHistory === "function") {
-    loadHistory();
-  }
-}
-
-/* ============================
-   正确的初始化顺序
-============================ */
-document.addEventListener("DOMContentLoaded", () => {
-  // 先翻译 UI（语言系统）
-  applyLanguage(currentLang);
-
-  // 再加载数据（今日训练 + 历史记录）
-  init();
-});
-
-/* ============================
-   加载今日训练（主页核心函数）
+   加载今日训练（主页核心）
 ============================ */
 function loadTodayWorkout() {
   const partSelect = document.getElementById("bodyPartSelect");
   const container = document.getElementById("subItemContainer");
-  const summaryBox = document.getElementById("todaySummary");
-  const date = document.getElementById("datePicker")?.value;
+  const date = datePicker?.value;
 
   if (!partSelect || !container || !date) return;
 
@@ -144,27 +95,23 @@ function loadTodayWorkout() {
   container.innerHTML = "";
 
   WORKOUT_GROUPS[selectedPart].forEach(item => {
-    const row = document.createElement("div");
-    row.className = "subitem-row";
-
     const name = item.name;
     const reps = item.reps;
-
     const sets = history[date]?.[name] || 0;
+
+    const row = document.createElement("div");
+    row.className = "subitem-row";
 
     row.innerHTML = `
       <div class="item-name" data-original-name="${name}">
         ${getLocalizedWorkout(name)}
       </div>
-
       <div class="reps-label">${reps} 次</div>
-
       <button class="counter-btn minus">-</button>
       <div class="count-number">${sets}</div>
       <button class="counter-btn plus">+</button>
     `;
 
-    /* 加减按钮逻辑 */
     const minus = row.querySelector(".minus");
     const plus = row.querySelector(".plus");
     const count = row.querySelector(".count-number");
@@ -188,15 +135,12 @@ function loadTodayWorkout() {
     container.appendChild(row);
   });
 
-  /* 3. 翻译动作名称 */
   translateTodayList();
-
-  /* 4. 更新今日统计 */
   translateSummary();
 }
 
 /* ============================
-   保存某个动作的组数
+   保存组数
 ============================ */
 function saveSet(date, name, sets) {
   if (!history[date]) history[date] = {};
@@ -204,3 +148,60 @@ function saveSet(date, name, sets) {
   localStorage.setItem("fitness_history", JSON.stringify(history));
 }
 
+/* ============================
+   加载历史记录
+============================ */
+function loadHistory() {
+  const list = document.getElementById("historyList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  const dates = Object.keys(history).sort().reverse();
+
+  dates.forEach(date => {
+    const dayData = history[date];
+    const div = document.createElement("div");
+    div.className = "history-day card";
+
+    let html = `<h3>${date}</h3>`;
+
+    for (const name in dayData) {
+      const sets = dayData[name];
+      html += `
+        <div class="history-row">
+          <span class="item-name" data-original-name="${name}">
+            ${getLocalizedWorkout(name)}
+          </span>
+          <span>${sets} 组</span>
+        </div>
+      `;
+    }
+
+    div.innerHTML = html;
+    list.appendChild(div);
+  });
+
+  translateHistoryList();
+}
+
+/* ============================
+   初始化
+============================ */
+function init() {
+  if (datePicker) {
+    const today = new Date();
+    datePicker.value = formatDate(today);
+  }
+
+  loadTodayWorkout();
+  loadHistory();
+}
+
+/* ============================
+   启动
+============================ */
+document.addEventListener("DOMContentLoaded", () => {
+  applyLanguage(currentLang);
+  init();
+});
