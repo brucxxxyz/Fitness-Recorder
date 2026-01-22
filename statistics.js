@@ -158,7 +158,7 @@ function renderBar(dates) {
     data: {
       labels,
       datasets: [{
-        label: "能量消耗（kcal）",
+        label: t("stats_bar_label"),
         data,
         backgroundColor: "#4f46e5"
       }]
@@ -184,7 +184,14 @@ function renderBar(dates) {
    雷达图
 ----------------------------- */
 function renderRadar(values) {
-  const labels = ["力量", "爆发", "核心", "平衡", "灵活", "耐力"];
+  const labels = [
+    t("radar_strength"),
+    t("radar_explosive"),
+    t("radar_core"),
+    t("radar_balance"),
+    t("radar_flexibility"),
+    t("radar_endurance")
+  ];
 
   if (!radarChart) {
     radarChart = new Chart(radarCtx, {
@@ -216,6 +223,7 @@ function renderRadar(values) {
       }
     });
   } else {
+    radarChart.data.labels = labels;
     radarChart.data.datasets[0].data = values;
     radarChart.update({
       duration: 900,
@@ -316,3 +324,10 @@ document.getElementById("btnBack").onclick = () => {
 
 // 默认显示本周
 refreshChart();
+
+/* ============================
+   初始化语言 + 暗夜模式 + 文案
+============================ */
+initLanguageMenu();
+initDarkMode();
+applyLangStats();
