@@ -6,26 +6,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- 语言包 -->
+  <script src="lang.js"></script>
+  <!-- 全局 UI（语言 + 暗夜模式） -->
+  <script src="ui.js"></script>
 </head>
 
 <body>
 
+<!-- 顶部按钮（语言 + 暗夜模式） -->
+<div class="top-right">
+
+  <!-- 语言选择器 -->
+  <div class="lang-wrapper">
+    <button id="langBtn" class="icon-btn">🌐</button>
+
+    <div id="langMenu" class="lang-menu hidden">
+      <div class="lang-title">🌐 Language</div>
+      <div data-lang="zh">🇨🇳 简体中文</div>
+      <div data-lang="hk">🇭🇰 繁體中文</div>
+      <div data-lang="en">🇺🇸 English</div>
+    </div>
+  </div>
+
+  <!-- 暗夜模式按钮 -->
+  <button id="themeToggle" class="icon-btn">🌙</button>
+</div>
+
+
 <div class="app">
 
-  <h2 class="page-title">训练统计</h2>
+  <h2 class="page-title" id="titleStats"></h2>
 
   <!-- 时间切换 -->
   <div class="card btn-row">
     <button id="btnPrev" class="small-btn"><</button>
-    <button id="btnWeek" class="small-btn">每周</button>
-    <button id="btnMonth" class="small-btn">每月</button>
+    <button id="btnWeek" class="small-btn"></button>
+    <button id="btnMonth" class="small-btn"></button>
     <button id="btnNext" class="small-btn">></button>
   </div>
 
   <!-- 图表类型切换 -->
   <div class="card btn-row">
-    <button id="btnBar" class="small-btn">柱状图（能量）</button>
-    <button id="btnRadar" class="small-btn">雷达图（六维）</button>
+    <button id="btnBar" class="small-btn"></button>
+    <button id="btnRadar" class="small-btn"></button>
   </div>
 
   <!-- 主图表 -->
@@ -40,15 +65,37 @@
 
   <!-- 返回按钮 -->
   <div class="card">
-    <button id="btnBack" class="small-btn">返回</button>
+    <button id="btnBack" class="small-btn"></button>
   </div>
 
 </div>
 
 <footer class="footer">— Designed by BY —</footer>
-  
+
 <script src="workouts.js"></script>
 <script src="statistics.js"></script>
+
+<script>
+/* ============================
+   statistics 页面语言渲染
+============================ */
+function applyLangStats() {
+  document.getElementById("titleStats").textContent = t("stats_title");
+
+  document.getElementById("btnWeek").textContent = t("stats_week");
+  document.getElementById("btnMonth").textContent = t("stats_month");
+
+  document.getElementById("btnBar").textContent = t("stats_bar");
+  document.getElementById("btnRadar").textContent = t("stats_radar");
+
+  document.getElementById("btnBack").textContent = t("stats_back");
+}
+
+/* 初始化语言菜单 + 暗夜模式 + 文案 */
+initLanguageMenu();
+initDarkMode();
+applyLangStats();
+</script>
 
 </body>
 </html>
