@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>历史记录</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="style.css">
 
   <!-- 语言包 -->
@@ -14,32 +15,34 @@
 
 <body>
 
-<!-- 顶部按钮（语言 + 暗夜模式） -->
-<div class="top-right">
-
-  <!-- 语言选择器 -->
-  <div class="lang-wrapper">
-    <button id="langBtn" class="icon-btn">🌐</button>
-
-    <div id="langMenu" class="lang-menu hidden">
-      <div class="lang-title">🌐 Language</div>
-      <div data-lang="zh">🇨🇳 简体中文</div>
-      <div data-lang="hk">🇭🇰 繁體中文</div>
-      <div data-lang="en">🇺🇸 English</div>
-    </div>
-  </div>
-
-  <!-- 暗夜模式按钮 -->
-  <button id="themeToggle" class="icon-btn">🌙</button>
-</div>
-
-
 <div class="app">
 
+  <!-- 顶部按钮（语言 + 暗夜模式） -->
+  <div class="top-right">
+
+    <!-- 语言选择器 -->
+    <div class="lang-wrapper">
+      <button id="langBtn" class="icon-btn">🌐</button>
+
+      <div id="langMenu" class="lang-menu hidden">
+        <div class="lang-title">🌐 Language</div>
+        <div data-lang="zh">🇨🇳 简体中文</div>
+        <div data-lang="hk">🇭🇰 繁體中文</div>
+        <div data-lang="en">🇺🇸 English</div>
+      </div>
+    </div>
+
+    <!-- 暗夜模式按钮 -->
+    <button id="themeToggle" class="icon-btn">🌙</button>
+  </div>
+
+  <!-- 页面标题 -->
   <h2 class="page-title" id="titleHistory"></h2>
 
+  <!-- 历史记录列表 -->
   <div id="historyList" class="card"></div>
 
+  <!-- 返回按钮 -->
   <div class="card">
     <button id="backHome"></button>
   </div>
