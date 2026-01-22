@@ -12,6 +12,7 @@ body {
   max-width: 480px;
   margin: 0 auto;
   padding: 16px;
+  padding-top: 72px; /* 给顶部按钮留空间 */
 }
 
 /* ============================
@@ -99,15 +100,15 @@ select {
 }
 
 /* ============================
-   日期按钮（彻底无边框）
+   日期按钮（放大版）
 ============================ */
 #prevDate,
 #nextDate {
   background: #22c55e;
   color: white;
-  padding: 6px 12px;
+  padding: 10px 18px;
   border-radius: 6px;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
 
   border: none !important;
@@ -115,9 +116,8 @@ select {
   box-shadow: none !important;
   -webkit-appearance: none !important;
   appearance: none !important;
-  background-clip: padding-box !important;
 
-  width: auto;
+  min-width: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -261,9 +261,7 @@ canvas {
   display: flex;
   gap: 12px;
   z-index: 99999;
-
-  /* 关键：容器不接收点击，不会挡住历史/统计按钮 */
-  pointer-events: none;
+  pointer-events: none; /* 容器不接收点击 */
 }
 
 #langBtn,
@@ -295,12 +293,12 @@ html.dark #themeToggle {
 ============================ */
 .lang-wrapper {
   position: relative;
-  pointer-events: auto; /* 菜单可点击 */
+  pointer-events: auto;
 }
 
 .lang-menu {
   position: absolute;
-  top: 48px; /* 菜单在按钮下方，不重叠 */
+  top: 48px;
   right: 0;
   background: #fff;
   border-radius: 10px;
@@ -326,7 +324,9 @@ html.dark #themeToggle {
   cursor: pointer;
 }
 
-.lang-menu div[data-lang]:hover { background: #eee; }
+.lang-menu div[data-lang]:hover {
+  background: #eee;
+}
 
 .hidden { display: none; }
 
@@ -356,7 +356,9 @@ html.dark .lang-menu {
   border-color: #555 !important;
 }
 
-html.dark .lang-menu div[data-lang] { color: #fff !important; }
+html.dark .lang-menu div[data-lang] {
+  color: #fff !important;
+}
 
 html.dark .lang-title {
   color: #aaa !important;
@@ -364,4 +366,6 @@ html.dark .lang-title {
   border-bottom: 1px solid #555 !important;
 }
 
-html.dark .footer { color: #ccc !important; }
+html.dark .footer {
+  color: #ccc !important;
+}
