@@ -345,3 +345,36 @@ html.dark .lang-title {
 html.dark .footer {
   color: #ccc !important;
 }
+
+/* ============================
+   去除日期按钮边框（亮色 + 暗夜）
+============================ */
+#prevDate,
+#nextDate {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ============================
+   去除统计页 < > 按钮边框
+============================ */
+#btnPrev,
+#btnNext {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ============================
+   暗夜模式下也保持无边框
+============================ */
+html.dark #prevDate,
+html.dark #nextDate,
+html.dark #btnPrev,
+html.dark #btnNext {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
