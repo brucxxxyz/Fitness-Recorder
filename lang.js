@@ -37,7 +37,15 @@ window.LANG = {
     radar_core: "核心",
     radar_balance: "平衡",
     radar_flexibility: "灵活",
-    radar_endurance: "耐力"
+    radar_endurance: "耐力",
+
+    /* ===== 部位翻译 ===== */
+    body_背部: "背部",
+    body_胸部: "胸部",
+    body_腿部: "腿部",
+    body_肩部: "肩部",
+    body_手臂: "手臂",
+    body_核心: "核心"
   },
 
   hk: {
@@ -78,7 +86,15 @@ window.LANG = {
     radar_core: "核心",
     radar_balance: "平衡",
     radar_flexibility: "靈活",
-    radar_endurance: "耐力"
+    radar_endurance: "耐力",
+
+    /* ===== 部位翻譯 ===== */
+    body_背部: "背部",
+    body_胸部: "胸部",
+    body_腿部: "腿部",
+    body_肩部: "肩部",
+    body_手臂: "手臂",
+    body_核心: "核心"
   },
 
   en: {
@@ -119,6 +135,14 @@ window.LANG = {
     radar_core: "Core",
     radar_balance: "Balance",
     radar_flexibility: "Flexibility",
-    radar_endurance: "Endurance"
+    radar_endurance: "Endurance",
+
+    /* ===== Body Part ===== */
+    body_背部: "Back",
+    body_胸部: "Chest",
+    body_腿部: "Legs",
+    body_肩部: "Shoulders",
+    body_手臂: "Arms",
+    body_核心: "Core"
   }
 };
