@@ -82,7 +82,6 @@ function showHistoryPage() {
       const left = document.createElement("span");
       left.className = "item-name";
 
-      // 找到对应动作对象
       let displayName = nameZh;
       for (const part in WORKOUT_GROUPS) {
         for (const obj of WORKOUT_GROUPS[part]) {
