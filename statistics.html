@@ -10,26 +10,27 @@
 
 <body>
 
-  <!-- 顶部按钮 -->
-  <div class="top-right">
-
-    <!-- 语言选择器 -->
-    <div class="lang-wrapper">
-      <button id="langBtn">🌐</button>
-      <div id="langMenu" class="lang-menu hidden">
-        <div class="lang-title">🌐 Language</div>
-        <div data-lang="zh">🇨🇳 简体中文</div>
-        <div data-lang="hk">🇭🇰 繁體中文</div>
-        <div data-lang="en">🇺🇸 English</div>
-      </div>
-    </div>
-
-    <!-- 暗夜模式按钮 -->
-    <button id="themeToggle">🌙</button>
-  </div>
-
   <div class="app">
 
+    <!-- 顶部按钮（跟随页面内容，不固定） -->
+    <div class="top-right">
+
+      <!-- 语言选择器 -->
+      <div class="lang-wrapper">
+        <button id="langBtn">🌐</button>
+        <div id="langMenu" class="lang-menu hidden">
+          <div class="lang-title">🌐 Language</div>
+          <div data-lang="zh">🇨🇳 简体中文</div>
+          <div data-lang="hk">🇭🇰 繁體中文</div>
+          <div data-lang="en">🇺🇸 English</div>
+        </div>
+      </div>
+
+      <!-- 暗夜模式按钮 -->
+      <button id="themeToggle">🌙</button>
+    </div>
+
+    <!-- 页面标题 -->
     <h2 class="page-title stats-title">训练统计</h2>
 
     <!-- 时间切换 -->
@@ -39,7 +40,6 @@
       <button id="btnMonth" class="small-btn">每月</button>
       <button id="btnNext" class="small-btn">></button>
     </div>
-
 
     <!-- 图表类型切换 -->
     <div class="card btn-row">
@@ -73,22 +73,23 @@
   <script src="app.theme.js"></script>
   <script src="statistics.js"></script>
 
-<script>
-window.onerror = function(msg, url, line, col, error) {
-  const div = document.createElement("div");
-  div.style.background = "red";
-  div.style.color = "white";
-  div.style.padding = "10px";
-  div.style.fontSize = "14px";
-  div.style.position = "fixed";
-  div.style.bottom = "0";
-  div.style.left = "0";
-  div.style.right = "0";
-  div.style.zIndex = "9999";
-  div.textContent = "Error: " + msg + " @ line " + line;
-  document.body.appendChild(div);
-};
-</script>
+  <!-- 错误捕获（可保留） -->
+  <script>
+    window.onerror = function(msg, url, line, col, error) {
+      const div = document.createElement("div");
+      div.style.background = "red";
+      div.style.color = "white";
+      div.style.padding = "10px";
+      div.style.fontSize = "14px";
+      div.style.position = "fixed";
+      div.style.bottom = "0";
+      div.style.left = "0";
+      div.style.right = "0";
+      div.style.zIndex = "9999";
+      div.textContent = "Error: " + msg + " @ line " + line;
+      document.body.appendChild(div);
+    };
+  </script>
 
 </body>
 </html>
