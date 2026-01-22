@@ -46,14 +46,14 @@ window.initLanguageMenu = function () {
 };
 
 /* ============================
-   暗夜模式
+   暗夜模式（切换 html.dark）
 ============================ */
 window.initDarkMode = function () {
   let dark = localStorage.getItem("dark") === "1";
 
   function applyDark() {
-    if (dark) document.body.classList.add("dark");
-    else document.body.classList.remove("dark");
+    if (dark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
   }
 
   applyDark();
