@@ -60,7 +60,7 @@ function showHistoryPage() {
     title.textContent = date;
 
     const calories = document.createElement("span");
-    calories.textContent = `🔥 ${getDayCalories(date)} kcal`;
+    calories.textContent = t("history_calories", { cal: getDayCalories(date) });
 
     header.appendChild(title);
     header.appendChild(calories);
@@ -84,11 +84,11 @@ function showHistoryPage() {
 
       const repsLabel = document.createElement("span");
       repsLabel.className = "reps-label";
-      repsLabel.textContent = `${reps} 次/组`;
+      repsLabel.textContent = t("reps_per_set", { reps });
 
       const totalLabel = document.createElement("span");
       totalLabel.className = "total-reps";
-      totalLabel.textContent = `${items[name] * reps} 次`;
+      totalLabel.textContent = t("total_reps", { total: items[name] * reps });
 
       const minus = document.createElement("button");
       minus.className = "counter-btn";
@@ -106,13 +106,13 @@ function showHistoryPage() {
         let v = parseInt(count.textContent);
         if (v > 0) v--;
         count.textContent = v;
-        totalLabel.textContent = `${v * reps} 次`;
+        totalLabel.textContent = t("total_reps", { total: v * reps });
 
         if (v === 0) delete history[date][name];
         else history[date][name] = v;
 
         saveHistory();
-        calories.textContent = `🔥 ${getDayCalories(date)} kcal`;
+        calories.textContent = t("history_calories", { cal: getDayCalories(date) });
         if (v === 0) showHistoryPage();
       };
 
@@ -120,11 +120,11 @@ function showHistoryPage() {
         let v = parseInt(count.textContent);
         v++;
         count.textContent = v;
-        totalLabel.textContent = `${v * reps} 次`;
+        totalLabel.textContent = t("total_reps", { total: v * reps });
 
         history[date][name] = v;
         saveHistory();
-        calories.textContent = `🔥 ${getDayCalories(date)} kcal`;
+        calories.textContent = t("history_calories", { cal: getDayCalories(date) });
       };
 
       row.appendChild(left);
@@ -140,7 +140,7 @@ function showHistoryPage() {
     /* --- 删除当天按钮 --- */
     const delBtn = document.createElement("button");
     delBtn.className = "small-btn";
-    delBtn.textContent = "删除当天数据";
+    delBtn.textContent = t("history_delete_day");
     delBtn.style.marginTop = "10px";
 
     delBtn.onclick = () => {
@@ -173,3 +173,10 @@ document.getElementById("backHome").onclick = () => {
    初次渲染
 ============================ */
 showHistoryPage();
+
+/* ============================
+   初始化语言 + 暗夜模式 + 文案
+============================ */
+initLanguageMenu();
+initDarkMode();
+applyLangHistory();
