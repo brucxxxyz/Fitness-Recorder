@@ -191,11 +191,8 @@ function renderFooter(totalSets, totalReps, totalCalories) {
   const box = document.getElementById("todaySummary");
   if (!box) return;
 
-  box.innerHTML = `
-    <div>今日总组数： <b>${totalSets}</b> 组</div>
-    <div>今日总次数： <b>${totalReps}</b> 次</div>
-    <div>今日总能量： <b>${totalCalories.toFixed(1)}</b> kcal</div>
-  `;
+  // 使用当前语言的 summary 文案
+  box.innerHTML = UI_TEXT[currentLang].summary(totalSets, totalReps, totalCalories);
 }
 
 /* ============================
