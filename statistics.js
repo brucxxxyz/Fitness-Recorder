@@ -239,14 +239,15 @@ btnNext.onclick = () => {
 /* ============================
    图表切换
 ============================ */
+
 btnBar.onclick = () => {
-  canvasBar.parentElement.style.display = "block";
-  canvasRadar.parentElement.style.display = "none";
+  const box = canvasBar.parentElement;
+  box.style.display = (box.style.display === "none") ? "block" : "none";
 };
 
 btnRadar.onclick = () => {
-  canvasBar.parentElement.style.display = "none";
-  canvasRadar.parentElement.style.display = "block";
+  const box = canvasRadar.parentElement;
+  box.style.display = (box.style.display === "none") ? "block" : "none";
 };
 
 /* ============================
@@ -260,5 +261,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderRadarChart(data);
 
   canvasBar.parentElement.style.display = "block";
-  canvasRadar.parentElement.style.display = "none";
+  canvasRadar.parentElement.style.display = "block";
+
 });
