@@ -10,25 +10,15 @@ body {
 
 .app {
   max-width: 480px;
-  margin: 0 auto;
+  margin: 60px auto 0; /* 让顶部按钮不被内容覆盖 */
   padding: 16px;
-}
-
-/* 主页 + 统计页整体下移一行 */
-.app {
-  margin-top: 60px; /* 让顶部按钮不会被内容挤压 */
 }
 
 /* ============================
    页面切换
 ============================ */
-.page {
-  display: none;
-}
-
-.page.active {
-  display: block;
-}
+.page { display: none; }
+.page.active { display: block; }
 
 /* ============================
    页面标题
@@ -36,7 +26,6 @@ body {
 .page-title {
   width: 100%;
   text-align: center;
-  display: block;
   margin-bottom: 12px;
 }
 
@@ -87,7 +76,7 @@ select {
 }
 
 /* ============================
-   日期选择器外层容器
+   日期选择器容器
 ============================ */
 .date-wrapper {
   height: 44px;
@@ -96,7 +85,6 @@ select {
   border-radius: 8px;
   border: 1px solid #ddd;
   background: #fff;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
 }
@@ -108,37 +96,35 @@ select {
   font-size: 16px;
   border: none;
   background: transparent;
-  box-sizing: border-box;
 }
 
 /* ============================
-   日期按钮（彻底去边框）
+   日期按钮（彻底无边框）
 ============================ */
 #prevDate,
 #nextDate {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  background-clip: padding-box !important;
   background: #22c55e;
   color: white;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 18px;
   font-weight: 600;
+
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-clip: padding-box !important;
 }
 
 html.dark #prevDate,
 html.dark #nextDate {
   background: #22c55e !important;
-  border: none !important;
-  box-shadow: none !important;
 }
 
 /* ============================
-   今日训练动作行（主页）
+   今日训练动作行
 ============================ */
 .subitem-row {
   display: grid;
@@ -148,17 +134,8 @@ html.dark #nextDate {
   margin-bottom: 10px;
 }
 
-.item-name {
-  font-size: 15px;
-}
-
-.reps-label {
-  min-width: 70px;
-  text-align: center;
-  font-size: 14px;
-  color: #666;
-}
-
+.item-name { font-size: 15px; }
+.reps-label,
 .total-reps {
   min-width: 60px;
   text-align: center;
@@ -170,16 +147,12 @@ html.dark #nextDate {
   min-width: 32px;
   text-align: center;
   font-size: 16px;
-  display: flex;
-  justify-content: center;
 }
 
 /* ============================
    今日总结
 ============================ */
-#todaySummary {
-  min-height: 60px;
-}
+#todaySummary { min-height: 60px; }
 
 .history-title {
   font-weight: bold;
@@ -210,11 +183,9 @@ button {
   color: #fff;
   font-size: 16px;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -223,9 +194,7 @@ button:active {
   opacity: 0.95;
 }
 
-/* ============================
-   小按钮
-============================ */
+/* 小按钮 */
 .small-btn {
   flex: 1;
   height: 44px;
@@ -234,22 +203,16 @@ button:active {
   background: #22c55e;
 }
 
-.small-btn:active {
-  background: #16a34a;
-}
+.small-btn:active { background: #16a34a; }
 
-/* ============================
-   按钮行
-============================ */
+/* 按钮行 */
 .btn-row {
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-/* ============================
-   加减按钮
-============================ */
+/* 加减按钮 */
 .counter-btn {
   width: 36px;
   height: 36px;
@@ -258,15 +221,12 @@ button:active {
   background: #22c55e;
   color: #fff;
   border-radius: 6px;
-
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.counter-btn:active {
-  background: #16a34a;
-}
+.counter-btn:active { background: #16a34a; }
 
 /* ============================
    图表 canvas
@@ -284,10 +244,6 @@ canvas {
   padding: 12px 0;
   color: #888;
   font-size: 14px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 /* ============================
@@ -303,7 +259,6 @@ canvas {
   pointer-events: none; /* 不阻挡页面点击 */
 }
 
-/* 按钮本身可点击 + 圆形 + 跟随主题颜色 */
 #langBtn,
 #themeToggle {
   width: 40px;
@@ -315,8 +270,8 @@ canvas {
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 html.dark #langBtn,
@@ -358,9 +313,7 @@ html.dark #themeToggle {
   cursor: pointer;
 }
 
-.lang-menu div[data-lang]:hover {
-  background: #eee;
-}
+.lang-menu div[data-lang]:hover { background: #eee; }
 
 .hidden { display: none; }
 
@@ -390,9 +343,7 @@ html.dark .lang-menu {
   border-color: #555 !important;
 }
 
-html.dark .lang-menu div[data-lang] {
-  color: #fff !important;
-}
+html.dark .lang-menu div[data-lang] { color: #fff !important; }
 
 html.dark .lang-title {
   color: #aaa !important;
@@ -400,6 +351,4 @@ html.dark .lang-title {
   border-bottom: 1px solid #555 !important;
 }
 
-html.dark .footer {
-  color: #ccc !important;
-}
+html.dark .footer { color: #ccc !important; }
