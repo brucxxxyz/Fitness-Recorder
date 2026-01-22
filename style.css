@@ -378,3 +378,45 @@ html.dark #btnNext {
   box-shadow: none !important;
 }
 
+/* 删除按钮 */
+.danger-btn {
+  background: #e53935;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* 历史页行布局 */
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+/* 加减按钮区域 */
+.history-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.h-minus, .h-plus {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  font-size: 18px;
+}
+
+.h-count {
+  width: 28px;
+  text-align: center;
+  font-size: 16px;
+}
+
+
