@@ -402,14 +402,12 @@ html.dark .footer {
   transform: none !important;
 }
 
-/* ============================
-   历史页：让 - n + 靠右（不影响主页）
-============================ */
+/* 历史页：让 - n + 靠右，并与删除按钮右边对齐 */
 #historyPage .card .subitem-row {
   display: flex;
-  justify-content: space-between;   /* 左右分布 */
+  justify-content: space-between;
   align-items: center;
-  padding: 6px 4px;                 /* 保持在卡片内 */
+  padding: 6px 12px 6px 4px;   /* ⭐ 右侧 padding = 12px，与删除按钮对齐 */
 }
 
 /* 左侧动作名占据左侧空间 */
@@ -427,3 +425,4 @@ html.dark .footer {
   align-items: center;
   justify-content: center;
 }
+
