@@ -114,20 +114,20 @@ select {
 /* ============================
    主页日期切换按钮（保持原色，只去边框）
 ============================ */
+/* 日期按钮：彻底去除边框（亮色 + 暗夜模式） */
 #prevDate,
 #nextDate {
   border: none !important;
+  outline: none !important;
   box-shadow: none !important;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 18px;
-  font-weight: 600;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-clip: padding-box !important;
 }
-
-/* 暗夜模式下也只去边框，不改变颜色 */
 html.dark #prevDate,
 html.dark #nextDate {
   border: none !important;
+  outline: none !important;
   box-shadow: none !important;
 }
 
