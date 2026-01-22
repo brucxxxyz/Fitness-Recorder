@@ -112,12 +112,10 @@ select {
 }
 
 /* ============================
-   主页日期切换按钮（亮色 + 暗夜模式都保持绿色）
+   主页日期切换按钮（保持原色，只去边框）
 ============================ */
 #prevDate,
 #nextDate {
-  background-color: #22c55e !important;
-  color: white !important;
   border: none !important;
   box-shadow: none !important;
   padding: 6px 12px;
@@ -126,11 +124,9 @@ select {
   font-weight: 600;
 }
 
-/* 暗夜模式下仍保持绿色 */
+/* 暗夜模式下也只去边框，不改变颜色 */
 html.dark #prevDate,
 html.dark #nextDate {
-  background-color: #22c55e !important;
-  color: white !important;
   border: none !important;
   box-shadow: none !important;
 }
