@@ -20,34 +20,40 @@ const PART_TRANSLATION = {
    动作名称翻译
 -------------------------------- */
 const WORKOUT_TRANSLATION = {
+  // 背部
   "对握下拉": { zh: "对握下拉", hk: "對握下拉", en: "Neutral Grip Lat Pulldown" },
   "引体向上": { zh: "引体向上", hk: "引體向上", en: "Pull-up" },
   "高位下拉": { zh: "高位下拉", hk: "高位下拉", en: "Lat Pulldown" },
   "坐姿划船": { zh: "坐姿划船", hk: "坐姿划船", en: "Seated Row" },
 
+  // 胸部
   "卧推": { zh: "卧推", hk: "臥推", en: "Bench Press" },
   "上斜卧推": { zh: "上斜卧推", hk: "上斜臥推", en: "Incline Bench Press" },
   "哑铃飞鸟": { zh: "哑铃飞鸟", hk: "啞鈴飛鳥", en: "Dumbbell Fly" },
   "拉绳夹胸": { zh: "拉绳夹胸", hk: "拉繩夾胸", en: "Cable Chest Fly" },
 
+  // 腿部
   "深蹲": { zh: "深蹲", hk: "深蹲", en: "Squat" },
   "硬拉": { zh: "硬拉", hk: "硬拉", en: "Deadlift" },
   "腿举": { zh: "腿举", hk: "腿舉", en: "Leg Press" },
   "弓步蹲": { zh: "弓步蹲", hk: "弓步蹲", en: "Lunge" },
   "小腿提踵": { zh: "小腿提踵", hk: "小腿提踵", en: "Calf Raise" },
 
+  // 肩部
   "哑铃推举": { zh: "哑铃推举", hk: "啞鈴推舉", en: "Dumbbell Shoulder Press" },
   "杠铃推举": { zh: "杠铃推举", hk: "槓鈴推舉", en: "Barbell Shoulder Press" },
   "侧平举": { zh: "侧平举", hk: "側平舉", en: "Lateral Raise" },
   "前平举": { zh: "前平举", hk: "前平舉", en: "Front Raise" },
   "反向飞鸟": { zh: "反向飞鸟", hk: "反向飛鳥", en: "Reverse Fly" },
 
+  // 手臂
   "哑铃弯举": { zh: "哑铃弯举", hk: "啞鈴彎舉", en: "Dumbbell Curl" },
   "杠铃弯举": { zh: "杠铃弯举", hk: "槓鈴彎舉", en: "Barbell Curl" },
   "锤式弯举": { zh: "锤式弯举", hk: "錘式彎舉", en: "Hammer Curl" },
   "绳索下压": { zh: "绳索下压", hk: "繩索下壓", en: "Cable Pushdown" },
   "臂屈伸": { zh: "臂屈伸", hk: "臂屈伸", en: "Triceps Extension" },
 
+  // 核心
   "卷腹": { zh: "卷腹", hk: "捲腹", en: "Crunch" },
   "仰卧起坐": { zh: "仰卧起坐", hk: "仰臥起坐", en: "Sit-up" },
   "俄式转体": { zh: "俄式转体", hk: "俄式轉體", en: "Russian Twist" },
@@ -107,21 +113,21 @@ const WORKOUT_GROUPS = {
 };
 
 /* --------------------------------
-   工具函数：获取翻译
+   工具函数：获取 reps
 -------------------------------- */
-function translatePart(part, lang) {
-  return PART_TRANSLATION[part]?.[lang] || part;
-}
-
-function translateWorkout(name, lang) {
-  return WORKOUT_TRANSLATION[name]?.[lang] || name;
+function findReps(name) {
+  for (const part in WORKOUT_GROUPS) {
+    for (const item of WORKOUT_GROUPS[part]) {
+      if (item.name === name) return item.reps;
+    }
+  }
+  return 10; // 默认值
 }
 
 /* --------------------------------
    六维能力映射（用于雷达图）
 -------------------------------- */
-// balance / power / endurance / flexibility / stability / coordination
-const WORKOUT_DIMENSION_MAP = {
+const WORKOUT_DIMENSION = {
   // 背部
   "对握下拉": "power",
   "引体向上": "power",
