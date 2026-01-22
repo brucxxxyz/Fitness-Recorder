@@ -1,4 +1,3 @@
-// app.i18n.js
 // =====================================
 // 三语言系统（UI + 动作 + 部位 + 统计页 + 六维能力）
 // 依赖：workouts.js（翻译表 + 数据）
@@ -90,7 +89,7 @@ const UI_TEXT = {
 };
 
 /* ============================
-   六维能力翻译（新增）
+   六维能力翻译
 ============================ */
 const DIM_TRANSLATIONS = {
   balance:      { zh: "平衡",   hk: "平衡",   en: "Balance" },
@@ -190,8 +189,8 @@ function translateUI() {
   const historyTitle = document.querySelector("#page-history .page-title");
   if (historyTitle) historyTitle.textContent = t.historyTitle;
 
-  // 统计页标题
-  const statsTitle = document.querySelector(".page-title.stats-title");
+  // 统计页标题（修复：不再使用 .stats-title）
+  const statsTitle = document.querySelector("#page-stats .page-title, .stats-page-title, h2.page-title");
   if (statsTitle) statsTitle.textContent = t.statsTitle;
 
   // 按钮
@@ -225,7 +224,7 @@ function translateUI() {
 }
 
 /* ============================
-   统计页图表标题接口（给 statistics.js 用）
+   统计页图表标题接口
 ============================ */
 function getChartTitle(type) {
   const t = UI_TEXT[currentLang];
@@ -256,18 +255,32 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ============================
-   绑定语言按钮
+   绑定语言按钮（修复版）
 ============================ */
 const langBtn = document.getElementById("langBtn");
 const langMenu = document.getElementById("langMenu");
+const langWrapper = document.querySelector(".lang-wrapper");
 
 if (langBtn && langMenu) {
-  langBtn.onclick = () => langMenu.classList.toggle("hidden");
 
+  // 展开/收回
+  langBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle("hidden");
+  });
+
+  // 点击语言选项
   langMenu.querySelectorAll("[data-lang]").forEach(item => {
-    item.onclick = () => {
+    item.addEventListener("click", () => {
       applyLanguage(item.dataset.lang);
       langMenu.classList.add("hidden");
-    };
+    });
+  });
+
+  // 点击外部关闭
+  document.addEventListener("click", (e) => {
+    if (!langWrapper.contains(e.target)) {
+      langMenu.classList.add("hidden");
+    }
   });
 }
