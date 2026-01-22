@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -10,67 +11,45 @@
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <!-- 顶部按钮（跟随页面内容，不固定） -->
-    <div class="top-right">
+  <h2 class="page-title">训练统计</h2>
 
-      <!-- 语言选择器 -->
-      <div class="lang-wrapper">
-        <button id="langBtn">🌐</button>
-        <div id="langMenu" class="lang-menu hidden">
-          <div class="lang-title">🌐 Language</div>
-          <div data-lang="zh">🇨🇳 简体中文</div>
-          <div data-lang="hk">🇭🇰 繁體中文</div>
-          <div data-lang="en">🇺🇸 English</div>
-        </div>
-      </div>
-
-      <!-- 暗夜模式按钮 -->
-      <button id="themeToggle">🌙</button>
-    </div>
-
-    <!-- 页面标题 -->
-    <h2 class="page-title stats-title">训练统计</h2>
-
-    <!-- 时间切换 -->
-    <div class="card btn-row">
-      <button id="btnPrev" class="small-btn"><</button>
-      <button id="btnWeek" class="small-btn">每周</button>
-      <button id="btnMonth" class="small-btn">每月</button>
-      <button id="btnNext" class="small-btn">></button>
-    </div>
-
-    <!-- 图表类型切换 -->
-    <div class="card btn-row">
-      <button id="btnBar" class="small-btn">柱状图（能量）</button>
-      <button id="btnRadar" class="small-btn">雷达图（六维）</button>
-    </div>
-
-    <!-- 柱状图 -->
-    <div class="card">
-      <canvas id="barChart" height="300"></canvas>
-    </div>
-
-    <!-- 雷达图 -->
-    <div class="card">
-      <canvas id="radarChart" width="300" height="300"></canvas>
-    </div>
-
-    <!-- 返回按钮 -->
-    <div class="card">
-      <button id="btnBack" class="small-btn">返回</button>
-    </div>
-
+  <!-- 时间切换 -->
+  <div class="card btn-row">
+    <button id="btnPrev" class="small-btn"><</button>
+    <button id="btnWeek" class="small-btn">每周</button>
+    <button id="btnMonth" class="small-btn">每月</button>
+    <button id="btnNext" class="small-btn">></button>
   </div>
 
-  <footer class="footer">— Designed by BY —</footer>
+  <!-- 图表类型切换 -->
+  <div class="card btn-row">
+    <button id="btnBar" class="small-btn">柱状图（能量）</button>
+    <button id="btnRadar" class="small-btn">雷达图（六维）</button>
+  </div>
 
-  <!-- 加载顺序非常重要 -->
-  <script src="workouts.js"></script>
-  <script src="app.i18n.js"></script>
-  <script src="app.theme.js"></script>
-  <script src="statistics.js"></script>
+  <!-- 主图表 -->
+  <div class="card">
+    <canvas id="chartCanvas" height="300"></canvas>
+  </div>
+
+  <!-- 雷达图 -->
+  <div class="card">
+    <canvas id="radarCanvas" width="300" height="300"></canvas>
+  </div>
+
+  <!-- 返回按钮 -->
+  <div class="card">
+    <button id="btnBack" class="small-btn">返回</button>
+  </div>
+
+</div>
+
+<footer class="footer">— Designed by BY —</footer>
+  
+<script src="workouts.js"></script>
+<script src="statistics.js"></script>
 
 </body>
 </html>
