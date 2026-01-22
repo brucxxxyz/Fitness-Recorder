@@ -9,12 +9,12 @@ function saveHistory() {
 }
 
 /* ============================
-   查 reps
+   查 reps（根据中文 key）
 ============================ */
-function findReps(itemName) {
+function findReps(itemNameZh) {
   for (const part in WORKOUT_GROUPS) {
     for (const obj of WORKOUT_GROUPS[part]) {
-      if (obj.name === itemName) return obj.reps;
+      if (obj.name.zh === itemNameZh) return obj.reps;
     }
   }
   return 0;
@@ -27,9 +27,9 @@ function getDayCalories(date) {
   const items = history[date] || {};
   let total = 0;
 
-  for (const name in items) {
-    const sets = items[name];
-    const reps = findReps(name);
+  for (const nameZh in items) {
+    const sets = items[nameZh];
+    const reps = findReps(nameZh);
     total += sets * reps * 0.6;
   }
   return total.toFixed(1);
@@ -72,31 +72,45 @@ function showHistoryPage() {
 
     const items = history[date];
 
-    for (const name in items) {
-      const reps = findReps(name);
+    for (const nameZh in items) {
+      const reps = findReps(nameZh);
 
       const row = document.createElement("div");
       row.className = "subitem-row";
 
+      /* --- 动作名（根据语言显示） --- */
       const left = document.createElement("span");
       left.className = "item-name";
-      left.textContent = name;
 
+      // 找到对应动作对象
+      let displayName = nameZh;
+      for (const part in WORKOUT_GROUPS) {
+        for (const obj of WORKOUT_GROUPS[part]) {
+          if (obj.name.zh === nameZh) {
+            displayName = obj.name[currentLang];
+          }
+        }
+      }
+      left.textContent = displayName;
+
+      /* --- reps 文案 --- */
       const repsLabel = document.createElement("span");
       repsLabel.className = "reps-label";
       repsLabel.textContent = t("reps_per_set", { reps });
 
+      /* --- 总次数 --- */
       const totalLabel = document.createElement("span");
       totalLabel.className = "total-reps";
-      totalLabel.textContent = t("total_reps", { total: items[name] * reps });
+      totalLabel.textContent = t("total_reps", { total: items[nameZh] * reps });
 
+      /* --- 加减按钮 --- */
       const minus = document.createElement("button");
       minus.className = "counter-btn";
       minus.textContent = "-";
 
       const count = document.createElement("span");
       count.className = "count-number";
-      count.textContent = items[name];
+      count.textContent = items[nameZh];
 
       const plus = document.createElement("button");
       plus.className = "counter-btn";
@@ -108,11 +122,12 @@ function showHistoryPage() {
         count.textContent = v;
         totalLabel.textContent = t("total_reps", { total: v * reps });
 
-        if (v === 0) delete history[date][name];
-        else history[date][name] = v;
+        if (v === 0) delete history[date][nameZh];
+        else history[date][nameZh] = v;
 
         saveHistory();
         calories.textContent = t("history_calories", { cal: getDayCalories(date) });
+
         if (v === 0) showHistoryPage();
       };
 
@@ -122,7 +137,7 @@ function showHistoryPage() {
         count.textContent = v;
         totalLabel.textContent = t("total_reps", { total: v * reps });
 
-        history[date][name] = v;
+        history[date][nameZh] = v;
         saveHistory();
         calories.textContent = t("history_calories", { cal: getDayCalories(date) });
       };
