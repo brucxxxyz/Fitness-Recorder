@@ -385,3 +385,18 @@ html.dark button:active {
 html.dark .footer {
   color: #aaa;
 }
+
+/* 取消语言按钮和暗夜按钮的点击高亮（亮色 + 暗夜都生效） */
+#langBtn,
+#themeToggle {
+  -webkit-tap-highlight-color: transparent; /* iOS 点击不再灰色闪烁 */
+}
+
+#langBtn:active,
+#themeToggle:active {
+  background: inherit !important; /* 不变色 */
+  opacity: 1 !important;          /* 不透明度不变化 */
+  box-shadow: none !important;    /* 不出现按下阴影 */
+  transform: none !important;     /* 不出现轻微缩放 */
+}
+
