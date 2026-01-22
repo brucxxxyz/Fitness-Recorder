@@ -11,7 +11,7 @@ body {
 
 .app {
   max-width: 480px;
-  margin: 0 auto;
+  margin: 20px auto 0 auto; /* ⭐ 内容整体下移一行 */
   padding: 16px;
 }
 
