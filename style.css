@@ -16,7 +16,7 @@ body {
 
 /* 主页 + 统计页整体下移一行 */
 .app {
-  margin-top: 30px; /* 你可以改成 30px 或 40px */
+  margin-top: 30px;
 }
 
 /* ============================
@@ -111,17 +111,28 @@ select {
   box-sizing: border-box;
 }
 
-/* 主页日期切换按钮：绿色按钮但无边框 */
+/* ============================
+   主页日期切换按钮（亮色 + 暗夜模式都保持绿色）
+============================ */
 #prevDate,
 #nextDate {
-  background-color: #22c55e; /* 绿色 */
-  color: white;
-  border: none;              /* 去边框 */
+  background-color: #22c55e !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
   padding: 6px 12px;
-  border-radius: 6px;        /* 保留圆角 */
+  border-radius: 6px;
   font-size: 18px;
   font-weight: 600;
-  box-shadow: none;          /* 去阴影 */
+}
+
+/* 暗夜模式下仍保持绿色 */
+html.dark #prevDate,
+html.dark #nextDate {
+  background-color: #22c55e !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* ============================
@@ -129,7 +140,7 @@ select {
 ============================ */
 .subitem-row {
   display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto; /* 修复：6 列 */
+  grid-template-columns: 1fr auto auto auto auto auto;
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
@@ -175,7 +186,7 @@ select {
 }
 
 /* ============================
-   历史记录行（标题行）
+   历史记录行
 ============================ */
 .history-row {
   display: flex;
@@ -264,7 +275,7 @@ canvas {
 }
 
 /* ============================
-   落款 footer
+   footer
 ============================ */
 .footer {
   text-align: center;
@@ -289,7 +300,6 @@ canvas {
   z-index: 999;
 }
 
-/* 语言按钮 + 暗夜按钮（亮色模式） */
 #langBtn,
 #themeToggle {
   width: 36px;
@@ -305,7 +315,9 @@ canvas {
   cursor: pointer;
 }
 
-/* 语言菜单 */
+/* ============================
+   语言菜单
+============================ */
 .lang-wrapper { position: relative; }
 
 .lang-menu {
@@ -342,21 +354,19 @@ canvas {
 .hidden { display: none; }
 
 /* ============================
-   暗夜模式（深色主题）
+   暗夜模式
 ============================ */
 html.dark body {
   background: #1C1C1E !important;
   color: #eee;
 }
 
-/* 卡片暗夜模式 */
 html.dark .card {
   background: #2c2c2e !important;
   color: #eee !important;
   box-shadow: none !important;
 }
 
-/* 输入框暗夜模式 */
 html.dark input,
 html.dark select {
   background: #333 !important;
@@ -364,7 +374,6 @@ html.dark select {
   border-color: #555 !important;
 }
 
-/* 顶部按钮暗夜模式 */
 html.dark #langBtn,
 html.dark #themeToggle {
   background: #333 !important;
@@ -373,7 +382,6 @@ html.dark #themeToggle {
   box-shadow: none !important;
 }
 
-/* 语言菜单暗夜模式 */
 html.dark .lang-menu {
   background: #333 !important;
   border-color: #555 !important;
@@ -389,7 +397,6 @@ html.dark .lang-title {
   border-bottom: 1px solid #555 !important;
 }
 
-/* footer 暗夜模式 */
 html.dark .footer {
   color: #ccc !important;
 }
