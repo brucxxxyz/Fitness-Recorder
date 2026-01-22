@@ -29,9 +29,9 @@ let monthOffset = 0;
 /* ============================
    返回主页
 ============================ */
-btnBack.onclick = () => {
+btnBack.addEventListener("click", () => {
   window.location.assign("index.html");
-};
+});
 
 /* ============================
    获取某周日期（Mon–Sun）
@@ -195,50 +195,54 @@ function refreshCharts() {
 /* ============================
    周/月切换
 ============================ */
-btnWeek.onclick = () => {
+btnWeek.addEventListener("click", () => {
   currentMode = "week";
   weekOffset = 0;
   refreshCharts();
-};
+});
 
-btnMonth.onclick = () => {
+btnMonth.addEventListener("click", () => {
   currentMode = "month";
   monthOffset = 0;
   refreshCharts();
-};
+});
 
 /* ============================
    上一周 / 下一周 / 上一月 / 下一月
 ============================ */
-btnPrev.onclick = () => {
+btnPrev.addEventListener("click", () => {
   if (currentMode === "week") weekOffset--;
   else monthOffset--;
   refreshCharts();
-};
+});
 
-btnNext.onclick = () => {
+btnNext.addEventListener("click", () => {
   if (currentMode === "week") weekOffset++;
   else monthOffset++;
   refreshCharts();
-};
+});
 
 /* ============================
    图表显示/隐藏
 ============================ */
-btnBar.onclick = () => {
+btnBar.addEventListener("click", () => {
   const box = canvasBar.parentElement;
   box.style.display = (box.style.display === "none") ? "block" : "none";
-};
+});
 
-btnRadar.onclick = () => {
+btnRadar.addEventListener("click", () => {
   const box = canvasRadar.parentElement;
   box.style.display = (box.style.display === "none") ? "block" : "none";
-};
+});
 
 /* ============================
-   启动：默认显示本周
+   启动：默认显示本周 + 翻译 UI
 ============================ */
 document.addEventListener("DOMContentLoaded", () => {
+  if (typeof applyLanguage === "function") {
+    applyLanguage(localStorage.getItem("fitness_lang") || "zh");
+  }
+
   refreshCharts();
   canvasBar.parentElement.style.display = "block";
   canvasRadar.parentElement.style.display = "block";
