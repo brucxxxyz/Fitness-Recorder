@@ -400,3 +400,33 @@ html.dark .footer {
   transform: none !important;     /* 不出现轻微缩放 */
 }
 
+/* 历史页：让 - n + 靠右，同时保持在卡片内 */
+.card .subitem-row {
+  display: flex;
+  justify-content: space-between;   /* 左右分布 */
+  align-items: center;
+  padding: 6px 4px;                 /* ⭐ 保证内容不会贴边 */
+}
+
+/* 左侧动作名占据左侧空间 */
+.card .subitem-row .item-name {
+  flex: 1;                           /* ⭐ 自动撑开左侧 */
+  padding-right: 10px;               /* ⭐ 与右侧按钮保持距离 */
+}
+
+/* 右侧按钮区保持紧凑 */
+.card .subitem-row .counter-btn,
+.card .subitem-row .count-number {
+  margin-left: 8px;
+}
+
+/* 修复英文模式下的垂直对齐 */
+.card .subitem-row .counter-btn,
+.card .subitem-row .count-number {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
