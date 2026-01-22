@@ -1,4 +1,3 @@
-// statistics.js
 // =====================================
 // 统计页（多语言 + 图表）
 // =====================================
@@ -23,7 +22,7 @@ let radarChart = null;
 /* ============================
    状态：周/月偏移
 ============================ */
-let currentMode = "week"; // "week" or "month"
+let currentMode = "week"; 
 let weekOffset = 0;
 let monthOffset = 0;
 
@@ -35,11 +34,11 @@ btnBack.onclick = () => {
 };
 
 /* ============================
-   获取某周的日期（Mon–Sun）
+   获取某周日期（Mon–Sun）
 ============================ */
 function getWeekRange(offset) {
   const today = new Date();
-  const day = today.getDay(); // 0=Sun
+  const day = today.getDay();
   const monday = new Date(today);
 
   monday.setDate(today.getDate() - ((day + 6) % 7) + offset * 7);
@@ -54,7 +53,7 @@ function getWeekRange(offset) {
 }
 
 /* ============================
-   获取某月的所有日期（从 1 号开始）
+   获取某月所有日期
 ============================ */
 function getMonthRange(offset) {
   const today = new Date();
@@ -72,7 +71,7 @@ function getMonthRange(offset) {
 }
 
 /* ============================
-   从日期列表中取数据
+   从日期列表取数据
 ============================ */
 function getDataForDates(dateList) {
   const result = {};
@@ -83,7 +82,7 @@ function getDataForDates(dateList) {
 }
 
 /* ============================
-   绘制柱状图（按周每日）
+   绘制柱状图
 ============================ */
 function renderBarChart(data) {
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -91,8 +90,7 @@ function renderBarChart(data) {
 
   for (const date in data) {
     const d = new Date(date);
-    let day = d.getDay(); // 0=Sun
-    day = (day + 6) % 7;  // 转 Mon=0
+    let day = (d.getDay() + 6) % 7;
 
     const items = data[date];
     let total = 0;
@@ -132,7 +130,7 @@ function renderBarChart(data) {
 }
 
 /* ============================
-   绘制雷达图（六维能力）
+   绘制雷达图
 ============================ */
 function renderRadarChart(data) {
   const FITNESS_DIMENSIONS = [
@@ -177,69 +175,56 @@ function renderRadarChart(data) {
 }
 
 /* ============================
-   按钮事件：周/月切换
+   图表联动刷新（核心）
 ============================ */
-btnWeek.onclick = () => {
-  currentMode = "week";
-  weekOffset = 0;
+function refreshCharts() {
+  let dates;
 
-  const dates = getWeekRange(weekOffset);
+  if (currentMode === "week") {
+    dates = getWeekRange(weekOffset);
+  } else {
+    dates = getMonthRange(monthOffset);
+  }
+
   const data = getDataForDates(dates);
 
   renderBarChart(data);
   renderRadarChart(data);
+}
+
+/* ============================
+   周/月切换
+============================ */
+btnWeek.onclick = () => {
+  currentMode = "week";
+  weekOffset = 0;
+  refreshCharts();
 };
 
 btnMonth.onclick = () => {
   currentMode = "month";
   monthOffset = 0;
-
-  const dates = getMonthRange(monthOffset);
-  const data = getDataForDates(dates);
-
-  renderBarChart(data);
-  renderRadarChart(data);
+  refreshCharts();
 };
 
 /* ============================
    上一周 / 下一周 / 上一月 / 下一月
 ============================ */
 btnPrev.onclick = () => {
-  if (currentMode === "week") {
-    weekOffset--;
-    const dates = getWeekRange(weekOffset);
-    const data = getDataForDates(dates);
-    renderBarChart(data);
-    renderRadarChart(data);
-  } else {
-    monthOffset--;
-    const dates = getMonthRange(monthOffset);
-    const data = getDataForDates(dates);
-    renderBarChart(data);
-    renderRadarChart(data);
-  }
+  if (currentMode === "week") weekOffset--;
+  else monthOffset--;
+  refreshCharts();
 };
 
 btnNext.onclick = () => {
-  if (currentMode === "week") {
-    weekOffset++;
-    const dates = getWeekRange(weekOffset);
-    const data = getDataForDates(dates);
-    renderBarChart(data);
-    renderRadarChart(data);
-  } else {
-    monthOffset++;
-    const dates = getMonthRange(monthOffset);
-    const data = getDataForDates(dates);
-    renderBarChart(data);
-    renderRadarChart(data);
-  }
+  if (currentMode === "week") weekOffset++;
+  else monthOffset++;
+  refreshCharts();
 };
 
 /* ============================
-   图表切换
+   图表显示/隐藏
 ============================ */
-
 btnBar.onclick = () => {
   const box = canvasBar.parentElement;
   box.style.display = (box.style.display === "none") ? "block" : "none";
@@ -254,13 +239,7 @@ btnRadar.onclick = () => {
    启动：默认显示本周
 ============================ */
 document.addEventListener("DOMContentLoaded", () => {
-  const dates = getWeekRange(0);
-  const data = getDataForDates(dates);
-
-  renderBarChart(data);
-  renderRadarChart(data);
-
+  refreshCharts();
   canvasBar.parentElement.style.display = "block";
   canvasRadar.parentElement.style.display = "block";
-
 });
