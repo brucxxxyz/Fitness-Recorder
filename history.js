@@ -21,7 +21,22 @@ function findReps(itemName) {
 }
 
 /* ============================
-   渲染历史记录
+   计算某天总能量
+============================ */
+function getDayCalories(date) {
+  const items = history[date] || {};
+  let total = 0;
+
+  for (const name in items) {
+    const sets = items[name];
+    const reps = findReps(name);
+    total += sets * reps * 0.6;
+  }
+  return total.toFixed(1);
+}
+
+/* ============================
+   渲染历史记录（折叠版）
 ============================ */
 function showHistoryPage() {
   const list = document.getElementById("historyList");
@@ -33,10 +48,27 @@ function showHistoryPage() {
     .reverse();
 
   dates.forEach(date => {
-    const title = document.createElement("div");
-    title.className = "history-title";
+    const dayCard = document.createElement("div");
+    dayCard.className = "card";
+
+    /* --- 折叠标题行 --- */
+    const header = document.createElement("div");
+    header.className = "history-row";
+    header.style.cursor = "pointer";
+
+    const title = document.createElement("span");
     title.textContent = date;
-    list.appendChild(title);
+
+    const calories = document.createElement("span");
+    calories.textContent = `🔥 ${getDayCalories(date)} kcal`;
+
+    header.appendChild(title);
+    header.appendChild(calories);
+
+    /* --- 内容区（默认折叠） --- */
+    const content = document.createElement("div");
+    content.style.display = "none";
+    content.style.marginTop = "10px";
 
     const items = history[date];
 
@@ -80,7 +112,8 @@ function showHistoryPage() {
         else history[date][name] = v;
 
         saveHistory();
-        showHistoryPage();
+        calories.textContent = `🔥 ${getDayCalories(date)} kcal`;
+        if (v === 0) showHistoryPage();
       };
 
       plus.onclick = () => {
@@ -91,6 +124,7 @@ function showHistoryPage() {
 
         history[date][name] = v;
         saveHistory();
+        calories.textContent = `🔥 ${getDayCalories(date)} kcal`;
       };
 
       row.appendChild(left);
@@ -100,15 +134,14 @@ function showHistoryPage() {
       row.appendChild(count);
       row.appendChild(plus);
 
-      list.appendChild(row);
+      content.appendChild(row);
     }
 
-    const delCard = document.createElement("div");
-    delCard.className = "card";
-
+    /* --- 删除当天按钮 --- */
     const delBtn = document.createElement("button");
     delBtn.className = "small-btn";
     delBtn.textContent = "删除当天数据";
+    delBtn.style.marginTop = "10px";
 
     delBtn.onclick = () => {
       delete history[date];
@@ -116,8 +149,16 @@ function showHistoryPage() {
       showHistoryPage();
     };
 
-    delCard.appendChild(delBtn);
-    list.appendChild(delCard);
+    content.appendChild(delBtn);
+
+    /* --- 点击标题折叠/展开 --- */
+    header.onclick = () => {
+      content.style.display = content.style.display === "none" ? "block" : "none";
+    };
+
+    dayCard.appendChild(header);
+    dayCard.appendChild(content);
+    list.appendChild(dayCard);
   });
 }
 
