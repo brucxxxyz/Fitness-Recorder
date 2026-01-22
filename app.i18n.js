@@ -189,8 +189,8 @@ function translateUI() {
   const historyTitle = document.querySelector("#page-history .page-title");
   if (historyTitle) historyTitle.textContent = t.historyTitle;
 
-  // 统计页标题（修复：不再使用 .stats-title）
-  const statsTitle = document.querySelector("#page-stats .page-title, .stats-page-title, h2.page-title");
+  // 统计页标题（修复：只选 .stats-title）
+  const statsTitle = document.querySelector(".stats-title");
   if (statsTitle) statsTitle.textContent = t.statsTitle;
 
   // 按钮
