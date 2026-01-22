@@ -59,7 +59,7 @@ const bodyPartSelect = document.getElementById("bodyPartSelect");
 for (const part in WORKOUT_GROUPS) {
   const opt = document.createElement("option");
   opt.value = part;
-  opt.textContent = part;
+  opt.textContent = part; // 部位名称不翻译
   bodyPartSelect.appendChild(opt);
 }
 
@@ -84,7 +84,7 @@ function renderSubItems() {
 
     const repsLabel = document.createElement("span");
     repsLabel.className = "reps-label";
-    repsLabel.textContent = `${item.reps} 次/组`;
+    repsLabel.textContent = t("reps_per_set", { reps: item.reps });
 
     const total = document.createElement("span");
     total.className = "total-reps";
@@ -102,7 +102,7 @@ function renderSubItems() {
 
     let sets = todayData[item.name] || 0;
     count.textContent = sets;
-    total.textContent = `${sets * item.reps} 次`;
+    total.textContent = t("total_reps", { total: sets * item.reps });
 
     minus.onclick = () => {
       if (sets > 0) sets--;
@@ -128,7 +128,7 @@ function renderSubItems() {
 
     function updateRow() {
       count.textContent = sets;
-      total.textContent = `${sets * item.reps} 次`;
+      total.textContent = t("total_reps", { total: sets * item.reps });
     }
 
     row.appendChild(name);
@@ -170,9 +170,9 @@ function updateFooter() {
 function renderFooter(totalSets, totalReps, totalCalories) {
   const box = document.getElementById("todaySummary");
   box.innerHTML = `
-    <div>今日总组数： <b>${totalSets}</b> 组</div>
-    <div>今日总次数： <b>${totalReps}</b> 次</div>
-    <div>今日总能量： <b>${totalCalories.toFixed(1)}</b> kcal</div>
+    <div>${t("today_sets")} <b>${totalSets}</b></div>
+    <div>${t("today_reps")} <b>${totalReps}</b></div>
+    <div>${t("today_calories")} <b>${totalCalories.toFixed(1)}</b> kcal</div>
   `;
 }
 
@@ -220,3 +220,10 @@ function findReps(itemName) {
   }
   return 0;
 }
+
+/* ============================
+   初始化语言 + 暗夜模式 + 文案
+============================ */
+initLanguageMenu();
+initDarkMode();
+applyLangIndex();
