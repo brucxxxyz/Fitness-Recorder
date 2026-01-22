@@ -1,4 +1,9 @@
 /* ============================
+   全局历史数据（必须放最顶部）
+============================ */
+let history = JSON.parse(localStorage.getItem("fitness_history") || "{}");
+
+/* ============================
    全局变量
 ============================ */
 let currentMode = "week";   // week / month
