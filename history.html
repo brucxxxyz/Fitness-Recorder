@@ -5,18 +5,43 @@
   <title>历史记录</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+
+  <!-- 语言包 -->
+  <script src="lang.js"></script>
+  <!-- 全局 UI（语言 + 暗夜模式） -->
+  <script src="ui.js"></script>
 </head>
 
 <body>
 
+<!-- 顶部按钮（语言 + 暗夜模式） -->
+<div class="top-right">
+
+  <!-- 语言选择器 -->
+  <div class="lang-wrapper">
+    <button id="langBtn" class="icon-btn">🌐</button>
+
+    <div id="langMenu" class="lang-menu hidden">
+      <div class="lang-title">🌐 Language</div>
+      <div data-lang="zh">🇨🇳 简体中文</div>
+      <div data-lang="hk">🇭🇰 繁體中文</div>
+      <div data-lang="en">🇺🇸 English</div>
+    </div>
+  </div>
+
+  <!-- 暗夜模式按钮 -->
+  <button id="themeToggle" class="icon-btn">🌙</button>
+</div>
+
+
 <div class="app">
 
-  <h2 class="page-title">历史记录</h2>
+  <h2 class="page-title" id="titleHistory"></h2>
 
   <div id="historyList" class="card"></div>
 
   <div class="card">
-    <button id="backHome">返回</button>
+    <button id="backHome"></button>
   </div>
 
 </div>
@@ -25,6 +50,21 @@
 
 <script src="workouts.js"></script>
 <script src="history.js"></script>
+
+<script>
+/* ============================
+   history 页面语言渲染
+============================ */
+function applyLangHistory() {
+  document.getElementById("titleHistory").textContent = t("history_title");
+  document.getElementById("backHome").textContent = t("history_back");
+}
+
+/* 初始化语言菜单 + 暗夜模式 + 文案 */
+initLanguageMenu();
+initDarkMode();
+applyLangHistory();
+</script>
 
 </body>
 </html>
