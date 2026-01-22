@@ -1,6 +1,6 @@
 // app.i18n.js
 // =====================================
-// 三语言系统（UI + 动作 + 部位 + 统计页）
+// 三语言系统（UI + 动作 + 部位 + 统计页 + 六维能力）
 // 依赖：workouts.js（翻译表 + 数据）
 // =====================================
 
@@ -88,6 +88,22 @@ const UI_TEXT = {
     `
   }
 };
+
+/* ============================
+   六维能力翻译（新增）
+============================ */
+const DIM_TRANSLATIONS = {
+  balance:      { zh: "平衡",   hk: "平衡",   en: "Balance" },
+  power:        { zh: "爆发力", hk: "爆發力", en: "Power" },
+  endurance:    { zh: "耐力",   hk: "耐力",   en: "Endurance" },
+  flexibility:  { zh: "柔韧",   hk: "柔韌",   en: "Flexibility" },
+  stability:    { zh: "稳定",   hk: "穩定",   en: "Stability" },
+  coordination: { zh: "协调",   hk: "協調",   en: "Coordination" }
+};
+
+function getLocalizedDimension(dim) {
+  return DIM_TRANSLATIONS[dim]?.[currentLang] || dim;
+}
 
 /* ============================
    获取翻译（动作 / 部位）
