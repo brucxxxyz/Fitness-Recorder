@@ -6,20 +6,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <link rel="apple-touch-icon" sizes="180x180" href="fitness.png">
+
+  <!-- 语言包 -->
+  <script src="lang.js"></script>
+  <!-- 全局 UI（语言 + 暗夜模式） -->
+  <script src="ui.js"></script>
 </head>
 
 <body>
+
+<!-- 顶部按钮（语言 + 暗夜模式） -->
+<div class="top-right">
+
+  <!-- 语言选择器 -->
+  <div class="lang-wrapper">
+    <button id="langBtn" class="icon-btn">🌐</button>
+
+    <div id="langMenu" class="lang-menu hidden">
+      <div class="lang-title">🌐 Language</div>
+      <div data-lang="zh">🇨🇳 简体中文</div>
+      <div data-lang="hk">🇭🇰 繁體中文</div>
+      <div data-lang="en">🇺🇸 English</div>
+    </div>
+  </div>
+
+  <!-- 暗夜模式按钮 -->
+  <button id="themeToggle" class="icon-btn">🌙</button>
+</div>
+
 
 <div class="app">
 
   <!-- 今日训练页 -->
   <div id="page-home" class="page active">
 
-    <h2 class="page-title">今日训练</h2>
+    <h2 class="page-title" id="titleHome"></h2>
 
     <!-- 日期选择 -->
     <div class="card form-row">
-      <label>日期</label>
+      <label id="labelDate"></label>
       <div class="date-wrapper">
         <button id="prevDate">&lt;</button>
         <input type="date" id="datePicker">
@@ -29,7 +54,7 @@
 
     <!-- 部位选择 -->
     <div class="card form-row">
-      <label>部位</label>
+      <label id="labelPart"></label>
       <select id="bodyPartSelect"></select>
     </div>
 
@@ -41,11 +66,11 @@
 
     <!-- 跳转按钮 -->
     <div class="card">
-      <button id="gotoHistory">查看历史记录</button>
+      <button id="gotoHistory"></button>
     </div>
 
     <div class="card">
-      <button id="gotoStats">训练统计</button>
+      <button id="gotoStats"></button>
     </div>
 
   </div>
@@ -56,6 +81,24 @@
 
 <script src="workouts.js"></script>
 <script src="app.js"></script>
+
+<script>
+/* ============================
+   index 页面语言渲染
+============================ */
+function applyLangIndex() {
+  document.getElementById("titleHome").textContent = t("home_title");
+  document.getElementById("labelDate").textContent = t("date_label");
+  document.getElementById("labelPart").textContent = t("part_label");
+  document.getElementById("gotoHistory").textContent = t("btn_history");
+  document.getElementById("gotoStats").textContent = t("btn_stats");
+}
+
+/* 初始化语言菜单 + 暗夜模式 + 文案 */
+initLanguageMenu();
+initDarkMode();
+applyLangIndex();
+</script>
 
 </body>
 </html>
