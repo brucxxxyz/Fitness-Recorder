@@ -116,3 +116,49 @@ function translatePart(part, lang) {
 function translateWorkout(name, lang) {
   return WORKOUT_TRANSLATION[name]?.[lang] || name;
 }
+
+/* --------------------------------
+   六维能力映射（用于雷达图）
+-------------------------------- */
+// balance / power / endurance / flexibility / stability / coordination
+const WORKOUT_DIMENSION_MAP = {
+  // 背部
+  "对握下拉": "power",
+  "引体向上": "power",
+  "高位下拉": "power",
+  "坐姿划船": "coordination",
+
+  // 胸部
+  "卧推": "power",
+  "上斜卧推": "power",
+  "哑铃飞鸟": "flexibility",
+  "拉绳夹胸": "flexibility",
+
+  // 腿部
+  "深蹲": "power",
+  "硬拉": "power",
+  "腿举": "endurance",
+  "弓步蹲": "balance",
+  "小腿提踵": "endurance",
+
+  // 肩部
+  "哑铃推举": "power",
+  "杠铃推举": "power",
+  "侧平举": "stability",
+  "前平举": "stability",
+  "反向飞鸟": "coordination",
+
+  // 手臂
+  "哑铃弯举": "coordination",
+  "杠铃弯举": "power",
+  "锤式弯举": "power",
+  "绳索下压": "endurance",
+  "臂屈伸": "endurance",
+
+  // 核心
+  "卷腹": "endurance",
+  "仰卧起坐": "endurance",
+  "俄式转体": "balance",
+  "抬腿": "endurance",
+  "平板支撑": "stability"
+};
