@@ -1,5 +1,5 @@
 /* ============================
-   页面切换
+   页面切换（仅 index.html 使用）
 ============================ */
 function showPage(pageId) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
@@ -89,15 +89,18 @@ if (datePicker) {
    初始化（安全版）
 ============================ */
 function init() {
+  // 默认设置今天日期
   if (datePicker) {
     const today = new Date();
     datePicker.value = formatDate(today);
   }
 
+  // 加载今日训练
   if (typeof loadTodayWorkout === "function") {
     loadTodayWorkout();
   }
 
+  // 加载历史记录
   if (typeof loadHistory === "function") {
     loadHistory();
   }
