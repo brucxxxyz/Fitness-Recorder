@@ -289,11 +289,12 @@ canvas {
 ============================ */
 .top-right {
   position: fixed;
-  top: 16px;
-  right: 16px;
+  top: 12px;
+  right: 12px;
   display: flex;
   gap: 12px;
-  z-index: 999;
+  z-index: 9999; /* 提升层级，确保永远在最上方 */
+  pointer-events: auto;
 }
 
 #langBtn,
