@@ -1,7 +1,6 @@
 // statistics.js
 // =====================================
 // 统计页（多语言 + 图表）
-// 依赖：workouts.js + app.i18n.js
 // =====================================
 
 /* ============================
@@ -22,11 +21,9 @@ let radarChart = null;
 /* ============================
    返回主页
 ============================ */
-if (btnBack) {
-  btnBack.onclick = () => {
-    window.location.assign("index.html");
-  };
-}
+btnBack.onclick = () => {
+  window.location.assign("index.html");
+};
 
 /* ============================
    获取最近 N 天的数据
@@ -60,7 +57,6 @@ function calcEnergyByPart(data) {
       const reps = findReps(name);
       const energy = sets * reps * 0.6;
 
-      // 找到动作属于哪个部位
       let part = null;
       for (const p in WORKOUT_GROUPS) {
         if (WORKOUT_GROUPS[p].some(x => x.name === name)) {
@@ -80,7 +76,7 @@ function calcEnergyByPart(data) {
 }
 
 /* ============================
-   绘制柱状图（能量）
+   绘制柱状图
 ============================ */
 function renderBarChart(data) {
   const partEnergy = calcEnergyByPart(data);
@@ -90,7 +86,7 @@ function renderBarChart(data) {
 
   if (barChart) barChart.destroy();
 
-  barChart = new Chart(canvasBar, {
+  barChart = new Chart(canvasBar.getContext("2d"), {
     type: "bar",
     data: {
       labels,
@@ -114,7 +110,7 @@ function renderBarChart(data) {
 }
 
 /* ============================
-   绘制雷达图（六维）
+   绘制雷达图
 ============================ */
 function renderRadarChart(data) {
   const partEnergy = calcEnergyByPart(data);
@@ -124,7 +120,7 @@ function renderRadarChart(data) {
 
   if (radarChart) radarChart.destroy();
 
-  radarChart = new Chart(canvasRadar, {
+  radarChart = new Chart(canvasRadar.getContext("2d"), {
     type: "radar",
     data: {
       labels,
@@ -163,13 +159,13 @@ btnMonth.onclick = () => {
 };
 
 btnBar.onclick = () => {
-  canvasBar.style.display = "block";
-  canvasRadar.style.display = "none";
+  canvasBar.parentElement.style.display = "block";
+  canvasRadar.parentElement.style.display = "none";
 };
 
 btnRadar.onclick = () => {
-  canvasBar.style.display = "none";
-  canvasRadar.style.display = "block";
+  canvasBar.parentElement.style.display = "none";
+  canvasRadar.parentElement.style.display = "block";
 };
 
 /* ============================
@@ -180,6 +176,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderBarChart(data);
   renderRadarChart(data);
 
-  canvasBar.style.display = "block";
-  canvasRadar.style.display = "none";
+  canvasBar.parentElement.style.display = "block";
+  canvasRadar.parentElement.style.display = "none";
 });
