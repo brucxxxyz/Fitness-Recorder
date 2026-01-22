@@ -12,7 +12,7 @@ body {
   max-width: 480px;
   margin: 0 auto;
   padding: 16px;
-  position: relative; /* 让 top-right 以 .app 为定位基准 */
+  position: relative;
 }
 
 /* ============================
@@ -34,7 +34,7 @@ body {
    顶部按钮（语言 + 暗夜模式）
 ============================ */
 .top-right {
-  position: absolute; /* 不再 fixed，跟随内容 */
+  position: absolute;
   top: 12px;
   right: 12px;
   display: flex;
@@ -231,6 +231,7 @@ html.dark #nextDate {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 6px 0;
   font-size: 15px;
 }
 
@@ -272,7 +273,7 @@ button:active {
   gap: 10px;
 }
 
-/* 加减按钮 */
+/* 加减按钮（主页） */
 .counter-btn {
   width: 36px;
   height: 36px;
@@ -287,6 +288,40 @@ button:active {
 }
 
 .counter-btn:active { background: #16a34a; }
+
+/* ============================
+   历史页加减按钮（绿色 + 对齐）
+============================ */
+.history-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.h-minus,
+.h-plus {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: #22c55e;
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.h-minus:active,
+.h-plus:active {
+  background: #16a34a;
+}
+
+.h-count {
+  width: 28px;
+  text-align: center;
+  font-size: 16px;
+}
 
 /* ============================
    图表 canvas
@@ -347,18 +382,10 @@ html.dark .footer {
 }
 
 /* ============================
-   去除日期按钮边框（亮色 + 暗夜）
+   去除按钮边框
 ============================ */
 #prevDate,
-#nextDate {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* ============================
-   去除统计页 < > 按钮边框
-============================ */
+#nextDate,
 #btnPrev,
 #btnNext {
   border: none !important;
@@ -366,9 +393,6 @@ html.dark .footer {
   box-shadow: none !important;
 }
 
-/* ============================
-   暗夜模式下也保持无边框
-============================ */
 html.dark #prevDate,
 html.dark #nextDate,
 html.dark #btnPrev,
@@ -387,36 +411,3 @@ html.dark #btnNext {
   border-radius: 8px;
   font-size: 16px;
 }
-
-/* 历史页行布局 */
-.history-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-}
-
-/* 加减按钮区域 */
-.history-counter {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.h-minus, .h-plus {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 6px;
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  font-size: 18px;
-}
-
-.h-count {
-  width: 28px;
-  text-align: center;
-  font-size: 16px;
-}
-
-
