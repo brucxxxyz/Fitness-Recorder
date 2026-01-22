@@ -223,3 +223,7 @@ if (btnBack) btnBack.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
   refreshCharts();
 });
+
+document.addEventListener("languageChanged", () => {
+  refreshCharts();
+});
