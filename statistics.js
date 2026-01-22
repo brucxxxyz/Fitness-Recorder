@@ -10,16 +10,32 @@ let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 // 当前选中的日期（用于雷达图联动）
 let selectedDate = null;
 
-// 图表显示开关（默认两个都显示）
+// 图表显示开关
 let showBar = true;
 let showRadar = true;
 
-// 自动卡路里：B 方案
+/* ============================
+   卡路里计算
+============================ */
 function caloriesPerSet(reps) {
   return reps * 0.6;
 }
 
-// 计算某天总次数 & 总卡路里
+/* ============================
+   查 reps（根据中文 key）
+============================ */
+function findReps(itemNameZh) {
+  for (const part in WORKOUT_GROUPS) {
+    for (const obj of WORKOUT_GROUPS[part]) {
+      if (obj.name.zh === itemNameZh) return obj.reps;
+    }
+  }
+  return 0;
+}
+
+/* ============================
+   获取某天统计
+============================ */
 function getDayStats(dateKey) {
   const items = history[dateKey];
   if (!items) return { totalReps: 0, totalCalories: 0 };
@@ -27,9 +43,9 @@ function getDayStats(dateKey) {
   let totalReps = 0;
   let totalCalories = 0;
 
-  for (const item in items) {
-    const sets = items[item];
-    const reps = findReps(item);
+  for (const itemZh in items) {
+    const sets = items[itemZh];
+    const reps = findReps(itemZh);
     const cals = caloriesPerSet(reps);
 
     totalReps += reps * sets;
@@ -39,20 +55,12 @@ function getDayStats(dateKey) {
   return { totalReps, totalCalories };
 }
 
-function findReps(itemName) {
-  for (const part in WORKOUT_GROUPS) {
-    for (const obj of WORKOUT_GROUPS[part]) {
-      if (obj.name === itemName) return obj.reps;
-    }
-  }
-  return 0;
-}
-
-// 偏移量：0=本周/本月，-1=上周/上月，+1=下周/下月
+/* ============================
+   周/月偏移
+============================ */
 let weekOffset = 0;
 let monthOffset = 0;
 
-// 根据偏移获取一周（周一~周日）
 function getWeekByOffset(offset) {
   const base = new Date();
   base.setDate(base.getDate() + offset * 7);
@@ -72,7 +80,6 @@ function getWeekByOffset(offset) {
   return arr;
 }
 
-// 根据偏移获取一个月所有日期
 function getMonthByOffset(offset) {
   const today = new Date();
   today.setMonth(today.getMonth() + offset);
@@ -90,9 +97,9 @@ function getMonthByOffset(offset) {
   return arr;
 }
 
-/* -----------------------------
-   计算各部位能量
------------------------------ */
+/* ============================
+   计算各部位能量（动作名三语 → key 中文）
+============================ */
 function computePartEnergy(dates) {
   const partEnergy = {
     "胸部": 0,
@@ -107,13 +114,14 @@ function computePartEnergy(dates) {
     const items = history[date];
     if (!items) return;
 
-    for (const itemName in items) {
-      const sets = items[itemName];
-      const reps = findReps(itemName);
+    for (const itemZh in items) {
+      const sets = items[itemZh];
+      const reps = findReps(itemZh);
       const calories = caloriesPerSet(reps) * sets;
 
+      // 找到动作属于哪个部位
       for (const part in WORKOUT_GROUPS) {
-        if (WORKOUT_GROUPS[part].some(obj => obj.name === itemName)) {
+        if (WORKOUT_GROUPS[part].some(obj => obj.name.zh === itemZh)) {
           partEnergy[part] += calories;
         }
       }
@@ -123,9 +131,9 @@ function computePartEnergy(dates) {
   return partEnergy;
 }
 
-/* -----------------------------
-   计算雷达图六维指标
------------------------------ */
+/* ============================
+   雷达图六维计算
+============================ */
 function computeRadarValues(partEnergy) {
   const chest = partEnergy["胸部"];
   const back = partEnergy["背部"];
@@ -144,9 +152,9 @@ function computeRadarValues(partEnergy) {
   ];
 }
 
-/* -----------------------------
-   柱状图（能量消耗）
------------------------------ */
+/* ============================
+   柱状图
+============================ */
 function renderBar(dates) {
   const labels = dates.map(d => d.slice(5));
   const data = dates.map(d => getDayStats(d).totalCalories);
@@ -180,9 +188,9 @@ function renderBar(dates) {
   });
 }
 
-/* -----------------------------
+/* ============================
    雷达图
------------------------------ */
+============================ */
 function renderRadar(values) {
   const labels = [
     t("radar_strength"),
@@ -232,14 +240,14 @@ function renderRadar(values) {
   }
 }
 
-/* -----------------------------
-   雷达图联动逻辑
------------------------------ */
+/* ============================
+   雷达图联动
+============================ */
 function updateRadar() {
   let dates;
 
   if (selectedDate) {
-    dates = [selectedDate]; // 单日
+    dates = [selectedDate];
   } else {
     dates = currentMode === "week"
       ? getWeekByOffset(weekOffset)
@@ -252,19 +260,18 @@ function updateRadar() {
   renderRadar(radarValues);
 }
 
-/* -----------------------------
-   刷新图表（支持同时显示）
------------------------------ */
+/* ============================
+   刷新图表
+============================ */
 let currentMode = "week";
 
 function refreshChart() {
-  selectedDate = null; // 切换周/月时清除选中
+  selectedDate = null;
 
   let dates = currentMode === "week"
     ? getWeekByOffset(weekOffset)
     : getMonthByOffset(monthOffset);
 
-  // 柱状图
   if (showBar) {
     document.getElementById("chartCanvas").style.display = "block";
     renderBar(dates);
@@ -272,7 +279,6 @@ function refreshChart() {
     document.getElementById("chartCanvas").style.display = "none";
   }
 
-  // 雷达图
   if (showRadar) {
     document.getElementById("radarCanvas").style.display = "block";
     updateRadar();
@@ -281,9 +287,9 @@ function refreshChart() {
   }
 }
 
-/* -----------------------------
-   按钮绑定（开关模式）
------------------------------ */
+/* ============================
+   按钮绑定
+============================ */
 document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
   weekOffset = 0;
@@ -322,7 +328,9 @@ document.getElementById("btnBack").onclick = () => {
   window.location.href = "index.html";
 };
 
-// 默认显示本周
+/* ============================
+   初次渲染
+============================ */
 refreshChart();
 
 /* ============================
