@@ -111,15 +111,17 @@ select {
   box-sizing: border-box;
 }
 
-/* 去除主页日期按钮边框与背景 */
+/* 主页日期切换按钮：绿色按钮但无边框 */
 #prevDate,
 #nextDate {
-  border: none;
-  background: none;
-  box-shadow: none;
-  padding: 0 8px;
-  font-size: 20px;
-  color: inherit;
+  background-color: #22c55e; /* 绿色 */
+  color: white;
+  border: none;              /* 去边框 */
+  padding: 6px 12px;
+  border-radius: 6px;        /* 保留圆角 */
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: none;          /* 去阴影 */
 }
 
 /* ============================
