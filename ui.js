@@ -26,10 +26,12 @@ window.initLanguageMenu = function () {
 
   if (!langBtn || !langMenu) return;
 
+  // 点击按钮 → 显示/隐藏菜单
   langBtn.onclick = () => {
     langMenu.classList.toggle("hidden");
   };
 
+  // 点击语言选项
   langMenu.querySelectorAll("[data-lang]").forEach(item => {
     item.onclick = () => {
       const lang = item.dataset.lang;
@@ -38,6 +40,7 @@ window.initLanguageMenu = function () {
     };
   });
 
+  // 点击外部关闭菜单
   document.addEventListener("click", (e) => {
     if (!langMenu.contains(e.target) && e.target !== langBtn) {
       langMenu.classList.add("hidden");
@@ -46,19 +49,24 @@ window.initLanguageMenu = function () {
 };
 
 /* ============================
-   暗夜模式（切换 html.dark）
+   暗夜模式（切换 html.dark + 图标 🌙/☀️）
 ============================ */
 window.initDarkMode = function () {
   let dark = localStorage.getItem("dark") === "1";
+  const btn = document.getElementById("themeToggle");
 
   function applyDark() {
-    if (dark) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
+    if (dark) {
+      document.documentElement.classList.add("dark");
+      if (btn) btn.textContent = "☀️";  // 暗夜模式 → 显示太阳
+    } else {
+      document.documentElement.classList.remove("dark");
+      if (btn) btn.textContent = "🌙";  // 亮色模式 → 显示月亮
+    }
   }
 
   applyDark();
 
-  const btn = document.getElementById("themeToggle");
   if (!btn) return;
 
   btn.onclick = () => {
