@@ -106,4 +106,13 @@ function init() {
   }
 }
 
-init();
+/* ============================
+   正确的初始化顺序
+============================ */
+document.addEventListener("DOMContentLoaded", () => {
+  // 先翻译 UI（语言系统）
+  applyLanguage(currentLang);
+
+  // 再加载数据（今日训练 + 历史记录）
+  init();
+});
