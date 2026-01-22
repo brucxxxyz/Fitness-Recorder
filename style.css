@@ -16,7 +16,7 @@ body {
 
 /* 主页 + 统计页整体下移一行 */
 .app {
-  margin-top: 30px;
+  margin-top: 60px; /* 让顶部按钮不会被内容挤压 */
 }
 
 /* ============================
@@ -112,9 +112,8 @@ select {
 }
 
 /* ============================
-   主页日期切换按钮（保持原色，只去边框）
+   日期按钮（彻底去边框）
 ============================ */
-/* 日期按钮：彻底去除边框（亮色 + 暗夜模式） */
 #prevDate,
 #nextDate {
   border: none !important;
@@ -123,11 +122,18 @@ select {
   -webkit-appearance: none !important;
   appearance: none !important;
   background-clip: padding-box !important;
+  background: #22c55e;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
 }
+
 html.dark #prevDate,
 html.dark #nextDate {
+  background: #22c55e !important;
   border: none !important;
-  outline: none !important;
   box-shadow: none !important;
 }
 
@@ -287,21 +293,37 @@ canvas {
 /* ============================
    顶部按钮（语言 + 暗夜模式）
 ============================ */
-/* 右上角按钮不遮挡页面点击 */
 .top-right {
   position: fixed;
   top: 12px;
   right: 12px;
   display: flex;
   gap: 12px;
-  z-index: 9999;
-  pointer-events: none; /* 关键：不阻挡点击 */
+  z-index: 99999;
+  pointer-events: none; /* 不阻挡页面点击 */
 }
 
-/* 按钮本身可点击 */
+/* 按钮本身可点击 + 圆形 + 跟随主题颜色 */
 #langBtn,
 #themeToggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   pointer-events: auto;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  background: #fff;
+}
+
+html.dark #langBtn,
+html.dark #themeToggle {
+  background: #333 !important;
+  color: #fff !important;
+  box-shadow: none !important;
 }
 
 /* ============================
@@ -361,14 +383,6 @@ html.dark select {
   background: #333 !important;
   color: #fff !important;
   border-color: #555 !important;
-}
-
-html.dark #langBtn,
-html.dark #themeToggle {
-  background: #333 !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: none !important;
 }
 
 html.dark .lang-menu {
