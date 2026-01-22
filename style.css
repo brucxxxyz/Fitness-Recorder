@@ -262,12 +262,11 @@ canvas {
    顶部按钮（iOS 风格）
 ============================ */
 .top-right {
-  position: fixed;
-  top: 16px;
-  right: 16px;
+  position: relative;   /* ⭐ 跟随页面内容 */
   display: flex;
+  justify-content: flex-end;
   gap: 12px;
-  z-index: 999;
+  margin-bottom: 16px;  /* ⭐ 与标题保持距离 */
 }
 
 #langBtn,
