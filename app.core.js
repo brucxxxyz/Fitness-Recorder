@@ -33,6 +33,23 @@ if (btnBackHome) {
 }
 
 /* ============================
+   删除当天数据按钮
+============================ */
+const btnDeleteDay = document.getElementById("deleteDay");
+if (btnDeleteDay) {
+  btnDeleteDay.addEventListener("click", () => {
+    const date = document.getElementById("datePicker")?.value;
+    if (!date) return;
+
+    delete history[date];
+    localStorage.setItem("fitness_history", JSON.stringify(history));
+
+    loadHistory();
+    translateSummary();
+  });
+}
+
+/* ============================
    日期选择器逻辑
 ============================ */
 const datePicker = document.getElementById("datePicker");
@@ -149,7 +166,7 @@ function saveSet(date, name, sets) {
 }
 
 /* ============================
-   加载历史记录
+   加载历史记录（可编辑 + 0 组不显示）
 ============================ */
 function loadHistory() {
   const list = document.getElementById("historyList");
@@ -168,18 +185,49 @@ function loadHistory() {
 
     for (const name in dayData) {
       const sets = dayData[name];
+
+      // ⭐ 0 组不显示
+      if (sets === 0) continue;
+
       html += `
         <div class="history-row">
           <span class="item-name" data-original-name="${name}">
             ${getLocalizedWorkout(name)}
           </span>
-          <span>${sets} 组</span>
+
+          <div class="history-counter">
+            <button class="h-minus">-</button>
+            <div class="h-count">${sets}</div>
+            <button class="h-plus">+</button>
+          </div>
         </div>
       `;
     }
 
     div.innerHTML = html;
     list.appendChild(div);
+
+    // ⭐ 绑定加减按钮
+    div.querySelectorAll(".history-row").forEach(row => {
+      const itemName = row.querySelector(".item-name").dataset.originalName;
+      const minus = row.querySelector(".h-minus");
+      const plus = row.querySelector(".h-plus");
+      const count = row.querySelector(".h-count");
+
+      minus.addEventListener("click", () => {
+        let v = parseInt(count.textContent);
+        if (v > 0) v--;
+        saveSet(date, itemName, v);
+        loadHistory(); // 自动刷新（0 组会消失）
+      });
+
+      plus.addEventListener("click", () => {
+        let v = parseInt(count.textContent);
+        v++;
+        saveSet(date, itemName, v);
+        loadHistory();
+      });
+    });
   });
 
   translateHistoryList();
