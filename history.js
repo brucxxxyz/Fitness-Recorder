@@ -92,16 +92,6 @@ function showHistoryPage() {
       }
       left.textContent = displayName;
 
-      /* --- reps 文案 --- */
-      const repsLabel = document.createElement("span");
-      repsLabel.className = "reps-label";
-      repsLabel.textContent = t("reps_per_set", { reps });
-
-      /* --- 总次数 --- */
-      const totalLabel = document.createElement("span");
-      totalLabel.className = "total-reps";
-      totalLabel.textContent = t("total_reps", { total: items[nameZh] * reps });
-
       /* --- 加减按钮 --- */
       const minus = document.createElement("button");
       minus.className = "counter-btn";
@@ -118,8 +108,8 @@ function showHistoryPage() {
       minus.onclick = () => {
         let v = parseInt(count.textContent);
         if (v > 0) v--;
+
         count.textContent = v;
-        totalLabel.textContent = t("total_reps", { total: v * reps });
 
         if (v === 0) delete history[date][nameZh];
         else history[date][nameZh] = v;
@@ -133,8 +123,8 @@ function showHistoryPage() {
       plus.onclick = () => {
         let v = parseInt(count.textContent);
         v++;
+
         count.textContent = v;
-        totalLabel.textContent = t("total_reps", { total: v * reps });
 
         history[date][nameZh] = v;
         saveHistory();
@@ -142,8 +132,6 @@ function showHistoryPage() {
       };
 
       row.appendChild(left);
-      row.appendChild(repsLabel);
-      row.appendChild(totalLabel);
       row.appendChild(minus);
       row.appendChild(count);
       row.appendChild(plus);
