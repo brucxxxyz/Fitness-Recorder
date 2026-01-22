@@ -12,7 +12,7 @@ body {
   max-width: 480px;
   margin: 0 auto;
   padding: 16px;
-  position: relative; /* 关键：让 top-right 以 .app 为定位基准 */
+  position: relative; /* 让 top-right 以 .app 为定位基准 */
 }
 
 /* ============================
@@ -34,17 +34,17 @@ body {
    顶部按钮（语言 + 暗夜模式）
 ============================ */
 .top-right {
-  position: absolute; /* 不固定，跟随页面内容 */
+  position: absolute; /* 不再 fixed，跟随内容 */
   top: 12px;
   right: 12px;
   display: flex;
   gap: 12px;
-  pointer-events: none; /* 容器不挡点击 */
+  pointer-events: none;
 }
 
 #langBtn,
 #themeToggle {
-  pointer-events: auto; /* 按钮可点击 */
+  pointer-events: auto;
   width: 40px;
   height: 40px;
   border-radius: 50%;
