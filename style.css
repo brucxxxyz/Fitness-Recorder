@@ -106,6 +106,17 @@ select {
   box-sizing: border-box;
 }
 
+/* 去除主页日期按钮边框与背景 */
+#prevDate,
+#nextDate {
+  border: none;
+  background: none;
+  box-shadow: none;
+  padding: 0 8px;
+  font-size: 20px;
+  color: inherit;
+}
+
 /* ============================
    今日训练动作行（主页）
 ============================ */
