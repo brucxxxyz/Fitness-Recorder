@@ -53,13 +53,13 @@ nextDateBtn.onclick = () => {
 };
 
 /* ============================
-   填充部位下拉菜单
+   填充部位下拉菜单（部位名保持中文 key）
 ============================ */
 const bodyPartSelect = document.getElementById("bodyPartSelect");
 for (const part in WORKOUT_GROUPS) {
   const opt = document.createElement("option");
   opt.value = part;
-  opt.textContent = part; // 部位名称不翻译
+  opt.textContent = part; // 部位名不翻译（保持 key）
   bodyPartSelect.appendChild(opt);
 }
 
@@ -78,17 +78,21 @@ function renderSubItems() {
     const row = document.createElement("div");
     row.className = "subitem-row";
 
+    /* --- 动作名（根据语言显示） --- */
     const name = document.createElement("span");
     name.className = "item-name";
-    name.textContent = item.name;
+    name.textContent = item.name[currentLang];
 
+    /* --- reps 文案 --- */
     const repsLabel = document.createElement("span");
     repsLabel.className = "reps-label";
     repsLabel.textContent = t("reps_per_set", { reps: item.reps });
 
+    /* --- 总次数 --- */
     const total = document.createElement("span");
     total.className = "total-reps";
 
+    /* --- 加减按钮 --- */
     const minus = document.createElement("button");
     minus.className = "counter-btn";
     minus.textContent = "-";
@@ -100,7 +104,10 @@ function renderSubItems() {
     plus.className = "counter-btn";
     plus.textContent = "+";
 
-    let sets = todayData[item.name] || 0;
+    /* --- sets 数据（key 使用中文动作名） --- */
+    const keyName = item.name.zh; // 数据 key 永远用中文
+    let sets = todayData[keyName] || 0;
+
     count.textContent = sets;
     total.textContent = t("total_reps", { total: sets * item.reps });
 
@@ -118,8 +125,8 @@ function renderSubItems() {
       const date = datePicker.value;
       if (!history[date]) history[date] = {};
 
-      if (sets > 0) history[date][item.name] = sets;
-      else delete history[date][item.name];
+      if (sets > 0) history[date][keyName] = sets;
+      else delete history[date][keyName];
 
       saveHistory();
       updateRow();
@@ -155,9 +162,9 @@ function updateFooter() {
   let totalReps = 0;
   let totalCalories = 0;
 
-  for (const name in todayData) {
-    const sets = todayData[name];
-    const reps = findReps(name);
+  for (const keyName in todayData) {
+    const sets = todayData[keyName];
+    const reps = findReps(keyName);
 
     totalSets += sets;
     totalReps += sets * reps;
@@ -177,18 +184,22 @@ function renderFooter(totalSets, totalReps, totalCalories) {
 }
 
 /* ============================
-   切换部位
+   查 reps（根据中文 key）
 ============================ */
-bodyPartSelect.onchange = () => {
-  renderSubItems();
-};
+function findReps(itemNameZh) {
+  for (const part in WORKOUT_GROUPS) {
+    for (const obj of WORKOUT_GROUPS[part]) {
+      if (obj.name.zh === itemNameZh) return obj.reps;
+    }
+  }
+  return 0;
+}
 
 /* ============================
-   切换日期
+   切换部位 & 日期
 ============================ */
-datePicker.onchange = () => {
-  renderSubItems();
-};
+bodyPartSelect.onchange = () => renderSubItems();
+datePicker.onchange = () => renderSubItems();
 
 /* ============================
    初次渲染
@@ -196,30 +207,15 @@ datePicker.onchange = () => {
 renderSubItems();
 
 /* ============================
-   跳转历史记录页
+   跳转
 ============================ */
 document.getElementById("gotoHistory").onclick = () => {
   window.location.assign("history.html");
 };
 
-/* ============================
-   跳转统计页
-============================ */
 document.getElementById("gotoStats").onclick = () => {
   window.location.assign("statistics.html");
 };
-
-/* ============================
-   查 reps
-============================ */
-function findReps(itemName) {
-  for (const part in WORKOUT_GROUPS) {
-    for (const obj of WORKOUT_GROUPS[part]) {
-      if (obj.name === itemName) return obj.reps;
-    }
-  }
-  return 0;
-}
 
 /* ============================
    初始化语言 + 暗夜模式 + 文案
