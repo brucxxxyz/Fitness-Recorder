@@ -53,13 +53,13 @@ nextDateBtn.onclick = () => {
 };
 
 /* ============================
-   填充部位下拉菜单（部位名保持中文 key）
+   填充部位下拉菜单（显示翻译）
 ============================ */
 const bodyPartSelect = document.getElementById("bodyPartSelect");
 for (const part in WORKOUT_GROUPS) {
   const opt = document.createElement("option");
   opt.value = part;
-  opt.textContent = part; // 部位名不翻译（保持 key）
+  opt.textContent = t("body_" + part); // ⭐ 使用语言包翻译
   bodyPartSelect.appendChild(opt);
 }
 
