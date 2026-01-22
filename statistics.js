@@ -26,73 +26,41 @@ btnBack.onclick = () => {
 };
 
 /* ============================
-   获取最近 N 天的数据
+   绘制柱状图（按周每日）
 ============================ */
-function getRecentDays(n) {
-  const result = {};
-  const today = new Date();
-
-  for (let i = 0; i < n; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-
-    const key = d.toISOString().slice(0, 10);
-    if (history[key]) result[key] = history[key];
-  }
-
-  return result;
-}
-
-/* ============================
-   计算能量（按部位）
-============================ */
-function calcEnergyByPart(data) {
-  const partEnergy = {};
+function renderBarChart(data) {
+  // 固定从周一开始
+  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const dailyEnergy = [0, 0, 0, 0, 0, 0, 0];
 
   for (const date in data) {
+    const d = new Date(date);
+    let day = d.getDay(); // 0=Sun, 1=Mon...
+
+    // 转换成 Mon=0 ... Sun=6
+    day = (day + 6) % 7;
+
     const items = data[date];
+    let total = 0;
 
     for (const name in items) {
       const sets = items[name];
       const reps = findReps(name);
-      const energy = sets * reps * 0.6;
-
-      let part = null;
-      for (const p in WORKOUT_GROUPS) {
-        if (WORKOUT_GROUPS[p].some(x => x.name === name)) {
-          part = p;
-          break;
-        }
-      }
-
-      if (!part) continue;
-
-      if (!partEnergy[part]) partEnergy[part] = 0;
-      partEnergy[part] += energy;
+      total += sets * reps * 0.6;
     }
+
+    dailyEnergy[day] += total;
   }
-
-  return partEnergy;
-}
-
-/* ============================
-   绘制柱状图
-============================ */
-function renderBarChart(data) {
-  const partEnergy = calcEnergyByPart(data);
-
-  const labels = Object.keys(partEnergy).map(p => getLocalizedPart(p));
-  const values = Object.values(partEnergy);
 
   if (barChart) barChart.destroy();
 
   barChart = new Chart(canvasBar.getContext("2d"), {
     type: "bar",
     data: {
-      labels,
+      labels: weekDays,
       datasets: [{
         label: getChartTitle("bar"),
-        data: values,
+        data: dailyEnergy,
         backgroundColor: "#22c55e"
       }]
     },
@@ -110,13 +78,22 @@ function renderBarChart(data) {
 }
 
 /* ============================
-   绘制雷达图
+   绘制雷达图（六维能力）
 ============================ */
 function renderRadarChart(data) {
-  const partEnergy = calcEnergyByPart(data);
+  const FITNESS_DIMENSIONS = [
+    "balance",
+    "power",
+    "endurance",
+    "flexibility",
+    "stability",
+    "coordination"
+  ];
 
-  const labels = Object.keys(partEnergy).map(p => getLocalizedPart(p));
-  const values = Object.values(partEnergy);
+  const dimEnergy = calcEnergyByDimension(data);
+
+  const labels = FITNESS_DIMENSIONS.map(d => getLocalizedDimension(d));
+  const values = FITNESS_DIMENSIONS.map(d => dimEnergy[d] || 0);
 
   if (radarChart) radarChart.destroy();
 
@@ -136,7 +113,9 @@ function renderRadarChart(data) {
       responsive: true,
       scales: {
         r: {
-          ticks: { display: false }
+          ticks: { display: false },
+          suggestedMin: 0,
+          suggestedMax: Math.max(...values, 10)
         }
       }
     }
