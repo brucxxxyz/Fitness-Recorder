@@ -1,135 +1,177 @@
-/* ============================
-   全局历史数据（必须放最顶部）
-============================ */
-let history = JSON.parse(localStorage.getItem("fitness_history") || "{}");
-
-/* ============================
-   全局变量
-============================ */
-let currentMode = "week";   // week / month
-let currentChart = "bar";   // bar / radar
-
-let barChart = null;
+let chart;
 let radarChart = null;
 
-/* ============================
-   获取当前周或月的日期范围
-============================ */
-function getDateRange(mode) {
-  const today = new Date();
-  const start = new Date(today);
-  const end = new Date(today);
+const ctx = document.getElementById("chartCanvas").getContext("2d");
+const radarCtx = document.getElementById("radarCanvas").getContext("2d");
 
-  if (mode === "week") {
-    const day = today.getDay() || 7;
-    start.setDate(today.getDate() - day + 1);
-    end.setDate(start.getDate() + 6);
-  } else {
-    start.setDate(1);
-    end.setMonth(start.getMonth() + 1);
-    end.setDate(0);
-  }
+const STORAGE_KEY = "fitness_history_v13";
+let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
-  return { start, end };
+// 当前选中的日期（用于雷达图联动）
+let selectedDate = null;
+
+// 图表显示开关（默认两个都显示）
+let showBar = true;
+let showRadar = true;
+
+// 自动卡路里：B 方案
+function caloriesPerSet(reps) {
+  return reps * 0.6;
 }
 
-/* ============================
-   获取范围内的训练数据
-============================ */
-function getRangeData(mode) {
-  const { start, end } = getDateRange(mode);
-  const result = {};
+// 计算某天总次数 & 总卡路里
+function getDayStats(dateKey) {
+  const items = history[dateKey];
+  if (!items) return { totalReps: 0, totalCalories: 0 };
 
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const key = d.toISOString().split("T")[0];
-    if (history[key]) result[key] = history[key];
+  let totalReps = 0;
+  let totalCalories = 0;
+
+  for (const item in items) {
+    const sets = items[item];
+    const reps = findReps(item);
+    const cals = caloriesPerSet(reps);
+
+    totalReps += reps * sets;
+    totalCalories += cals * sets;
   }
 
-  return result;
+  return { totalReps, totalCalories };
 }
 
-/* ============================
-   计算柱状图数据（能量）
-============================ */
-function computeBarData(mode) {
-  const rangeData = getRangeData(mode);
-  const labels = [];
-  const values = [];
-
-  for (const date in rangeData) {
-    let total = 0;
-    const items = rangeData[date];
-
-    for (const name in items) {
-      const sets = items[name];
-      const reps = findReps(name);
-      total += sets * reps * 0.6;
+function findReps(itemName) {
+  for (const part in WORKOUT_GROUPS) {
+    for (const obj of WORKOUT_GROUPS[part]) {
+      if (obj.name === itemName) return obj.reps;
     }
-
-    labels.push(date.slice(5));
-    values.push(total.toFixed(1));
   }
-
-  return { labels, values };
+  return 0;
 }
 
-/* ============================
-   计算雷达图数据（六维能力）
-============================ */
-function computeRadarData(mode) {
-  const rangeData = getRangeData(mode);
+// 偏移量：0=本周/本月，-1=上周/上月，+1=下周/下月
+let weekOffset = 0;
+let monthOffset = 0;
 
-  const dims = {
-    balance: 0,
-    power: 0,
-    endurance: 0,
-    flexibility: 0,
-    stability: 0,
-    coordination: 0
+// 根据偏移获取一周（周一~周日）
+function getWeekByOffset(offset) {
+  const base = new Date();
+  base.setDate(base.getDate() + offset * 7);
+
+  let day = base.getDay();
+  if (day === 0) day = 7;
+
+  const monday = new Date(base);
+  monday.setDate(base.getDate() - (day - 1));
+
+  const arr = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    arr.push(d.toISOString().slice(0, 10));
+  }
+  return arr;
+}
+
+// 根据偏移获取一个月所有日期
+function getMonthByOffset(offset) {
+  const today = new Date();
+  today.setMonth(today.getMonth() + offset);
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const days = new Date(year, month + 1, 0).getDate();
+  const arr = [];
+
+  for (let i = 1; i <= days; i++) {
+    const d = new Date(year, month, i);
+    arr.push(d.toISOString().slice(0, 10));
+  }
+  return arr;
+}
+
+/* -----------------------------
+   计算各部位能量
+----------------------------- */
+function computePartEnergy(dates) {
+  const partEnergy = {
+    "胸部": 0,
+    "背部": 0,
+    "腿部": 0,
+    "肩部": 0,
+    "手臂": 0,
+    "核心": 0
   };
 
-  for (const date in rangeData) {
-    const items = rangeData[date];
+  dates.forEach(date => {
+    const items = history[date];
+    if (!items) return;
 
-    for (const name in items) {
-      const sets = items[name];
-      const reps = findReps(name);
-      const score = sets * reps;
+    for (const itemName in items) {
+      const sets = items[itemName];
+      const reps = findReps(itemName);
+      const calories = caloriesPerSet(reps) * sets;
 
-      const dim = WORKOUT_DIMENSION[name];
-      if (dim) dims[dim] += score;
+      for (const part in WORKOUT_GROUPS) {
+        if (WORKOUT_GROUPS[part].some(obj => obj.name === itemName)) {
+          partEnergy[part] += calories;
+        }
+      }
     }
-  }
+  });
 
-  return dims;
+  return partEnergy;
 }
 
-/* ============================
-   绘制柱状图
-============================ */
-function renderBarChart() {
-  const ctx = document.getElementById("barChart");
-  if (!ctx) return;
+/* -----------------------------
+   计算雷达图六维指标
+----------------------------- */
+function computeRadarValues(partEnergy) {
+  const chest = partEnergy["胸部"];
+  const back = partEnergy["背部"];
+  const legs = partEnergy["腿部"];
+  const shoulder = partEnergy["肩部"];
+  const arm = partEnergy["手臂"];
+  const core = partEnergy["核心"];
 
-  const { labels, values } = computeBarData(currentMode);
+  return [
+    chest + back + legs,                     // 力量
+    shoulder + arm,                          // 爆发
+    core,                                    // 核心
+    core + legs,                             // 平衡
+    shoulder + core,                         // 灵活
+    chest + back + legs + shoulder + arm + core // 耐力
+  ];
+}
 
-  if (barChart) barChart.destroy();
+/* -----------------------------
+   柱状图（能量消耗）
+----------------------------- */
+function renderBar(dates) {
+  const labels = dates.map(d => d.slice(5));
+  const data = dates.map(d => getDayStats(d).totalCalories);
 
-  barChart = new Chart(ctx, {
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
     type: "bar",
     data: {
       labels,
       datasets: [{
-        label: getChartTitle("bar"),
-        data: values,
-        backgroundColor: "rgba(34,197,94,0.6)",
-        borderColor: "rgba(34,197,94,1)",
-        borderWidth: 1
+        label: "能量消耗（kcal）",
+        data,
+        backgroundColor: "#4f46e5"
       }]
     },
     options: {
-      plugins: {
-        legend: { display: true }
+      onClick: (evt, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const date = dates[index];
+
+          selectedDate = (selectedDate === date) ? null : date;
+          updateRadar();
+        }
       },
       scales: {
         y: { beginAtZero: true }
@@ -138,92 +180,139 @@ function renderBarChart() {
   });
 }
 
-/* ============================
-   绘制雷达图
-============================ */
-function renderRadarChart() {
-  const ctx = document.getElementById("radarChart");
-  if (!ctx) return;
+/* -----------------------------
+   雷达图
+----------------------------- */
+function renderRadar(values) {
+  const labels = ["力量", "爆发", "核心", "平衡", "灵活", "耐力"];
 
-  const dims = computeRadarData(currentMode);
-
-  if (radarChart) radarChart.destroy();
-
-  radarChart = new Chart(ctx, {
-    type: "radar",
-    data: {
-      labels: Object.keys(dims).map(k => getLocalizedDimension(k)),
-      datasets: [{
-        label: getChartTitle("radar"),
-        data: Object.values(dims),
-        backgroundColor: "rgba(34,197,94,0.3)",
-        borderColor: "rgba(34,197,94,1)",
-        borderWidth: 2,
-        pointBackgroundColor: "rgba(34,197,94,1)"
-      }]
-    },
-    options: {
-      scales: {
-        r: {
-          beginAtZero: true,
-          ticks: { display: false }
+  if (!radarChart) {
+    radarChart = new Chart(radarCtx, {
+      type: "radar",
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: "rgba(59,130,246,0.25)",
+          borderColor: "rgba(59,130,246,1)",
+          borderWidth: 2,
+          pointBackgroundColor: "rgba(59,130,246,1)"
+        }]
+      },
+      options: {
+        animation: {
+          duration: 900,
+          easing: "easeOutQuart"
+        },
+        plugins: { legend: { display: false } },
+        scales: {
+          r: {
+            beginAtZero: true,
+            grid: { color: "#ccc" },
+            angleLines: { color: "#ccc" },
+            pointLabels: { font: { size: 12 } }
+          }
         }
       }
-    }
-  });
-}
-
-/* ============================
-   刷新图表
-============================ */
-function refreshCharts() {
-  if (currentChart === "bar") {
-    renderBarChart();
+    });
   } else {
-    renderRadarChart();
+    radarChart.data.datasets[0].data = values;
+    radarChart.update({
+      duration: 900,
+      easing: "easeOutQuart"
+    });
   }
 }
 
-/* ============================
-   按钮绑定
-============================ */
-const btnWeek = document.getElementById("btnWeek");
-const btnMonth = document.getElementById("btnMonth");
-const btnBar = document.getElementById("btnBar");
-const btnRadar = document.getElementById("btnRadar");
-const btnBack = document.getElementById("btnBack");
+/* -----------------------------
+   雷达图联动逻辑
+----------------------------- */
+function updateRadar() {
+  let dates;
 
-if (btnWeek) btnWeek.addEventListener("click", () => {
+  if (selectedDate) {
+    dates = [selectedDate]; // 单日
+  } else {
+    dates = currentMode === "week"
+      ? getWeekByOffset(weekOffset)
+      : getMonthByOffset(monthOffset);
+  }
+
+  const partEnergy = computePartEnergy(dates);
+  const radarValues = computeRadarValues(partEnergy);
+
+  renderRadar(radarValues);
+}
+
+/* -----------------------------
+   刷新图表（支持同时显示）
+----------------------------- */
+let currentMode = "week";
+
+function refreshChart() {
+  selectedDate = null; // 切换周/月时清除选中
+
+  let dates = currentMode === "week"
+    ? getWeekByOffset(weekOffset)
+    : getMonthByOffset(monthOffset);
+
+  // 柱状图
+  if (showBar) {
+    document.getElementById("chartCanvas").style.display = "block";
+    renderBar(dates);
+  } else {
+    document.getElementById("chartCanvas").style.display = "none";
+  }
+
+  // 雷达图
+  if (showRadar) {
+    document.getElementById("radarCanvas").style.display = "block";
+    updateRadar();
+  } else {
+    document.getElementById("radarCanvas").style.display = "none";
+  }
+}
+
+/* -----------------------------
+   按钮绑定（开关模式）
+----------------------------- */
+document.getElementById("btnWeek").onclick = () => {
   currentMode = "week";
-  refreshCharts();
-});
+  weekOffset = 0;
+  refreshChart();
+};
 
-if (btnMonth) btnMonth.addEventListener("click", () => {
+document.getElementById("btnMonth").onclick = () => {
   currentMode = "month";
-  refreshCharts();
-});
+  monthOffset = 0;
+  refreshChart();
+};
 
-if (btnBar) btnBar.addEventListener("click", () => {
-  currentChart = "bar";
-  refreshCharts();
-});
+document.getElementById("btnBar").onclick = () => {
+  showBar = !showBar;
+  refreshChart();
+};
 
-if (btnRadar) btnRadar.addEventListener("click", () => {
-  currentChart = "radar";
-  refreshCharts();
-});
+document.getElementById("btnRadar").onclick = () => {
+  showRadar = !showRadar;
+  refreshChart();
+};
 
-if (btnBack) btnBack.addEventListener("click", () => {
+document.getElementById("btnPrev").onclick = () => {
+  if (currentMode === "week") weekOffset--;
+  else monthOffset--;
+  refreshChart();
+};
+
+document.getElementById("btnNext").onclick = () => {
+  if (currentMode === "week") weekOffset++;
+  else monthOffset++;
+  refreshChart();
+};
+
+document.getElementById("btnBack").onclick = () => {
   window.location.href = "index.html";
-});
+};
 
-/* ============================
-   初始化
-============================ */
-document.addEventListener("DOMContentLoaded", () => {
-  refreshCharts();
-});
-
-document.addEventListener("languageChanged", () => {
-  refreshCharts();
-});
+// 默认显示本周
+refreshChart();
